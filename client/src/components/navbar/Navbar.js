@@ -3,7 +3,7 @@ import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import NavbarItem from './NavbarItem';
 
-function Navbar() {
+const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
 
   return (
@@ -14,9 +14,9 @@ function Navbar() {
             {/* logo */}
             <Link
               to='/'
-              className='flex gap-1 font-bold text-gray-700 items-center'
+              className='flex gap-1 font-bold text-primary items-center'
             >
-              <FaBusAlt className='h-6 w-6 text-primary' />
+              <FaBusAlt className='h-6 w-6' />
               <span>RideNGo</span>
             </Link>
 
@@ -26,11 +26,20 @@ function Navbar() {
             </div>
           </div>
 
+          <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
+            <Link
+              to='/'
+              className='font-semibold text-secondary hover:text-primary transition duration-200'
+            >
+              Login <span aria-hidden='true'>&rarr;</span>
+            </Link>
+          </div>
+
           {/* Mobile Menu */}
           <div className='lg:hidden'>
             <button
               onClick={() => setToggleMenu(!toggleMenu)}
-              className='text-gray-700 hover:text-primary focus:outline-none'
+              className='text-secondary hover:text-primary focus:outline-none'
             >
               {toggleMenu ? (
                 <FaTimes className='h-6 w-6' />
@@ -51,6 +60,6 @@ function Navbar() {
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;

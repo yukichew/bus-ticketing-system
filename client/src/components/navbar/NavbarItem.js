@@ -1,16 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function NavbarItem() {
+const NavbarItem = () => {
   const links = [
-    { key: 1, name: 'Home', href: '/', 'aria-label': 'Home' },
+    { key: 1, name: 'Home', href: '/' },
     {
       key: 2,
       name: 'Bus Tickets',
       href: '/bus-tickets',
-      'aria-label': 'Bus Tickets',
     },
-    { key: 3, name: 'About', href: '/about', 'aria-label': 'About' },
+    { key: 3, name: 'About', href: '/about' },
   ];
 
   return (
@@ -19,14 +18,14 @@ function NavbarItem() {
         <Link
           key={link.key}
           to={link.href}
-          aria-label={link['aria-label']}
-          className='text-gray-600 hover:text-primary hover:text-black transition duration-200'
+          aria-label={link.name}
+          className='text-tertiary hover:text-primary transition duration-200 font-semibold'
         >
           {link.name}
         </Link>
       ))}
     </>
   );
-}
+};
 
 export default NavbarItem;
