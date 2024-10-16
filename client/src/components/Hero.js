@@ -1,9 +1,15 @@
-import React from 'react';
-import { IoCalendarOutline } from 'react-icons/io5';
+import React, { useState } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
+import { FaChevronRight } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import CustomButton from './common/CustomButton';
-import TextField from './common/TextField';
+import CustomInput from './common/CustomInput';
+import DatePickerField from './common/DatePickerField';
 
 const Hero = () => {
+  const [departureDate, setDepartureDate] = useState(null);
+  const [returnDate, setReturnDate] = useState(null);
+
   return (
     <section className='relative'>
       <img
@@ -11,71 +17,62 @@ const Hero = () => {
         className='absolute inset-0 object-cover w-full h-full'
       />
       <div className='relative bg-gray-900 bg-opacity-75'>
-        <div className='px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20'>
+        <div className='px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-28'>
           <div className='flex flex-col items-center justify-between xl:flex-row'>
             <div className='w-full max-w-xl mb-12 xl:mb-0 xl:pr-16 xl:w-7/12'>
-              <h2 className='max-w-lg mb-6 font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl sm:leading-none'>
-                The quick, brown fox <br className='hidden md:block' />
-                jumps over a{' '}
-                <span className='text-teal-accent-400'>lazy dog</span>
+              <h2 className='font-poppins max-w-lg mb-4 text-3xl font-bold text-white sm:text-4xl sm:leading-tight'>
+                Book Your Bus Tickets on RideNGo
               </h2>
-              <p className='max-w-xl mb-4 text-base text-gray-400 md:text-lg'>
-                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                accusantium doloremque laudan, totam rem aperiam, eaque ipsa
-                quae.
+              <p className='font-poppins max-w-xl mb-4 text-base text-gray-400 md:text-lg'>
+                RideNGo stands as Malaysia's leading online platform for bus
+                ticketing, earning the trust of millions of global travellers.
               </p>
-              <a
+              <Link
                 href='/'
                 aria-label=''
-                className='inline-flex items-center font-semibold tracking-wider transition-colors duration-200 text-teal-accent-400 hover:text-teal-accent-700'
+                className='font-poppins text-white inline-flex items-center font-semibold tracking-wider transition-colors duration-200'
               >
-                Learn more
-                <svg
-                  className='inline-block w-3 ml-2'
-                  fill='currentColor'
-                  viewBox='0 0 12 12'
-                >
-                  <path d='M9.707,5.293l-5-5A1,1,0,0,0,3.293,1.707L7.586,6,3.293,10.293a1,1,0,1,0,1.414,1.414l5-5A1,1,0,0,0,9.707,5.293Z' />
-                </svg>
-              </a>
+                Learn more <FaChevronRight className='inline-block w-3 ml-2' />
+              </Link>
             </div>
-            <div className='w-full max-w-xl xl:px-8 xl:w-5/12'>
-              <div className='bg-white rounded shadow-2xl p-7 sm:p-10'>
+
+            <div className='w-full max-w-xl xl:px-6 xl:w-5/12'>
+              <div className='bg-white rounded p-8 sm:p-10'>
                 <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-6 sm:text-2xl'>
                   Buy Bus Tickets Online
                 </h3>
-                <form>
-                  <TextField
+                <form className='space-y-4'>
+                  <CustomInput
                     id={'origin'}
                     name={'origin'}
                     placeholder={'From'}
                     type={'text'}
                     required
                   />
-                  <TextField
+                  <CustomInput
                     id={'destination'}
                     name={'destination'}
                     placeholder={'To'}
                     type={'text'}
                     required
                   />
-                  <TextField
+                  <DatePickerField
                     id={'departureDate'}
                     name={'departureDate'}
                     placeholder={'Departure Date'}
-                    type={'text'}
                     required
-                    icon={IoCalendarOutline}
+                    selectedDate={departureDate}
+                    setSelectedDate={setDepartureDate}
                   />
-                  <TextField
+                  <DatePickerField
                     id={'returnDate'}
                     name={'returnDate'}
                     placeholder={'Return Date'}
-                    type={'text'}
                     required
-                    icon={IoCalendarOutline}
+                    selectedDate={returnDate}
+                    setSelectedDate={setReturnDate}
                   />
-                  <CustomButton title={'Search Buses'} />
+                  <CustomButton title={'Search Buses'} type={'submit'} />
                 </form>
               </div>
             </div>
