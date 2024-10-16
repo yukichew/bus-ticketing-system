@@ -1,11 +1,17 @@
 import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdOutlineLocalPhone } from "react-icons/md";
 import Navbar from '../components/navbar/Navbar';
 import CustomButton from '../components/common/CustomButton';
 import TextField from '../components/common/TextField';
 
 const Register = () => {
+    const navigate = useNavigate();
+
+    const getOTPVerification = () => {
+        navigate('otp-verification');
+    }
+
     return (
         <div>
             <Navbar />
@@ -27,7 +33,10 @@ const Register = () => {
                             />
 
                             <div className="mt-5">
-                                <CustomButton title={'Get Verification Code'} />
+                                <CustomButton 
+                                    title={'Get Verification Code'}
+                                    onClick={getOTPVerification}
+                                />
                             </div>
                         </form>
 
