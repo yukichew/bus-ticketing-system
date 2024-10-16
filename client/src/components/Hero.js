@@ -16,8 +16,8 @@ const Hero = () => {
         src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         className='absolute inset-0 object-cover w-full h-full'
       />
-      <div className='relative bg-gray-900 bg-opacity-75'>
-        <div className='px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-28'>
+      <div className='relative bg-gray-900 bg-opacity-65'>
+        <div className='px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8'>
           <div className='flex flex-col items-center justify-between xl:flex-row'>
             <div className='w-full max-w-xl mb-12 xl:mb-0 xl:pr-16 xl:w-7/12'>
               <h2 className='font-poppins max-w-lg mb-4 text-3xl font-bold text-white sm:text-4xl sm:leading-tight'>
