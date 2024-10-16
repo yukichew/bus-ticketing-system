@@ -1,7 +1,7 @@
 import React from 'react';
 import { IoLocationOutline } from 'react-icons/io5';
 
-const TextField = ({
+const CustomField = ({
   placeholder,
   required,
   id,
@@ -10,7 +10,7 @@ const TextField = ({
   icon: Icon = IoLocationOutline,
 }) => {
   return (
-    <div className='mb-4 relative flex items-center'>
+    <div className='relative flex items-center'>
       <Icon
         size={20}
         className='absolute text-gray-400 pointer-events-none ml-3'
@@ -27,4 +27,4 @@ const TextField = ({
   );
 };
 
-export default TextField;
+export default CustomField;
