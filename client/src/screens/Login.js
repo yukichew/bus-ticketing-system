@@ -18,13 +18,16 @@ const Login = () => {
         <div>
             <Navbar />
 
-            <div className="flex justify-center items-center px-4 py-20">
+            <div className="flex justify-center items-center px-4 py-10">
                 <div className="w-full max-w-lg xl:px-8 xl:w-5/12 ml-auto mr-0">
                     <div className="bg-white rounded shadow-2xl p-7 sm:p-10">
-                        <h3 className="font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-6 sm:text-2xl">
-                            Sign In
+                        <h3 className="font-poppins text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl">
+                            Welcome back!
                         </h3>
-                        <form className="mt-10">
+                        <div className="font-poppins text-center text-sm text-gray-500">
+                            Please enter your details
+                        </div>
+                        <form className="mt-12">
                             <TextField
                                 id={'username'}
                                 name={'username'}
@@ -63,13 +66,25 @@ const Login = () => {
                                 </Link>
                             </div>
 
-                            <div className="mt-12">
+                            <div className="mt-10">
                                 <CustomButton title={'Login'} />
                             </div>
                         </form>
 
+                        <div className="font-poppins text-center text-sm text-gray-500 mt-5">
+                            - or sign in with -
+                        </div>
+
+                        <div className="flex justify-center mt-2">
+                            <img
+                                src='https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg'
+                                alt="Google Logo"
+                                className="w-10 h-10 rounded-full"
+                            />
+                        </div>
+
                         {!isAdmin && (
-                            <div className="font-poppins text-center text-sm text-gray-500 mt-6">
+                            <div className="font-poppins text-center text-sm text-gray-500 mt-8">
                                 Hasn't have an account yet?{' '}
                                 <Link 
                                     to='/register' 
