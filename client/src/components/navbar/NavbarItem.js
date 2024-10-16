@@ -19,7 +19,7 @@ const NavbarItem = () => {
           key={link.key}
           to={link.href}
           aria-label={link.name}
-          className='text-tertiary hover:text-primary transition duration-200 font-semibold'
+          className='font-poppins text-tertiary hover:text-primary transition duration-200 font-semibold'
         >
           {link.name}
         </Link>
