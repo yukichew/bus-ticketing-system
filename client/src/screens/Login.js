@@ -21,10 +21,13 @@ const Login = () => {
             <div className="flex justify-center items-center px-4 py-10">
                 <div className="w-full max-w-lg xl:px-8 xl:w-5/12 ml-auto mr-0">
                     <div className="bg-white rounded shadow-2xl p-7 sm:p-10">
-                        <h3 className="font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-6 sm:text-2xl">
-                            Sign In
+                        <h3 className="font-poppins text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl">
+                            Welcome back!
                         </h3>
-                        <form className="mt-10">
+                        <div className="font-poppins text-center text-sm text-gray-500">
+                            Please enter your details
+                        </div>
+                        <form className="mt-12">
                             <TextField
                                 id={'username'}
                                 name={'username'}
