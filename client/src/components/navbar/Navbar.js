@@ -10,7 +10,7 @@ const Navbar = () => {
     <nav className='bg-white shadow-lg'>
       <div className='max-w-7xl mx-auto'>
         <div className='flex mx-auto justify-between w-5/6 items-center'>
-          <div className='flex items-center gap-16 my-7'>
+          <div className='flex items-center gap-16 my-8'>
             {/* logo */}
             <Link
               to='/'

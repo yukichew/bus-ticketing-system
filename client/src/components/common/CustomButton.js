@@ -1,9 +1,9 @@
 import React from 'react';
 
-const CustomButton = ({ title, onClick }) => {
+const CustomButton = ({ title, type, onClick }) => {
   return (
     <button
-      type='submit'
+      type={type}
       onClick={onClick}
       className='bg-primary items-center justify-center w-full h-12 px-6 font-medium tracking-wide text-white transition duration-200 rounded shadow-md focus:outline-none'
     >
