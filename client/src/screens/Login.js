@@ -59,7 +59,7 @@ const Login = () => {
 
                             <div className="font-poppins text-left">
                                 <Link
-                                    to='/forgot-password' 
+                                    to='/otp-verification' 
                                     className='text-sm hover:text-primary text-gray-500 underline transition duration-200'
                                 >
                                     Forgot Password?

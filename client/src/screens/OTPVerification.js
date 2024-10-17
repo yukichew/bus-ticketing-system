@@ -9,7 +9,7 @@ const OTPVerification = () => {
     const navigate = useNavigate();
 
     const verifyOTP= () => {
-        navigate('/register/create-account');
+        navigate('/create-account');
     }
 
     return (

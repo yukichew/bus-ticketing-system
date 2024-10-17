@@ -9,7 +9,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const getOTPVerification = () => {
-        navigate('otp-verification');
+        navigate('/otp-verification');
     }
 
     return (

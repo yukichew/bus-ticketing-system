@@ -5,6 +5,7 @@ import Login from './screens/Login';
 import Register from './screens/Register';
 import OTPVerification from './screens/OTPVerification';
 import SignUp from './screens/SignUp';
+import ResetPassword from './screens//ResetPassword';
 
 function App() {
   return (
@@ -13,8 +14,9 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/register/otp-verification' element={<OTPVerification />} />
-        <Route path='/register/create-account' element={<SignUp />} />
+        <Route path='/otp-verification' element={<OTPVerification />} />
+        <Route path='/create-account' element={<SignUp />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );
