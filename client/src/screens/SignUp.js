@@ -5,7 +5,7 @@ import { IoKeyOutline, IoEye, IoEyeOff, IoCalendarOutline } from "react-icons/io
 import { TfiEmail } from "react-icons/tfi";
 import Navbar from '../components/navbar/Navbar';
 import CustomButton from '../components/common/CustomButton';
-import TextField from '../components/common/TextField';
+import CustomField from '../components/common/CustomInput';
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ const SignUp = () => {
                             Please enter all the details
                         </div>
                         <form className="mt-12">
-                            <TextField
+                            <CustomField
                                 id={'name'}
                                 name={'name'}
                                 placeholder={'Full Name'}
@@ -46,24 +46,28 @@ const SignUp = () => {
                                 required
                                 icon={CiUser}
                             />
-                            <TextField
-                                id={'email'}
-                                name={'email'}
-                                placeholder={'Email'}
-                                type={'text'}
-                                required
-                                icon={TfiEmail}
-                            />
-                            <TextField
-                                id={'dob'}
-                                name={'dob'}
-                                placeholder={'Date Of Birth'}
-                                type={'text'}
-                                required
-                                icon={IoCalendarOutline}
-                            />
-                            <div className="relative">
-                                <TextField
+                            <div className="mt-3">
+                                <CustomField
+                                    id={'email'}
+                                    name={'email'}
+                                    placeholder={'Email'}
+                                    type={'text'}
+                                    required
+                                    icon={TfiEmail}
+                                />
+                            </div>
+                            <div className="mt-3">
+                                <CustomField
+                                    id={'dob'}
+                                    name={'dob'}
+                                    placeholder={'Date Of Birth'}
+                                    type={'text'}
+                                    required
+                                    icon={IoCalendarOutline}
+                                />
+                            </div>
+                            <div className="relative mt-3">
+                                <CustomField
                                     id={'password'}
                                     name={'password'}
                                     placeholder={'Password'}
@@ -82,8 +86,8 @@ const SignUp = () => {
                                     )}
                                 </div>
                             </div>
-                            <div className="relative">
-                                <TextField
+                            <div className="relative mt-3">
+                                <CustomField
                                     id={'cpassword'}
                                     name={'cpassword'}
                                     placeholder={'Confirm Password'}

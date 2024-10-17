@@ -4,7 +4,7 @@ import { CiUser } from "react-icons/ci";
 import { IoKeyOutline, IoEye, IoEyeOff } from "react-icons/io5";
 import Navbar from '../components/navbar/Navbar';
 import CustomButton from '../components/common/CustomButton';
-import TextField from '../components/common/TextField';
+import CustomField from '../components/common/CustomInput';
 
 const Login = () => {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -27,8 +27,8 @@ const Login = () => {
                         <div className="font-poppins text-center text-sm text-gray-500">
                             Please enter your details
                         </div>
-                        <form className="mt-12">
-                            <TextField
+                        <form className="mt-16">
+                            <CustomField
                                 id={'username'}
                                 name={'username'}
                                 placeholder={'Username'}
@@ -36,8 +36,8 @@ const Login = () => {
                                 required
                                 icon={CiUser}
                             />
-                            <div className="relative">
-                                <TextField
+                            <div className="relative mt-3">
+                                <CustomField
                                     id={'password'}
                                     name={'password'}
                                     placeholder={'Password'}
@@ -57,7 +57,7 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <div className="font-poppins text-left">
+                            <div className="font-poppins text-left mt-3">
                                 <Link 
                                     to="/otp-verification" 
                                     state={{ source: 'forgot-password' }} 
@@ -67,7 +67,7 @@ const Login = () => {
                                 </Link>
                             </div>
 
-                            <div className="mt-10">
+                            <div className="mt-12">
                                 <CustomButton title={'Login'} />
                             </div>
                         </form>

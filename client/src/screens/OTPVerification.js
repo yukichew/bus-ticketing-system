@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { CiLock } from "react-icons/ci";
 import Navbar from '../components/navbar/Navbar';
 import CustomButton from '../components/common/CustomButton';
-import TextField from '../components/common/TextField';
+import CustomField from '../components/common/CustomInput';
 
 const OTPVerification = () => {
     const location = useLocation();
@@ -34,7 +34,7 @@ const OTPVerification = () => {
                             Please enter the 6-digit-code
                         </div>
                         <form className="mt-12">
-                            <TextField
+                            <CustomField
                                 id={'otp'}
                                 name={'otp'}
                                 placeholder={'Verification Code'}
@@ -43,14 +43,14 @@ const OTPVerification = () => {
                                 icon={CiLock}
                             />
 
-                            <div className="font-poppins text-left text-sm text-gray-500">
+                            <div className="font-poppins text-left text-sm text-gray-500 mt-3">
                                 Didn't receive the code? <span className="underline text-primary cursor-pointer">Resend</span>
                             </div>
 
                             <div className="mt-10">
                                 <CustomButton 
                                     title={'Verify OTP'}
-                                    onClick={verifyOTP} // Call the verifyOTP function on button click
+                                    onClick={verifyOTP}
                                 />
                             </div>
                         </form>

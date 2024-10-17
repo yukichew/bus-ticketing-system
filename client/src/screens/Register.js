@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MdOutlineLocalPhone } from "react-icons/md";
 import Navbar from '../components/navbar/Navbar';
 import CustomButton from '../components/common/CustomButton';
-import TextField from '../components/common/TextField';
+import CustomField from '../components/common/CustomInput';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Register = () => {
                             Create An Account
                         </h3>
                         <form className="mt-12">
-                            <TextField
+                            <CustomField
                                 id={'phoneNo'}
                                 name={'phoneNo'}
                                 placeholder={'Phone Number'}
