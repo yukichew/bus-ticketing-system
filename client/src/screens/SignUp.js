@@ -6,6 +6,7 @@ import { TfiEmail } from "react-icons/tfi";
 import Navbar from '../components/navbar/Navbar';
 import CustomButton from '../components/common/CustomButton';
 import CustomField from '../components/common/CustomInput';
+import Footer from '../components/Footer';
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -117,6 +118,8 @@ const SignUp = () => {
                     </div>
                 </div>
             </div>
+
+            <Footer />
         </div>
     );
 };

@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MdOutlineLocalPhone } from "react-icons/md";
 import Navbar from '../components/navbar/Navbar';
+import Footer from '../components/Footer';
 import CustomButton from '../components/common/CustomButton';
 import CustomField from '../components/common/CustomInput';
 
@@ -64,6 +65,8 @@ const Register = () => {
                     </div>
                 </div>
             </div>
+
+            <Footer />
         </div>
     );
 };

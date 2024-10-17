@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CiUser } from "react-icons/ci";
 import { IoKeyOutline, IoEye, IoEyeOff } from "react-icons/io5";
 import Navbar from '../components/navbar/Navbar';
+import Footer from '../components/Footer';
 import CustomButton from '../components/common/CustomButton';
 import CustomField from '../components/common/CustomInput';
 
@@ -18,7 +19,7 @@ const Login = () => {
         <div>
             <Navbar />
 
-            <div className="flex justify-center items-center px-4 py-10">
+            <div className="flex justify-center items-center px-4 py-8">
                 <div className="w-full max-w-lg xl:px-8 xl:w-5/12 ml-auto mr-0">
                     <div className="bg-white rounded shadow-2xl p-7 sm:p-10">
                         <h3 className="font-poppins text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl">
@@ -27,7 +28,7 @@ const Login = () => {
                         <div className="font-poppins text-center text-sm text-gray-500">
                             Please enter your details
                         </div>
-                        <form className="mt-16">
+                        <form className="mt-12">
                             <CustomField
                                 id={'username'}
                                 name={'username'}
@@ -67,7 +68,7 @@ const Login = () => {
                                 </Link>
                             </div>
 
-                            <div className="mt-12">
+                            <div className="mt-11">
                                 <CustomButton title={'Login'} />
                             </div>
                         </form>
@@ -98,6 +99,8 @@ const Login = () => {
                     </div>
                 </div>
             </div>
+
+            <Footer />
         </div>
     );
 };
