@@ -20,7 +20,7 @@ const Login = () => {
             <Navbar />
 
             <div className="flex justify-center items-center px-4 py-8">
-                <div className="w-full max-w-lg xl:px-8 xl:w-5/12 ml-auto mr-0">
+                <div className="w-full max-w-lg xl:px-8 xl:w-5/12">
                     <div className="bg-white rounded shadow-2xl p-7 sm:p-10">
                         <h3 className="font-poppins text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl">
                             Welcome back!

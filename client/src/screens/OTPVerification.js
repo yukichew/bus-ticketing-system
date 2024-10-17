@@ -13,8 +13,6 @@ const OTPVerification = () => {
     const { source } = location.state || {};
 
     const verifyOTP = () => {
-        console.log("Source:", source);
-
         if (source === 'register') {
             navigate('/create-account');
         } else if (source === 'forgot-password') {
@@ -27,7 +25,7 @@ const OTPVerification = () => {
             <Navbar />
 
             <div className="flex justify-center items-center px-4 py-24">
-                <div className="w-full max-w-lg xl:px-8 xl:w-5/12 ml-auto mr-0">
+                <div className="w-full max-w-lg xl:px-8 xl:w-5/12">
                     <div className="bg-white rounded shadow-2xl p-7 sm:p-10">
                         <h3 className="font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl">
                             {source === 'register' ? 'Create An Account' : 'Reset Your Password'}
