@@ -8,6 +8,8 @@ const CustomField = ({
   name,
   type,
   icon: Icon = IoLocationOutline,
+  value,
+  onChange,
 }) => {
   return (
     <div className='relative flex items-center'>
@@ -22,6 +24,8 @@ const CustomField = ({
         className='w-full h-12 px-4 pl-12 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm'
         id={id}
         name={name}
+        value={value}
+        onChange={onChange}
       />
     </div>
   );

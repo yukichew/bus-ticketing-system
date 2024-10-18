@@ -15,6 +15,7 @@ const Register = () => {
     const navigate = useNavigate();
     const [selectedRole, setSelectedRole] = useState('passenger');
     const [currentStep, setCurrentStep] = useState(1);
+    const [images, setImages] = useState([]);
     const [formData, setFormData] = useState({
         companyname: '',
         companyemail: '',
@@ -36,8 +37,24 @@ const Register = () => {
     }, [source]);
 
     const handleRoleSelection = (role) => {
-        setSelectedRole(role);
-    }
+        if (role !== selectedRole) {
+            setSelectedRole(role);
+            setCurrentStep(1);
+            
+            setFormData({
+                companyname: '',
+                companyemail: '',
+                companycontact: '',
+                address: '',
+                fullname: '',
+                email: '',
+                contactno: '',
+            });
+            setImages([]);
+        } else {
+            setCurrentStep(1);
+        }
+    };
 
     const getOTPVerification = () => {
         if (source === 'forgot-password') {
@@ -54,9 +71,13 @@ const Register = () => {
             [name]: value
         });
     };
-
+    
     const handleNext = () => {
-        setCurrentStep(prevStep => prevStep + 1);
+        setFormData({
+            ...formData,
+            images: images,
+        });
+        setCurrentStep((prevStep) => prevStep + 1);
     };
     
     const handleSubmit = (e) => {
@@ -149,7 +170,7 @@ const Register = () => {
                             <>
                                 <div className="font-poppins text-center text-sm text-gray-500 w-4/5 mx-auto">
                                     {currentStep === 1 && "Please enter your company details"}
-                                    {currentStep === 2 && "Please upload photos of the buses"}
+                                    {currentStep === 2 && "Please upload 2 photos of the buses"}
                                     {currentStep === 3 && "Please enter your personal details"}
                                 </div>
 
@@ -213,7 +234,7 @@ const Register = () => {
                                     
                                     {currentStep === 2 && (
                                         <>
-                                            <FilesUploadButton />
+                                            <FilesUploadButton setImages={setImages} initialFiles={images.map(name => new File([], name))} />
 
                                             <div className="mt-12 flex justify-between gap-x-56">
                                                 <CustomButton
