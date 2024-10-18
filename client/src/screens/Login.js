@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
-import { CiUser } from "react-icons/ci";
+import { TfiEmail } from "react-icons/tfi";
 import { IoKeyOutline, IoEye, IoEyeOff } from "react-icons/io5";
 import Navbar from '../components/navbar/Navbar';
 import Footer from '../components/Footer';
@@ -30,12 +30,12 @@ const Login = () => {
                         </div>
                         <form className="mt-12">
                             <CustomField
-                                id={'username'}
-                                name={'username'}
-                                placeholder={'Username'}
+                                id={'email'}
+                                name={'email'}
+                                placeholder={'Email'}
                                 type={'text'}
                                 required
-                                icon={CiUser}
+                                icon={TfiEmail}
                             />
                             <div className="relative mt-3">
                                 <CustomField
@@ -60,7 +60,7 @@ const Login = () => {
 
                             <div className="font-poppins text-left mt-3">
                                 <Link 
-                                    to="/otp-verification" 
+                                    to="/register" 
                                     state={{ source: 'forgot-password' }} 
                                     className='text-sm hover:text-primary text-gray-500 underline transition duration-200'
                                 >

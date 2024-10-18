@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { CiUser } from "react-icons/ci";
 import { MdOutlineLocalPhone } from "react-icons/md";
@@ -11,6 +11,8 @@ import CustomField from '../components/common/CustomInput';
 import FilesUploadButton from '../components/common/FilesUploadButton';
 
 const Register = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [selectedRole, setSelectedRole] = useState('passenger');
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -23,14 +25,26 @@ const Register = () => {
         contactno: '',
     });
 
-    const navigate = useNavigate();
+    const { source } = location.state || {};
+
+    useEffect(() => {
+        if (source === 'forgot-password') {
+            setSelectedRole('');
+        } else {
+            setSelectedRole('passenger');
+        }
+    }, [source]);
 
     const handleRoleSelection = (role) => {
         setSelectedRole(role);
     }
 
     const getOTPVerification = () => {
-        navigate('/otp-verification', { state: { source: 'register' } });
+        if (source === 'forgot-password') {
+            navigate('/otp-verification', { state: { source: 'forgot-password' } });
+        } else {
+            navigate('/otp-verification', { state: { source: 'register' } });
+        }
     }
 
     const handleInputChange = (e) => {
@@ -48,6 +62,7 @@ const Register = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Submitted form data:', formData); // For testing
+        navigate('/login');
     };
 
     return (
@@ -55,29 +70,35 @@ const Register = () => {
             <Navbar />
 
             <div className="flex justify-center items-center px-4 py-16">
-                <div className="w-full max-w-xl xl:px-8 xl:w-5/12">
+                <div className={`w-full ${source === 'forgot-password' ? 'max-w-lg' : 'max-w-xl'} xl:px-8 xl:w-5/12`}>
                     <div className="bg-white rounded shadow-2xl p-7 sm:p-10">
-                        <div className="flex justify-center mb-6">
-                            <button 
-                                className={`font-poppins font-medium text-sm px-2 py-5 w-1/2 ${selectedRole === 'passenger' ? 'bg-white text-primary font-semibold ' : 'bg-gray-100 text-gray-600'}`}
-                                onClick={() => handleRoleSelection('passenger')}
-                            >
-                                Register as Passenger
-                            </button>
-                            <button 
-                                className={`font-poppins font-medium text-sm px-2 py-5 w-1/2 ${selectedRole === 'busoperator' ? 'bg-white text-primary font-semibold ' : 'bg-gray-100 text-gray-600'}`}
-                                onClick={() => handleRoleSelection('busoperator')}
-                            >
-                                Register as Bus Operator
-                            </button>
-                        </div>
+                        {source !== 'forgot-password' && (
+                            <div className="flex justify-center mb-6">
+                                <button 
+                                    className={`font-poppins font-medium text-sm px-2 py-5 w-1/2 ${selectedRole === 'passenger' ? 'bg-white text-primary font-semibold ' : 'bg-gray-100 text-gray-600'}`}
+                                    onClick={() => handleRoleSelection('passenger')}
+                                >
+                                    Register as Passenger
+                                </button>
+                                <button 
+                                    className={`font-poppins font-medium text-sm px-2 py-5 w-1/2 ${selectedRole === 'busoperator' ? 'bg-white text-primary font-semibold ' : 'bg-gray-100 text-gray-600'}`}
+                                    onClick={() => handleRoleSelection('busoperator')}
+                                >
+                                    Register as Bus Operator
+                                </button>
+                            </div>
+                        )}
 
                         <h3 className="font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl">
-                            Create An Account
+                            {source === 'forgot-password' ? 'Reset Your Password' : 'Create An Account'}
                         </h3>
 
-                        {selectedRole === 'passenger' && (
+                        {selectedRole !== 'busoperator' &&(
                             <>
+                                <div className="font-poppins text-center text-sm text-gray-500 w-4/5 mx-auto">
+                                    Please enter your phone number
+                                </div>
+
                                 <form className="mt-8">
                                     <CustomField
                                         id={'phoneNo'}
@@ -95,7 +116,11 @@ const Register = () => {
                                         />
                                     </div>
                                 </form>
+                            </>
+                        )}
 
+                        {selectedRole === 'passenger' && source !== 'forgot-password' && (
+                            <>
                                 <div className="font-poppins text-center text-sm text-gray-500 mt-5">
                                     - or sign in with -
                                 </div>
@@ -120,7 +145,7 @@ const Register = () => {
                             </>
                         )}
                         
-                        {selectedRole === 'busoperator' && (
+                        {selectedRole === 'busoperator' && source !== 'forgot-password' && (
                             <>
                                 <div className="font-poppins text-center text-sm text-gray-500 w-4/5 mx-auto">
                                     {currentStep === 1 && "Please enter your company details"}
