@@ -1,21 +1,27 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { PiUploadSimple } from "react-icons/pi";
 import { AiOutlineDelete } from "react-icons/ai";
 
-const FilesUploadButton = ({ className }) => {
-    const [files, setFiles] = useState([]);
+const FilesUploadButton = ({ setImages, initialFiles = [] }) => {
+    const [files, setFiles] = useState(initialFiles);
+
+    useEffect(() => {
+        setImages(files.map(file => file.name));
+    }, [files, setImages]);
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
         const validFiles = selectedFiles.filter(validateFile);
-        setFiles((prevFiles) => [...prevFiles, ...validFiles].slice(0, 2));
+        const newFiles = [...files, ...validFiles].slice(0, 2);
+        setFiles(newFiles);
     };
 
     const handleDrop = (e) => {
         e.preventDefault();
         const droppedFiles = Array.from(e.dataTransfer.files);
         const validFiles = droppedFiles.filter(validateFile);
-        setFiles((prevFiles) => [...prevFiles, ...validFiles].slice(0, 2));
+        const newFiles = [...files, ...validFiles].slice(0, 2);
+        setFiles(newFiles);
     };
 
     const validateFile = (file) => {
@@ -33,7 +39,8 @@ const FilesUploadButton = ({ className }) => {
     };
 
     const handleDelete = (index) => {
-        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+        const updatedFiles = files.filter((_, i) => i !== index);
+        setFiles(updatedFiles);
     };
 
     return (
