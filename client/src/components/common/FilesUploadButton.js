@@ -8,14 +8,14 @@ const FilesUploadButton = ({ className }) => {
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
         const validFiles = selectedFiles.filter(validateFile);
-        setFiles((prevFiles) => [...prevFiles, ...validFiles].slice(0, 3));
+        setFiles((prevFiles) => [...prevFiles, ...validFiles].slice(0, 2));
     };
 
     const handleDrop = (e) => {
         e.preventDefault();
         const droppedFiles = Array.from(e.dataTransfer.files);
         const validFiles = droppedFiles.filter(validateFile);
-        setFiles((prevFiles) => [...prevFiles, ...validFiles].slice(0, 3));
+        setFiles((prevFiles) => [...prevFiles, ...validFiles].slice(0, 2));
     };
 
     const validateFile = (file) => {
@@ -66,7 +66,7 @@ const FilesUploadButton = ({ className }) => {
 
                 {files.length > 0 && (
                     <div className="mt-6 w-full">
-                        <div className={`grid gap-2 justify-items-center ${files.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                        <div className={`grid gap-2 justify-items-center grid-cols-2`}>
                             {files.map((file, index) => (
                                 <div key={index} className="relative w-full">
                                     <div className="w-full h-36 bg-gray-100 overflow-hidden">
