@@ -30,15 +30,15 @@ const Seatmap = () => {
           <div className='bg-white p-7 rounded-lg w-auto relative'>
             <IoClose
               size={25}
-              className='cursor-pointer absolute top-2 right-2'
+              className='cursor-pointer absolute top-3 right-3 text-gray-400 hover:text-gray-800'
               onClick={toggleModal}
             />
-            <h2 className='text-xl font-semibold mb-4 font-poppins'>
+            <h2 className='text-lg lg:text-xl font-semibold font-poppins'>
               Select your seat
             </h2>
 
-            <div className='flex justify-end items-center mb-4 bg-gray-100 p-2'>
-              <RiSteering2Line size={25} className='mr-4' />
+            <div className='flex justify-end items-center my-3 bg-gray-200 p-2 rounded'>
+              <RiSteering2Line size={25} className='mr-4 text-gray-500' />
             </div>
 
             <div
@@ -62,7 +62,7 @@ const Seatmap = () => {
             </div>
 
             <CustomButton
-              title='Confirm'
+              title='Proceed to Book'
               type='button'
               onClick={() => {
                 toggleModal();
