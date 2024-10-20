@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IoClose } from 'react-icons/io5';
 import { RiSteering2Line } from 'react-icons/ri';
 import CustomButton from '../common/CustomButton';
 import Seat from './Seat';
@@ -26,13 +27,18 @@ const Seatmap = () => {
 
       {showModal && (
         <div className='fixed inset-0 bg-gray-900 bg-opacity-55 flex justify-center items-center'>
-          <div className='bg-white p-6 rounded-lg w-auto'>
-            <h2 className='text-xl font-semibold mb-4 font-poppins'>
+          <div className='bg-white p-7 rounded-lg w-auto relative'>
+            <IoClose
+              size={25}
+              className='cursor-pointer absolute top-3 right-3 text-gray-400 hover:text-gray-800'
+              onClick={toggleModal}
+            />
+            <h2 className='text-lg lg:text-xl font-semibold font-poppins'>
               Select your seat
             </h2>
 
-            <div className='flex justify-end items-center mb-4 bg-gray-100 p-2'>
-              <RiSteering2Line size={25} className='mr-4' />
+            <div className='flex justify-end items-center my-3 bg-gray-200 p-2 rounded'>
+              <RiSteering2Line size={25} className='mr-4 text-gray-500' />
             </div>
 
             <div
@@ -55,22 +61,13 @@ const Seatmap = () => {
               ))}
             </div>
 
-            <div className='flex justify-between'>
-              <button
-                onClick={toggleModal}
-                className='px-4 py-2 bg-gray-400 text-white rounded'
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  toggleModal();
-                }}
-                className='px-4 py-2 bg-blue-500 text-white rounded'
-              >
-                Confirm
-              </button>
-            </div>
+            <CustomButton
+              title='Proceed to Book'
+              type='button'
+              onClick={() => {
+                toggleModal();
+              }}
+            />
           </div>
         </div>
       )}
