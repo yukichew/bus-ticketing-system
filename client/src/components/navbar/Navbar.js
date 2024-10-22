@@ -28,8 +28,8 @@ const Navbar = () => {
 
           <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
             <Link
-              to='/'
-              className='font-poppins font-semibold text-secondary hover:text-primary transition duration-200'
+              to='/login'
+              className='font-semibold text-secondary hover:text-primary transition duration-200'
             >
               Login <span aria-hidden='true'>&rarr;</span>
             </Link>
