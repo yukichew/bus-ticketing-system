@@ -71,7 +71,7 @@ const BusCard = ({ schedule }) => {
         </div>
 
         <div className='flex flex-col items-center'>
-          <CustomButton title='SELECT' className='w-3/5' />
+          <CustomButton title='SELECT' className='w-2/4' />
           <Link
             to={`/bus/${schedule.id}`}
             className='text-primary mt-1 font-medium hover:underline'
