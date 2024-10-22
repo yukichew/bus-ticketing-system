@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Home from './screens/Home';
-import Login from './screens/Login';
-import Register from './screens/Register';
-import OTPVerification from './screens/OTPVerification';
-import SignUp from './screens/SignUp';
-import ResetPassword from './screens//ResetPassword';
+import Login from './screens/auth/Login';
+import OTPVerification from './screens/auth/OTPVerification';
+import Register from './screens/auth/Register';
+import ResetPassword from './screens/auth/ResetPassword';
+import SignUp from './screens/auth/SignUp';
+import Home from './screens/user/Home';
 
 function App() {
   return (

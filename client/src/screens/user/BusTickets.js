@@ -1,5 +1,5 @@
 import React from 'react';
-import BusCard from '../components/user/BusCard';
+import BusCard from '../../components/user/BusCard';
 
 const BusTickets = () => {
   const busSchedule = {
@@ -10,7 +10,7 @@ const BusTickets = () => {
     departureTime: '10:15',
     departureLocation: 'JB Larkin',
     arrivalTime: '14:15',
-    arrivalLocation: 'Penang Sentral Bus Terminal',
+    arrivalLocation: 'Penang Sentral',
     rating: 4.5,
     passengers: 27,
     price: 'RM 35',
