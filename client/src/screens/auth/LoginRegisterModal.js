@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Login from '../SignUp/Login';
-import Register from '../SignUp/Register';
-import OTPVerification from '../SignUp/OTPVerification';
-import ResetPassword from '../SignUp/ResetPassword';
-import CreateAccount from '../SignUp/CreateAccount';
+import Login from '../auth/Login';
+import Register from '../auth/Register';
+import OTPVerification from '../auth/OTPVerification';
+import ResetPassword from '../auth/ResetPassword';
+import CreateAccount from '../auth/CreateAccount';
 
 const LoginRegistrationModal = () => {
     const [view, setView] = useState({ screen: 'login', source: '' });
