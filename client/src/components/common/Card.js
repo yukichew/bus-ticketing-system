@@ -4,7 +4,7 @@ const Card = ({ header, children, Icon, onClick, tooltip }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className={`bg-gray-50 rounded-lg p-6 shadow-md mt-6 w-full mx-auto`}>
+    <div className={`bg-slate-50 rounded-lg p-6 shadow-md mt-6 w-full mx-auto`}>
       {header && (
         <div className="flex justify-between items-start">
           <div className="font-poppins font-semibold text-lg text-primary mb-4">
