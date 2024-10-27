@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaChevronRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import CustomButton from './common/CustomButton';
-import CustomInput from './common/CustomInput';
-import DatePickerField from './common/DatePickerField';
+import BusTicketForm from './user/BusTicketForm';
 
 const Hero = () => {
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
+  const [origin, setOrigin] = useState('');
+  const [destination, setDestination] = useState('');
 
   return (
     <section className='relative'>
@@ -41,39 +41,14 @@ const Hero = () => {
                 <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-6 sm:text-2xl'>
                   Buy Bus Tickets Online
                 </h3>
-                <form className='space-y-4'>
-                  <CustomInput
-                    id={'origin'}
-                    name={'origin'}
-                    placeholder={'From'}
-                    type={'text'}
-                    required
-                  />
-                  <CustomInput
-                    id={'destination'}
-                    name={'destination'}
-                    placeholder={'To'}
-                    type={'text'}
-                    required
-                  />
-                  <DatePickerField
-                    id={'departureDate'}
-                    name={'departureDate'}
-                    placeholder={'Departure Date'}
-                    required
-                    selectedDate={departureDate}
-                    setSelectedDate={setDepartureDate}
-                  />
-                  <DatePickerField
-                    id={'returnDate'}
-                    name={'returnDate'}
-                    placeholder={'Return Date'}
-                    required
-                    selectedDate={returnDate}
-                    setSelectedDate={setReturnDate}
-                  />
-                  <CustomButton title={'Search Buses'} type={'submit'} />
-                </form>
+                <BusTicketForm
+                  origin={origin}
+                  destination={destination}
+                  departureDate={departureDate}
+                  setDepartureDate={setDepartureDate}
+                  returnDate={returnDate}
+                  setReturnDate={setReturnDate}
+                />
               </div>
             </div>
           </div>
