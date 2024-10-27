@@ -14,10 +14,7 @@ const CustomButton = ({
       } w-full h-12 px-6 font-medium font-poppins tracking-wide text-white transition duration-200 rounded-lg shadow-md ${className}`}
     >
       {LeftIcon && (
-        <LeftIcon
-          size={20}
-          className='absolute left-4 text-gray-400 pointer-events-none'
-        />
+        <LeftIcon size={20} className='absolute left-4 pointer-events-none' />
       )}
       <button
         type={type}
@@ -28,10 +25,7 @@ const CustomButton = ({
         {title}
       </button>
       {RightIcon && (
-        <RightIcon
-          size={20}
-          className='absolute right-4 text-gray-400 pointer-events-none'
-        />
+        <RightIcon size={15} className='absolute right-4 pointer-events-none' />
       )}
     </div>
   );
