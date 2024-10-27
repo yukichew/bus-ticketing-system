@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MdOutlineTitle, MdOutlineSubtitles } from "react-icons/md";
-import { RiServiceLine } from "react-icons/ri";
+import { RiServiceLine, RiDeleteBin6Line } from "react-icons/ri";
 import { CiEdit } from "react-icons/ci";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { Link } from 'react-router-dom';
@@ -13,27 +13,69 @@ import CustomField from '../../../components/common/CustomInput';
 const UserProfile = () => {
     const [showBioFields, setShowBioFields] = useState(false);
     const [showServiceFields, setShowServiceFields] = useState(false);
+    const [isBioDisabled, setIsBioDisabled] = useState(false);
+    const [isServiceDisabled, setIsServiceDisabled] = useState(false);
+    const [isEditingCompany, setIsEditingCompany] = useState(false);
+    const [isEditingPersonal, setIsEditingPersonal] = useState(false);
+    const [isEditingBio, setIsEditingBio] = useState(false);
+    const [isEditingService, setIsEditingService] = useState(false);
 
-    const handleEdit = () => {
-        alert("Icon clicked!");
+    const handleEdit = (form) => {
+        if (form === "company") {
+            setIsEditingCompany(!isEditingCompany);
+        } else if (form === "personal") {
+            setIsEditingPersonal(!isEditingPersonal);
+        } else if (form === "bio") {
+            setIsEditingBio(!isEditingBio);
+        } else if (form === "service") {
+            setIsEditingService(!isEditingService);
+        }
+    };
+    
+    const handleCancel = (form) => {
+        if (form === "company") {
+            setIsEditingCompany(false);
+        } else if (form === "personal") {
+            setIsEditingPersonal(false);
+        } else if (form === "bio") {
+            setIsEditingBio(false);
+        } else if (form === "service") {
+            setIsEditingService(false);
+        }
+    };
+    
+    const handleSave = (form) => {
+        alert(`${form} information saved!`);
+    };
+
+    const handleCompanyChange = (e) => {
+        const { id, value } = e.target;
+        setCompanyInfo((prevState) => ({ ...prevState, [id]: value }));
+    };
+
+    const handlePersonalChange = (e) => {
+        const { id, value } = e.target;
+        setPersonalInfo((prevState) => ({ ...prevState, [id]: value }));
     };
 
     const handleAddBio = () => {
         setShowBioFields(true);
+        setIsBioDisabled(true);
     };
 
     const handleAddService = () => {
         setShowServiceFields(true);
+        setIsServiceDisabled(true);
     };
 
-    const [companyInfo] = useState({
+    const [companyInfo, setCompanyInfo] = useState({
         companyname: 'Super Nice Express',
         companyemail: 'contact@superniceexpress.com',
         companycontact: '089-345-6789',
         address: '123, Bukit Jalil, Kuala Lumpur'
     });
 
-    const [personalInfo] = useState({
+    const [personalInfo, setPersonalInfo] = useState({
         fullName: 'Hello World',
         email: 'helloworld@example.com',
         contactno: '012-567-9856'
@@ -58,7 +100,7 @@ const UserProfile = () => {
                     <Card 
                         header="Company Information"
                         Icon={CiEdit}
-                        onClick={handleEdit}
+                        onClick={isEditingCompany ? null : () => handleEdit("company")}
                         tooltip="Edit"
                     >
                         <div className="flex flex-col space-y-4">
@@ -70,7 +112,8 @@ const UserProfile = () => {
                                     className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
                                     placeholder="Enter company name"
                                     value={companyInfo.companyname}
-                                    disabled
+                                    onChange={handleCompanyChange}
+                                    disabled={!isEditingCompany}
                                 />
                             </div>
                             <div>
@@ -81,7 +124,8 @@ const UserProfile = () => {
                                     className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
                                     placeholder="Enter company email"
                                     value={companyInfo.companyemail}
-                                    disabled
+                                    onChange={handleCompanyChange}
+                                    disabled={!isEditingCompany}
                                 />
                             </div>
                             <div>
@@ -92,7 +136,8 @@ const UserProfile = () => {
                                     className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
                                     placeholder="Enter company contact number"
                                     value={companyInfo.companycontact}
-                                    disabled
+                                    onChange={handleCompanyChange}
+                                    disabled={!isEditingCompany}
                                 />
                             </div>
                             <div>
@@ -103,16 +148,31 @@ const UserProfile = () => {
                                     className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
                                     placeholder="Enter address"
                                     value={companyInfo.address}
-                                    disabled
+                                    onChange={handleCompanyChange}
+                                    disabled={!isEditingCompany}
                                 />
                             </div>
+                            {isEditingCompany && (
+                                <div className='flex justify-between'>
+                                    <CustomButton
+                                        title={'Cancel'}
+                                        className={'w-40 bg-white hover:bg-indigo-50 text-[#0A21C0] border border-2 border-primary mt-5'}
+                                        onClick={() => handleCancel("company")}
+                                    />
+                                    <CustomButton
+                                        title={'Save'}
+                                        className={'w-40 mt-5'}
+                                        onClick={() => handleSave("company")}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Card>
                     
                     <Card 
                         header="Personal Information"
                         Icon={CiEdit}
-                        onClick={handleEdit}
+                        onClick={isEditingPersonal ? null : () => handleEdit("personal")}
                         tooltip="Edit"
                     >
                         <div className="flex flex-col space-y-4">
@@ -124,7 +184,8 @@ const UserProfile = () => {
                                     className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
                                     placeholder="Enter your fullname"
                                     value={personalInfo.fullName}
-                                    disabled
+                                    onChange={handlePersonalChange}
+                                    disabled={!isEditingPersonal}
                                 />
                             </div>
                             <div>
@@ -135,7 +196,8 @@ const UserProfile = () => {
                                     className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
                                     placeholder="Enter email"
                                     value={personalInfo.email}
-                                    disabled
+                                    onChange={handlePersonalChange}
+                                    disabled={!isEditingPersonal}
                                 />
                             </div>
                             <div>
@@ -146,9 +208,24 @@ const UserProfile = () => {
                                     className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
                                     placeholder="Enter contact number"
                                     value={personalInfo.contactno}
-                                    disabled
+                                    onChange={handlePersonalChange}
+                                    disabled={!isEditingPersonal}
                                 />
                             </div>
+                            {isEditingPersonal && (
+                                <div className='flex justify-between'>
+                                    <CustomButton
+                                        title={'Cancel'}
+                                        className={'w-40 bg-white hover:bg-indigo-50 text-[#0A21C0] border border-2 border-primary mt-5'}
+                                        onClick={() => handleCancel("personal")}
+                                    />
+                                    <CustomButton
+                                        title={'Save'}
+                                        className={'w-40 mt-5'}
+                                        onClick={() => handleSave("personal")}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Card>
                 </div>
@@ -184,7 +261,7 @@ const UserProfile = () => {
                     <Card 
                         header="Bio"
                         Icon={CiEdit} 
-                        onClick={handleEdit}
+                        onClick={isEditingBio ? null : () => handleEdit("bio")}
                         tooltip="Edit"
                     >
                         {showBioFields && (
@@ -207,27 +284,29 @@ const UserProfile = () => {
                                 />
                             </>
                         )}
-                        {/* Don't delete */}
-                        {/* <div className='mt-12 flex justify-between'>
-                            <CustomButton
-                                title={'Cancel'}
-                                className={'w-40 bg-white text-[#0A21C0] border border-2 border-primary'}
-                                // onClick={}
-                            />
-                            <CustomButton
-                                title={'Save'}
-                                className={'w-40'}
-                                // onClick={}
-                            />
-                        </div> */}
+                        {isEditingBio && (
+                            <div className='flex justify-between'>
+                                <CustomButton
+                                    title={'Cancel'}
+                                    className={'w-40 bg-white hover:bg-indigo-50 text-[#0A21C0] border border-2 border-primary mt-5'}
+                                    onClick={() => handleCancel("bio")}
+                                />
+                                <CustomButton
+                                    title={'Save'}
+                                    className={'w-40 mt-5'}
+                                    onClick={() => handleSave("bio")}
+                                />
+                            </div>
+                        )}
                         <CustomButton
                             title={(
                                 <>
-                                    <IoMdAddCircleOutline className="inline-block mr-2 mb-1" size={22} />
-                                    Add Bio
+                                <IoMdAddCircleOutline className="inline-block mr-2 mb-1" size={22} />
+                                Add Bio
                                 </>
                             )}
                             onClick={handleAddBio}
+                            disabled={isBioDisabled}
                         />
                     </Card>
                 </div>
@@ -236,7 +315,7 @@ const UserProfile = () => {
                     <Card 
                         header="Services & Reputations"
                         Icon={CiEdit}
-                        onClick={handleEdit}
+                        onClick={isEditingService ? null : () => handleEdit("service")}
                         tooltip="Edit"
                     >
                         {showServiceFields && (
@@ -251,19 +330,20 @@ const UserProfile = () => {
                                 />
                             </>
                         )}
-                        {/* Don't delete */}
-                        {/* <div className='mt-12 flex justify-between'>
-                            <CustomButton
-                                title={'Cancel'}
-                                className={'w-40 bg-white text-[#0A21C0] border border-2 border-primary'}
-                                // onClick={}
-                            />
-                            <CustomButton
-                                title={'Save'}
-                                className={'w-40'}
-                                // onClick={}
-                            />
-                        </div> */}
+                        {isEditingService && (
+                            <div className='flex justify-between'>
+                                <CustomButton
+                                    title={'Cancel'}
+                                    className={'w-40 bg-white hover:bg-indigo-50 text-[#0A21C0] border border-2 border-primary mt-5'}
+                                    onClick={() => handleCancel("service")}
+                                />
+                                <CustomButton
+                                    title={'Save'}
+                                    className={'w-40 mt-5'}
+                                    onClick={() => handleSave("service")}
+                                />
+                            </div>
+                        )}
                         <CustomButton
                             title={(
                                 <>
@@ -272,6 +352,7 @@ const UserProfile = () => {
                                 </>
                             )}
                             onClick={handleAddService}
+                            disabled={isServiceDisabled}
                         />
                     </Card>
                 </div>
