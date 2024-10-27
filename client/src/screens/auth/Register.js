@@ -77,14 +77,10 @@ const Register = ({ switchToLogin, switchToOTPVerification, source }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Submitted form data:', formData); // For testing
-        // navigate('/login');
     };
 
     return (
         <>
-            {/* <button onClick={switchToLogin} className="text-sm text-primary">
-                Back to Login
-            </button> */}
 
             {source !== 'forgot-password' && (
                 <div className="flex justify-center mb-6">

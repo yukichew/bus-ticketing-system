@@ -8,6 +8,7 @@ import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentView, setCurrentView] = useState('login');
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -70,8 +71,13 @@ const Navbar = () => {
         )}
       </div>
 
-      <Modal isOpen={isModalOpen} closeModal={closeModal}>
-        <LoginRegistrationModal />
+      <Modal 
+        isOpen={isModalOpen} 
+        closeModal={closeModal}
+        showBackButton={currentView !== 'login'}
+        // backButtonAction={handleBack}
+      >
+        <LoginRegistrationModal setCurrentView={setCurrentView}/>
       </Modal>
     </nav>
   );
