@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../../../components/navbar/Navbar';
 import Footer from '../../../components/Footer';
+import BusTypes from './BusTypes';
 
 const ManageBus = () => {
     const [activeSection, setActiveSection] = useState('Main');
@@ -10,7 +11,7 @@ const ManageBus = () => {
             case 'Main':
                 return <div>Main</div>;
             case 'Bus Types':
-                return <div>Bus Types</div>;
+                return <BusTypes />;
             case 'Bus Scheduling':
                 return <div>Bus Scheduling</div>;
             default:
@@ -18,48 +19,48 @@ const ManageBus = () => {
         }
     };
 
-    return(
+    return (
         <>
             <Navbar />
 
-            <div className='w-4/5 mt-8 mx-auto'>
+            <div className="w-4/5 mt-8 mx-auto">
                 <div className="flex items-center">
                     <h2 className="font-poppins font-bold text-2xl">Bus Management</h2>
                 </div>
 
-                <div className="flex items-center space-x-5 mt-5">
-                    <button
+                <div className="flex items-center space-x-8 mt-5 border-b">
+                    <div
                         onClick={() => setActiveSection('Main')}
-                        className={`px-6 py-2 border font-poppins shadow-md rounded-lg transition duration-300 ${
+                        className={`cursor-pointer pb-2 border-b-2 ${
                             activeSection === 'Main'
-                                ? 'bg-primary text-white border-primary'
-                                : 'bg-white text-gray-400 border-gray-200 hover:bg-slate-50 hover:text-primary hover:font-medium hover:border-slate-50'
-                        }`}
+                                ? 'border-primary text-primary font-medium'
+                                : 'border-transparent text-gray-400 hover:text-primary'
+                        } transition duration-300 flex items-center`}
                     >
-                        Main
-                    </button>
+                        <span>Main</span>
+                    </div>
 
-                    <button
+                    <div
                         onClick={() => setActiveSection('Bus Types')}
-                        className={`px-6 py-2 border font-poppins shadow-md rounded-lg transition duration-300 ${
+                        className={`cursor-pointer pb-2 border-b-2 ${
                             activeSection === 'Bus Types'
-                                ? 'bg-primary text-white border-primary'
-                                : 'bg-white text-gray-400 border-gray-200 hover:bg-slate-50 hover:text-primary hover:font-medium hover:border-slate-50'
-                        }`}
+                                ? 'border-primary text-primary font-medium'
+                                : 'border-transparent text-gray-400 hover:text-primary'
+                        } transition duration-300 flex items-center`}
                     >
-                        Bus Types
-                    </button>
+                        <span>Bus Types</span>
+                    </div>
 
-                    <button
+                    <div
                         onClick={() => setActiveSection('Bus Scheduling')}
-                        className={`px-6 py-2 border font-poppins shadow-md rounded-lg transition duration-300 ${
+                        className={`cursor-pointer pb-2 border-b-2 ${
                             activeSection === 'Bus Scheduling'
-                                ? 'bg-primary text-white border-primary'
-                                : 'bg-white text-gray-400 border-gray-200 hover:bg-slate-50 hover:text-primary hover:font-medium hover:border-slate-50'
-                        }`}
+                                ? 'border-primary text-primary font-medium'
+                                : 'border-transparent text-gray-400 hover:text-primary'
+                        } transition duration-300 flex items-center`}
                     >
-                        Bus Scheduling
-                    </button>
+                        <span>Bus Scheduling</span>
+                    </div>
                 </div>
 
                 <div className="mt-6 mb-6">
@@ -70,6 +71,6 @@ const ManageBus = () => {
             <Footer />
         </>
     );
-}
+};
 
 export default ManageBus;
