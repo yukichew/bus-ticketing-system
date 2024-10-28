@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SlOptionsVertical } from 'react-icons/sl';
 import { Link } from 'react-router-dom';
 
-const BookingCard = () => {
+const BookingCard = ({ booking }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   return (
@@ -16,25 +16,27 @@ const BookingCard = () => {
 
         {/* departure and arrival */}
         <div className='col-span-2'>
-          <p className='font-semibold md:text-lg'>Batu Pahat - Kuala Lumpur</p>
-          <p className='text-gray-600 text-sm'>KKKL Express</p>
+          <p className='font-semibold md:text-lg'>
+            {booking.departureLocation} - {booking.arrivalLocation}
+          </p>
+          <p className='text-gray-600 text-sm'>{booking.busOperator}</p>
         </div>
 
         {/* boarding */}
         <div className='col-span-2'>
           <p className='font-semibold'>Boarding</p>
           <p className='text-gray-500 font-medium text-sm'>
-            Batu Pahat Bus Terminal - 15: 00
+            {booking.boardingLocation} - {booking.departureTime}
           </p>
         </div>
 
         {/* status */}
         <div className=''>
-          <p className='font-semibold'>Completed</p>
-          <p className='text-gray-500 text-sm'>Booking ID: 123456</p>
+          <p className='font-semibold'>{booking.status}</p>
+          <p className='text-gray-500 text-sm'>Trip No: {booking.tripNo}</p>
         </div>
 
-        {/* action */}
+        {/* action button */}
         <div className='flex justify-end'>
           <button
             onClick={() => setDropdownVisible(!dropdownVisible)}
