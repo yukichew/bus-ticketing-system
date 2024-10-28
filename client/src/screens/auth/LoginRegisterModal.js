@@ -5,11 +5,11 @@ import OTPVerification from '../auth/OTPVerification';
 import ResetPassword from '../auth/ResetPassword';
 import CreateAccount from '../auth/CreateAccount';
 
-const LoginRegistrationModal = ({ setCurrentView }) => {
-    const [view, setView] = useState({ screen: 'login', source: '' });
+const LoginRegistrationModal = ({ currentView, setCurrentView }) => {
+    const [view, setView] = useState({ screen: '', source: '' });
 
     const renderView = () => {
-        switch (view.screen) {
+        switch (currentView) {
             case 'login':
                 setCurrentView('login');
                 return (

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Modal = ({ isOpen, closeModal, showBackButton, backButtonAction, children }) => {
+const Modal = ({ isOpen, closeModal, showBackButton, backToLogin, children }) => {
   if (!isOpen) return null;
 
   return (
@@ -11,7 +11,7 @@ const Modal = ({ isOpen, closeModal, showBackButton, backButtonAction, children 
           {showBackButton && (
             <button
               className='absolute top-5 left-9 text-gray-600 hover:text-gray-900'
-              onClick={backButtonAction}
+              onClick={backToLogin}
               style={{ fontSize: '1.5rem' }}
             >
               &#8592;

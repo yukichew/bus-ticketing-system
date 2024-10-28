@@ -10,12 +10,18 @@ const Navbar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentView, setCurrentView] = useState('login');
 
+  const backToLogin = () => {
+    console.log(123);
+    setCurrentView('login');
+  };
+
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setCurrentView('login');
   };
 
   return (
@@ -75,9 +81,9 @@ const Navbar = () => {
         isOpen={isModalOpen} 
         closeModal={closeModal}
         showBackButton={currentView !== 'login'}
-        // backButtonAction={handleBack}
+        backToLogin={backToLogin}
       >
-        <LoginRegistrationModal setCurrentView={setCurrentView}/>
+        <LoginRegistrationModal currentView={currentView} setCurrentView={setCurrentView}/>
       </Modal>
     </nav>
   );
