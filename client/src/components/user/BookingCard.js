@@ -1,4 +1,3 @@
-import { PDFViewer } from '@react-pdf/renderer';
 import React, { useState } from 'react';
 import { SlOptionsVertical } from 'react-icons/sl';
 import { Link } from 'react-router-dom';
@@ -75,9 +74,7 @@ const BookingCard = ({ booking }) => {
         onClose={() => setViewPdf(false)}
         className='w-11/12 md:w-3/4 lg:w-1/2'
       >
-        <PDFViewer style={{ paddingTop: 12, width: '100%', height: '80vh' }}>
-          <Ticket booking={booking} />
-        </PDFViewer>
+        <Ticket booking={booking} />
       </Modal>
     </div>
   );
