@@ -78,7 +78,7 @@ const BusTickets = () => {
   const [returnDate, setReturnDate] = useState(null);
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
-  const [isFormVisible, setIsFormVisible] = useState(true);
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   return (
     <div className='py-5 font-poppins'>
