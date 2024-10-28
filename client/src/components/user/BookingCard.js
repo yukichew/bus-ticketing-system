@@ -1,9 +1,13 @@
+import { PDFViewer } from '@react-pdf/renderer';
 import React, { useState } from 'react';
 import { SlOptionsVertical } from 'react-icons/sl';
 import { Link } from 'react-router-dom';
+import Modal from '../common/Modal';
+import Ticket from './Ticket';
 
 const BookingCard = ({ booking }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [viewPdf, setViewPdf] = useState(false);
 
   return (
     <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50 border'>
@@ -48,12 +52,12 @@ const BookingCard = ({ booking }) => {
 
           {dropdownVisible && (
             <div className='absolute mt-6 w-48 bg-white border border-gray-200 rounded-md shadow-lg text-gray-700 font-medium'>
-              <Link
-                to='/ticket-details'
-                className='block px-4 py-3 hover:bg-gray-100'
+              <button
+                onClick={() => setViewPdf(!viewPdf)}
+                className='block w-full px-4 py-3 text-left hover:bg-gray-100'
               >
                 Ticket Details
-              </Link>
+              </button>
               <Link
                 to='/rate-review'
                 className='block px-4 py-3 hover:bg-gray-100'
@@ -64,6 +68,17 @@ const BookingCard = ({ booking }) => {
           )}
         </div>
       </div>
+
+      {/* PDF Viewer Modal */}
+      <Modal
+        isVisible={viewPdf}
+        onClose={() => setViewPdf(false)}
+        className='w-11/12 md:w-3/4 lg:w-1/2'
+      >
+        <PDFViewer style={{ paddingTop: 12, width: '100%', height: '80vh' }}>
+          <Ticket booking={booking} />
+        </PDFViewer>
+      </Modal>
     </div>
   );
 };
