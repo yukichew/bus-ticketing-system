@@ -21,10 +21,7 @@ const Ticket = ({ booking }) => {
 
   return (
     <>
-      <div
-        ref={ticketRef}
-        className='p-6 rounded-lg border font-poppins mb-4 mx-4'
-      >
+      <div ref={ticketRef} className='p-6 rounded-lg border font-poppins m-4'>
         <div className='flex flex-row'>
           <div className='flex gap-1 font-bold text-primary items-center mb-5'>
             <FaBusAlt className='h-4 w-4 2xl:h-5 2xl:w-5' />

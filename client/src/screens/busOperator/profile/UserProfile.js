@@ -8,7 +8,7 @@ import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomField from '../../../components/common/CustomInput';
-import Navbar from '../../../components/navbar/Navbar';
+import Navbar from '../../../components/common/Navbar';
 
 const UserProfile = () => {
   const [showBioFields, setShowBioFields] = useState(false);
