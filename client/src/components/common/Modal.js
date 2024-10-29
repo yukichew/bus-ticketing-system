@@ -1,36 +1,20 @@
 import React from 'react';
+import { IoClose } from 'react-icons/io5';
 
-const Modal = ({ isOpen, closeModal, showBackButton, backToLogin, children }) => {
-  if (!isOpen) return null;
-
+const Modal = ({ isVisible, onClose, children, className }) => {
+  if (!isVisible) return null;
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center'>
-      <div className='fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity'></div>
-      <div className='bg-white rounded-lg shadow-2xl p-7 sm:p-10 relative z-10 w-full max-w-lg'>
-        <div className='flex items-center justify-between'>
-          {showBackButton && (
-            <button
-              className='absolute top-5 left-9 text-gray-600 hover:text-gray-900'
-              onClick={backToLogin}
-              style={{ fontSize: '1.5rem' }}
-            >
-              &#8592;
-            </button>
-          )}
-          <button
-            className='absolute top-2 right-9 text-gray-600 hover:text-gray-900 mb-1'
-            onClick={closeModal}
-            style={{ fontSize: '2.2rem' }}
-          >
-            &times;
-          </button>
-        </div>
-        <div className='mt-6'>
-          {children}
-        </div>
+    <div className='fixed inset-0 bg-black bg-opacity-55 flex justify-center items-center'>
+      <div className={`bg-white rounded-lg shadow-lg p-6 w-auto' ${className}`}>
+        <IoClose
+          size={25}
+          className='cursor-pointer float-right text-gray-400 hover:text-gray-800'
+          onClick={onClose}
+          aria-label='Close'
+        />
+        {children}
       </div>
     </div>
   );
 };
-
 export default Modal;
