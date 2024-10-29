@@ -7,7 +7,7 @@ import CustomButton from '../common/CustomButton';
 
 const BusCard = ({ schedule }) => {
   return (
-    <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50'>
+    <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50 border'>
       <div className='grid grid-cols-1 md:grid-cols-6 p-4 items-center'>
         {/* bus operator name */}
         <div className='flex flex-row items-center'>
