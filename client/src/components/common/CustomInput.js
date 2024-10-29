@@ -1,5 +1,4 @@
 import React from 'react';
-import { IoLocationOutline } from 'react-icons/io5';
 
 const CustomField = ({
   placeholder,
@@ -7,12 +6,12 @@ const CustomField = ({
   id,
   name,
   type,
-  icon: Icon = IoLocationOutline,
+  icon: Icon = null,
   value,
   onChange,
 }) => {
   return (
-    <div className='relative flex items-center'>
+    <div className='relative flex items-center w-full'>
       <Icon
         size={20}
         className='absolute text-gray-400 pointer-events-none ml-3'
