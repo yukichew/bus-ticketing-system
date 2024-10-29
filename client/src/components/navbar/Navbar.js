@@ -1,28 +1,17 @@
 import React, { useState } from 'react';
 import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
+import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
-import NavbarItem from './NavbarItem';
-import Modal from '../common/Modal';
 import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
+import Modal from '../common/Modal';
+import NavbarItem from './NavbarItem';
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [currentView, setCurrentView] = useState('login');
 
-  const backToLogin = () => {
-    console.log(123);
-    setCurrentView('login');
-  };
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setCurrentView('login');
-  };
+  const handleBackToLogin = () => setCurrentView('login');
 
   return (
     <nav className='bg-white shadow-lg'>
@@ -44,12 +33,12 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
             <button
-              onClick={openModal}
-              className="font-semibold text-secondary hover:text-primary transition duration-200"
+              onClick={() => setShowModal(true)}
+              className='font-semibold text-secondary hover:text-primary transition duration-200'
             >
-              Login <span aria-hidden="true">&rarr;</span>
+              Login <span aria-hidden='true'>&rarr;</span>
             </button>
           </div>
 
@@ -77,13 +66,25 @@ const Navbar = () => {
         )}
       </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        closeModal={closeModal}
-        showBackButton={currentView !== 'login'}
-        backToLogin={backToLogin}
+      {/* modal for login and register */}
+      <Modal
+        isVisible={showModal}
+        onClose={() => setShowModal(false)}
+        backButton={
+          currentView !== 'login' && (
+            <IoArrowBackOutline
+              size={25}
+              className='cursor-pointer text-gray-400 hover:text-gray-800'
+              onClick={handleBackToLogin}
+              aria-label='Back'
+            />
+          )
+        }
       >
-        <LoginRegistrationModal currentView={currentView} setCurrentView={setCurrentView}/>
+        <LoginRegistrationModal
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+        />
       </Modal>
     </nav>
   );

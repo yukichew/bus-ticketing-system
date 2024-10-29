@@ -8,7 +8,9 @@ const OTPVerification = ({
   switchToResetPassword,
   source,
 }) => {
-  const verifyOTP = () => {
+  const verifyOTP = (e) => {
+    e.preventDefault();
+
     if (source === 'register') {
       switchToCreateAccount();
     } else if (source === 'forgot-password') {

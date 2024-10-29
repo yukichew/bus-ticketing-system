@@ -23,7 +23,7 @@ const Ticket = ({ booking }) => {
     <>
       <div
         ref={ticketRef}
-        className='p-6 rounded-lg border font-poppins mt-8 mb-4 mx-4'
+        className='p-6 rounded-lg border font-poppins mb-4 mx-4'
       >
         <div className='flex flex-row'>
           <div className='flex gap-1 font-bold text-primary items-center mb-5'>
