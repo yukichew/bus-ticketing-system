@@ -80,6 +80,7 @@ const Navbar = () => {
             />
           )
         }
+        className='w-2/6'
       >
         <LoginRegistrationModal
           currentView={currentView}
