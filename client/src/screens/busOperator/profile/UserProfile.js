@@ -177,7 +177,7 @@ const UserProfile = () => {
                   <CustomButton
                     title={'Cancel'}
                     className={
-                      'w-40 bg-white hover:bg-indigo-50 text-[#0A21C0] border border-2 border-primary mt-5'
+                      'w-40 bg-white hover:bg-indigo-50 text-[#0A21C0] border border-primary mt-5'
                     }
                     onClick={() => handleCancel('company')}
                   />
