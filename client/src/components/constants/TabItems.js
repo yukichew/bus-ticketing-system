@@ -1,10 +1,11 @@
 import Notes from '../../screens/user/modal/Notes';
-import Photos from '../../screens/user/modal/Photos';
 import Ratings from '../../screens/user/modal/Ratings';
+import Carousel from '../common/Carousel';
+import { bus } from './Dummy';
 
 export const busInfoTabs = [
   { label: 'Notes', content: <Notes /> },
-  { label: 'Photos', content: <Photos /> },
+  { label: 'Photos', content: <Carousel images={bus.images} /> },
   {
     label: 'Ratings & Reviews',
     content: <Ratings />,
