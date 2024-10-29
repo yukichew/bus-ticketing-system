@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { IoEye, IoEyeOff, IoKeyOutline } from 'react-icons/io5';
+import { CiUser } from 'react-icons/ci';
+import {
+  IoCalendarOutline,
+  IoEye,
+  IoEyeOff,
+  IoKeyOutline,
+} from 'react-icons/io5';
+import { TfiEmail } from 'react-icons/tfi';
 import CustomButton from '../../components/common/CustomButton';
 import CustomInput from '../../components/common/CustomInput';
 
-const ResetPassword = ({ switchToLogin }) => {
+const CreateAccount = ({ switchToLogin }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
@@ -23,15 +30,46 @@ const ResetPassword = ({ switchToLogin }) => {
   return (
     <>
       <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
-        Reset Your Password
+        Create An Account
       </h3>
+      <div className='font-poppins text-center text-sm text-gray-500 w-4/5 mx-auto'>
+        Please enter all the details
+      </div>
       <form className='mt-12'>
+        <CustomInput
+          id={'name'}
+          name={'name'}
+          placeholder={'Full Name'}
+          type={'text'}
+          required
+          icon={CiUser}
+        />
+        <div className='mt-3'>
+          <CustomInput
+            id={'email'}
+            name={'email'}
+            placeholder={'Email'}
+            type={'text'}
+            required
+            icon={TfiEmail}
+          />
+        </div>
+        <div className='mt-3'>
+          <CustomInput
+            id={'dob'}
+            name={'dob'}
+            placeholder={'Date Of Birth'}
+            type={'text'}
+            required
+            icon={IoCalendarOutline}
+          />
+        </div>
         <div className='relative mt-3'>
           <CustomInput
-            id={'newpassword'}
-            name={'newpassword'}
-            placeholder={'New Password'}
-            type={isPasswordVisible ? 'text' : 'newpassword'}
+            id={'password'}
+            name={'password'}
+            placeholder={'Password'}
+            type={isPasswordVisible ? 'text' : 'password'}
             required
             icon={IoKeyOutline}
           />
@@ -68,11 +106,11 @@ const ResetPassword = ({ switchToLogin }) => {
         </div>
 
         <div className='mt-16'>
-          <CustomButton title={'Confirm'} onClick={submitForm} />
+          <CustomButton title={'Submit'} onClick={submitForm} />
         </div>
       </form>
     </>
   );
 };
 
-export default ResetPassword;
+export default CreateAccount;

@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
+import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
+import Modal from '../common/Modal';
 import NavbarItem from './NavbarItem';
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [currentView, setCurrentView] = useState('login');
+
+  const handleBackToLogin = () => setCurrentView('login');
 
   return (
     <nav className='bg-white shadow-lg'>
@@ -27,12 +34,12 @@ const Navbar = () => {
           </div>
 
           <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
-            <Link
-              to='/login'
+            <button
+              onClick={() => setShowModal(true)}
               className='font-semibold text-secondary hover:text-primary transition duration-200'
             >
               Login <span aria-hidden='true'>&rarr;</span>
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Menu */}
@@ -58,6 +65,28 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      {/* modal for login and register */}
+      <Modal
+        isVisible={showModal}
+        onClose={() => setShowModal(false)}
+        backButton={
+          currentView !== 'login' && (
+            <IoArrowBackOutline
+              size={25}
+              className='cursor-pointer text-gray-400 hover:text-gray-800'
+              onClick={handleBackToLogin}
+              aria-label='Back'
+            />
+          )
+        }
+        className='w-2/6'
+      >
+        <LoginRegistrationModal
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+        />
+      </Modal>
     </nav>
   );
 };

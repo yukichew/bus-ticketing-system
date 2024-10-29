@@ -1,7 +1,7 @@
 import React from 'react';
 import { IoLocationOutline } from 'react-icons/io5';
 import CustomButton from '../common/CustomButton';
-import CustomField from '../common/CustomInput';
+import CustomInput from '../common/CustomInput';
 import DatePickerField from '../common/DatePickerField';
 
 const BusTicketForm = ({
@@ -17,7 +17,7 @@ const BusTicketForm = ({
 }) => {
   return (
     <form className={`space-y-2 ${className}`} onSubmit={onSubmit}>
-      <CustomField
+      <CustomInput
         id={'origin'}
         name={'origin'}
         placeholder={'From'}
@@ -26,7 +26,7 @@ const BusTicketForm = ({
         required
         value={origin}
       />
-      <CustomField
+      <CustomInput
         id={'destination'}
         name={'destination'}
         placeholder={'To'}

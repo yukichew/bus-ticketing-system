@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CustomField = ({
+const CustomInput = ({
   placeholder,
   required,
   id,
@@ -30,4 +30,4 @@ const CustomField = ({
   );
 };
 
-export default CustomField;
+export default CustomInput;
