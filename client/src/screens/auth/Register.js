@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CiUser } from 'react-icons/ci';
+import { CiUser, CiLocationOn } from 'react-icons/ci';
 import { MdOutlineLocalPhone } from 'react-icons/md';
 import { PiWarehouseDuotone } from 'react-icons/pi';
 import { TfiEmail } from 'react-icons/tfi';
@@ -217,6 +217,7 @@ const Register = ({ switchToLogin, switchToOTPVerification, source }) => {
                     placeholder={'Address'}
                     type={'text'}
                     required
+                    icon={CiLocationOn}
                     value={formData.address}
                     onChange={handleInputChange}
                   />

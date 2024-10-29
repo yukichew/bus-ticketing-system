@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { IoMdAdd } from "react-icons/io";
 import { CiEdit } from "react-icons/ci";
-import Table from '../../../components/common/Table';
-import StatusBox from '../../../components/busOperator/StatusBox';
+import Table from '../common/Table';
+import StatusBox from './StatusBox';
 
 const BusTypes = () => {
     const [selectedOption, setSelectedOption] = useState('all');
@@ -10,26 +10,26 @@ const BusTypes = () => {
     const [contactNumber, setContactNumber] = useState('');
     
     const [busData, setBusData] = useState([
-        { busPlate: "SMP5792", seats: '30', busType: '2+1', driver: 'John Doe', contactno: '123-456-7890', status: 'Available' },
-        { busPlate: "SB8204H", seats: '40', busType: '2+1', driver: 'Jane Smith', contactno: '234-567-8901', status: 'Pending' },
-        { busPlate: "QPD1151", seats: '56', busType: '2+2', driver: 'Emily Johnson', contactno: '345-678-9012', status: 'Not Available' },
-        { busPlate: "WXY2345", seats: '45', busType: '2+1', driver: 'Michael Brown', contactno: '456-789-0123', status: 'On Road' },
-        { busPlate: "TRG4786", seats: '32', busType: '2+2', driver: 'Sarah Davis', contactno: '567-890-1234', status: 'Not Available' },
-        { busPlate: "LMN8765", seats: '50', busType: '2+2', driver: 'Chris Wilson', contactno: '678-901-2345', status: 'Available' },
-        { busPlate: "KJD2938", seats: '25', busType: '2+1', driver: 'Patricia Martinez', contactno: '789-012-3456', status: 'Available' },
-        { busPlate: "HFG5623", seats: '60', busType: '2+2', driver: 'Daniel Garcia', contactno: '890-123-4567', status: 'Not Available' },
-        { busPlate: "NPQ1234", seats: '35', busType: '2+1', driver: 'Jennifer Lee', contactno: '901-234-5678', status: 'Available' },
-        { busPlate: "BND9821", seats: '55', busType: '2+2', driver: 'Robert Clark', contactno: '012-345-6789', status: 'Available' },
-        { busPlate: "CDE4455", seats: '48', busType: '2+1', driver: 'Linda Rodriguez', contactno: '123-456-7891', status: 'Available' },
-        { busPlate: "VFR9832", seats: '40', busType: '2+2', driver: 'David Lewis', contactno: '234-567-8902', status: 'Not Available' },
-        { busPlate: "LKJ0921", seats: '38', busType: '2+1', driver: 'Elizabeth Walker', contactno: '345-678-9013', status: 'Available' },
-        { busPlate: "XYZ7654", seats: '50', busType: '2+1', driver: 'James Hall', contactno: '456-789-0124', status: 'Available' },
-        { busPlate: "FTH9843", seats: '42', busType: '2+2', driver: 'Mary Allen', contactno: '567-890-1235', status: 'Available' },
-        { busPlate: "JIK1298", seats: '46', busType: '2+2', driver: 'Charles Young', contactno: '678-901-2346', status: 'Not Available' },
-        { busPlate: "GHF1290", seats: '52', busType: '2+1', driver: 'Susan King', contactno: '789-012-3457', status: 'Available' },
-        { busPlate: "PQR7563", seats: '30', busType: '2+2', driver: 'Mark Wright', contactno: '890-123-4568', status: 'Available' },
-        { busPlate: "ASD8732", seats: '28', busType: '2+1', driver: 'Jennifer Scott', contactno: '901-234-5679', status: 'Not Available' },
-        { busPlate: "QWE4321", seats: '62', busType: '2+2', driver: 'Christopher Green', contactno: '012-345-6780', status: 'Available' }
+        { id:"1", busPlate: "SMP5792", seats: '30', busType: '2+1', driver: 'John Doe', contactno: '123-456-7890', status: 'Available' },
+        { id:"2", busPlate: "SB8204H", seats: '40', busType: '2+1', driver: 'Jane Smith', contactno: '234-567-8901', status: 'Pending' },
+        { id:"3", busPlate: "QPD1151", seats: '56', busType: '2+2', driver: 'Emily Johnson', contactno: '345-678-9012', status: 'Not Available' },
+        { id:"4", busPlate: "WXY2345", seats: '45', busType: '2+1', driver: 'Michael Brown', contactno: '456-789-0123', status: 'On Road' },
+        { id:"5", busPlate: "TRG4786", seats: '32', busType: '2+2', driver: 'Sarah Davis', contactno: '567-890-1234', status: 'Not Available' },
+        { id:"6", busPlate: "LMN8765", seats: '50', busType: '2+2', driver: 'Chris Wilson', contactno: '678-901-2345', status: 'Available' },
+        { id:"7", busPlate: "KJD2938", seats: '25', busType: '2+1', driver: 'Patricia Martinez', contactno: '789-012-3456', status: 'Available' },
+        { id:"8", busPlate: "HFG5623", seats: '60', busType: '2+2', driver: 'Daniel Garcia', contactno: '890-123-4567', status: 'Not Available' },
+        { id:"9", busPlate: "NPQ1234", seats: '35', busType: '2+1', driver: 'Jennifer Lee', contactno: '901-234-5678', status: 'Available' },
+        { id:"10", busPlate: "BND9821", seats: '55', busType: '2+2', driver: 'Robert Clark', contactno: '012-345-6789', status: 'Available' },
+        { id:"11", busPlate: "CDE4455", seats: '48', busType: '2+1', driver: 'Linda Rodriguez', contactno: '123-456-7891', status: 'Available' },
+        { id:"12", busPlate: "VFR9832", seats: '40', busType: '2+2', driver: 'David Lewis', contactno: '234-567-8902', status: 'Not Available' },
+        { id:"13", busPlate: "LKJ0921", seats: '38', busType: '2+1', driver: 'Elizabeth Walker', contactno: '345-678-9013', status: 'Available' },
+        { id:"14", busPlate: "XYZ7654", seats: '50', busType: '2+1', driver: 'James Hall', contactno: '456-789-0124', status: 'Available' },
+        { id:"15", busPlate: "FTH9843", seats: '42', busType: '2+2', driver: 'Mary Allen', contactno: '567-890-1235', status: 'Available' },
+        { id:"16", busPlate: "JIK1298", seats: '46', busType: '2+2', driver: 'Charles Young', contactno: '678-901-2346', status: 'Not Available' },
+        { id:"17", busPlate: "GHF1290", seats: '52', busType: '2+1', driver: 'Susan King', contactno: '789-012-3457', status: 'Available' },
+        { id:"18", busPlate: "PQR7563", seats: '30', busType: '2+2', driver: 'Mark Wright', contactno: '890-123-4568', status: 'Available' },
+        { id:"19", busPlate: "ASD8732", seats: '28', busType: '2+1', driver: 'Jennifer Scott', contactno: '901-234-5679', status: 'Not Available' },
+        { id:"20", busPlate: "QWE4321", seats: '62', busType: '2+2', driver: 'Christopher Green', contactno: '012-345-6780', status: 'Available' }
     ]);
 
     const columns = ['Bus Plate', 'No. of Seats', 'Bus Type', 'Driver', 'Contact No.', 'Status'];

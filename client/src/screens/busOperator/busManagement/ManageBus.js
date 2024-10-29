@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import Navbar from '../../../components/navbar/Navbar';
 import Footer from '../../../components/Footer';
-import BusTypes from './BusTypes';
+import BusTypes from '../../../components/busOperator/BusTypes';
+import BusScheduling from '../../../components/busOperator/BusScheduling';
 
 const ManageBus = () => {
     const [activeSection, setActiveSection] = useState('Main');
 
     const renderContent = () => {
         switch (activeSection) {
-            case 'Main':
-                return <div>Main</div>;
             case 'Bus Types':
                 return <BusTypes />;
             case 'Bus Scheduling':
-                return <div>Bus Scheduling</div>;
+                return <BusScheduling />;
             default:
                 return null;
         }
@@ -29,17 +28,6 @@ const ManageBus = () => {
                 </div>
 
                 <div className="flex items-center space-x-8 mt-5 border-b">
-                    <div
-                        onClick={() => setActiveSection('Main')}
-                        className={`cursor-pointer pb-2 border-b-2 ${
-                            activeSection === 'Main'
-                                ? 'border-primary text-primary font-medium'
-                                : 'border-transparent text-gray-400 hover:text-primary'
-                        } transition duration-300 flex items-center`}
-                    >
-                        <span>Main</span>
-                    </div>
-
                     <div
                         onClick={() => setActiveSection('Bus Types')}
                         className={`cursor-pointer pb-2 border-b-2 ${
