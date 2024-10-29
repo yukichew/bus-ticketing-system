@@ -35,7 +35,7 @@ const Tabs = ({ tabs, orientation = 'horizontal' }) => {
       </div>
       <div
         className={`tab-content p-4 ${
-          orientation === 'vertical' ? 'w-3/4' : ''
+          orientation === 'vertical' ? 'w-5/6' : ''
         }`}
       >
         {renderTabContent()}
