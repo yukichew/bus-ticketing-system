@@ -72,11 +72,11 @@ const FilesUploadButton = ({ setImages, initialFiles = [] }) => {
                 </div>
 
                 {files.length > 0 && (
-                    <div className="mt-6 w-full">
+                    <div className="mt-2 w-full">
                         <div className={`grid gap-2 justify-items-center grid-cols-2`}>
                             {files.map((file, index) => (
                                 <div key={index} className="relative w-full">
-                                    <div className="w-full h-36 bg-gray-100 overflow-hidden">
+                                    <div className="w-full h-20 bg-gray-100 overflow-hidden">
                                         <img
                                             src={URL.createObjectURL(file)}
                                             alt={file.name}

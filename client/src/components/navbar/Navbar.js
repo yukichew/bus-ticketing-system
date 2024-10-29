@@ -2,9 +2,27 @@ import React, { useState } from 'react';
 import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import NavbarItem from './NavbarItem';
+import Modal from '../common/Modal';
+import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentView, setCurrentView] = useState('login');
+
+  const backToLogin = () => {
+    console.log(123);
+    setCurrentView('login');
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentView('login');
+  };
 
   return (
     <nav className='bg-white shadow-lg'>
@@ -26,13 +44,13 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
-            <Link
-              to='/login'
-              className='font-semibold text-secondary hover:text-primary transition duration-200'
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+            <button
+              onClick={openModal}
+              className="font-semibold text-secondary hover:text-primary transition duration-200"
             >
-              Login <span aria-hidden='true'>&rarr;</span>
-            </Link>
+              Login <span aria-hidden="true">&rarr;</span>
+            </button>
           </div>
 
           {/* Mobile Menu */}
@@ -58,6 +76,15 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      <Modal 
+        isOpen={isModalOpen} 
+        closeModal={closeModal}
+        showBackButton={currentView !== 'login'}
+        backToLogin={backToLogin}
+      >
+        <LoginRegistrationModal currentView={currentView} setCurrentView={setCurrentView}/>
+      </Modal>
     </nav>
   );
 };
