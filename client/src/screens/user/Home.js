@@ -1,15 +1,15 @@
 import React from 'react';
+import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/Footer';
 import Hero from '../../components/Hero';
-import Navbar from '../../components/navbar/Navbar';
-import Seatmap from '../../components/user/Seatmap';
+import BusTickets from '../user/BusTickets';
 
 const Home = () => {
   return (
     <div>
       <Navbar />
       <Hero />
-      <Seatmap />
+      <BusTickets />
       <Footer />
     </div>
   );
