@@ -14,7 +14,7 @@ const ManageUserPage = () => {
 
   const renderContent = () => {
     switch (activeSection) {
-      case "Users":
+      case "Passengers":
         return <ManageUser />;
       case "Bus Operators":
         return <ManageBusOperators />;
@@ -45,9 +45,9 @@ const ManageUserPage = () => {
 
           <div className="flex items-center space-x-8 mt-5 border-b">
             <div
-              onClick={() => setActiveSection("Users")}
+              onClick={() => setActiveSection("Passengers")}
               className={`cursor-pointer pb-2 border-b-2 ${
-                activeSection === "Users"
+                activeSection === "Passengers"
                   ? "border-primary text-primary font-medium"
                   : "border-transparent text-gray-400 hover:text-primary"
               } transition duration-300 flex items-center`}
