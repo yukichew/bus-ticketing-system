@@ -17,7 +17,7 @@ const NotFound = () => {
         title={'Back to homepage'}
         type={'button'}
         onClick={() => navigate('/')}
-        className={'w-1/5'}
+        className={'w-4/6 md:w-1/6'}
       />
     </div>
   );
