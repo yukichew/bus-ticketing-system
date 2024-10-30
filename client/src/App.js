@@ -7,6 +7,7 @@ import ManageUserPage from './screens/admin/ManageUserPage';
 import ManageBus from './screens/busOperator/busManagement/ManageBus';
 import UserProfile from './screens/busOperator/profile/UserProfile';
 import NotFound from './screens/NotFound';
+import Booking from './screens/user/booking/Booking';
 import Home from './screens/user/Home';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
 
         {/* User */}
         <Route path='/' element={<Home />} />
+        <Route path='/booking' element={<Booking />} />
 
         {/* Admin */}
         <Route path='/admin-dashboard' element={<AdminDashboard />} />
