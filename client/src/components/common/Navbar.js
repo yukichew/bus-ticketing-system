@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import { userLinks } from '../../constants/NavbarItems';
 import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
-import { userLinks } from '../constants/NavbarItems';
 import Modal from './Modal';
 
 const Navbar = () => {

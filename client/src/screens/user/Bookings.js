@@ -1,6 +1,6 @@
 import React from 'react';
-import { bookings } from '../../components/constants/Dummy';
 import BookingCard from '../../components/user/BookingCard';
+import { bookings } from '../../constants/Dummy';
 
 const Bookings = () => {
   return (

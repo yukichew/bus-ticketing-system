@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { IoFilter } from 'react-icons/io5';
 import { TbArrowBigRightFilled } from 'react-icons/tb';
-import { busSchedule } from '../../components/constants/Dummy';
 import BusCard from '../../components/user/BusCard';
 import BusTicketForm from '../../components/user/BusTicketForm';
+import { busSchedule } from '../../constants/Dummy';
 
 const BusTickets = () => {
   const [departureDate, setDepartureDate] = useState(null);

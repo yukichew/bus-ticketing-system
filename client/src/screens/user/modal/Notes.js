@@ -1,6 +1,6 @@
 import React from 'react';
 import Bullets from '../../../components/common/Bullets';
-import { policies } from '../../../components/constants/Dummy';
+import { policies } from '../../../constants/Dummy';
 
 const Notes = () => {
   return (
