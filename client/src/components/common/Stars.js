@@ -1,20 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaStar } from 'react-icons/fa6';
 
-const Stars = ({ rating, size = 18 }) => {
-  const filledStars = Math.floor(rating);
-  const emptyStars = 5 - filledStars;
+const Stars = ({
+  rating = 0,
+  size = 18,
+  isClickable = false,
+  onRatingChange,
+}) => {
+  const [currentRating, setCurrentRating] = useState(rating);
+
+  const handleClick = (index) => {
+    if (isClickable) {
+      const newRating = index + 1;
+      setCurrentRating(newRating);
+      onRatingChange && onRatingChange(newRating);
+    }
+  };
 
   return (
     <div className='flex space-x-1'>
-      {[...Array(filledStars)].map((_, index) => (
-        <FaStar key={index} size={size} className='fill-yellow-400' />
-      ))}
-      {[...Array(emptyStars)].map((_, index) => (
+      {[...Array(5)].map((_, index) => (
         <FaStar
-          key={index + filledStars}
+          key={index}
           size={size}
-          className='fill-gray-300'
+          onClick={() => handleClick(index)}
+          className={
+            index < currentRating
+              ? 'fill-yellow-400 cursor-pointer'
+              : 'fill-gray-300'
+          }
         />
       ))}
     </div>
