@@ -120,7 +120,9 @@ const ManageBusOperators = () => {
     <>
       <div className="flex justify-between items-center mt-5">
         <p className="text-gray-500">
-          <span className="font-semibold text-secondary">10 users </span>
+          <span className="font-semibold text-secondary">
+            10 bus operators{" "}
+          </span>
           created
         </p>
 
