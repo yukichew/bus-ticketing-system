@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { SlOptionsVertical } from 'react-icons/sl';
-import { Link } from 'react-router-dom';
+import Rating from '../../screens/user/modal/Rating';
 import Modal from '../common/Modal';
 import Ticket from './Ticket';
 
 const BookingCard = ({ booking }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewPdf, setViewPdf] = useState(false);
+  const [ratingView, setRatingView] = useState(false);
 
   return (
     <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50 border'>
@@ -57,24 +58,33 @@ const BookingCard = ({ booking }) => {
               >
                 Ticket Details
               </button>
-              <Link
-                to='/rate-review'
+              <button
+                onClick={() => setRatingView(!ratingView)}
                 className='block px-4 py-3 hover:bg-gray-100'
               >
                 Rate and Review
-              </Link>
+              </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* PDF Viewer Modal */}
+      {/* PDF viewer modal */}
       <Modal
         isVisible={viewPdf}
         onClose={() => setViewPdf(false)}
         className='w-11/12 md:w-3/4 lg:w-1/2'
       >
         <Ticket booking={booking} />
+      </Modal>
+
+      {/* Rate and review modal */}
+      <Modal
+        isVisible={ratingView}
+        onClose={() => setRatingView(false)}
+        className='w-11/12 md:w-3/4 lg:w-1/2'
+      >
+        <Rating />
       </Modal>
     </div>
   );
