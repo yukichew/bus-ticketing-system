@@ -3,8 +3,8 @@ import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
-import Modal from '../common/Modal';
-import NavbarItem from './NavbarItem';
+import { userLinks } from '../constants/NavbarItems';
+import Modal from './Modal';
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
@@ -29,7 +29,16 @@ const Navbar = () => {
 
             {/* Desktop nav bar items */}
             <div className='hidden lg:flex items-center space-x-8'>
-              <NavbarItem />
+              {userLinks.map((link) => (
+                <Link
+                  key={link.key}
+                  to={link.href}
+                  aria-label={link.name}
+                  className='font-poppins text-tertiary hover:text-primary transition duration-200 font-semibold'
+                >
+                  {link.name}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -60,7 +69,7 @@ const Navbar = () => {
         {toggleMenu && (
           <div className='lg:hidden bg-white shadow-lg absolute top-16 left-0 right-0'>
             <div className='flex flex-col items-center space-y-4 py-4'>
-              <NavbarItem setToggleMenu={setToggleMenu} />
+              {/* <NavbarItem setToggleMenu={setToggleMenu} /> */}
             </div>
           </div>
         )}

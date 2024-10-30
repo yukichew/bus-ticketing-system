@@ -2,78 +2,11 @@ import React, { useState } from 'react';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { IoFilter } from 'react-icons/io5';
 import { TbArrowBigRightFilled } from 'react-icons/tb';
+import { busSchedule } from '../../components/constants/Dummy';
 import BusCard from '../../components/user/BusCard';
 import BusTicketForm from '../../components/user/BusTicketForm';
 
 const BusTickets = () => {
-  const busSchedule = [
-    {
-      id: 1,
-      name: 'Super Nice Express',
-      type: 'Executive (2+1)',
-      duration: '4h',
-      departureTime: '10:15',
-      departureLocation: 'JB Larkin',
-      arrivalTime: '14:15',
-      arrivalLocation: 'Penang Sentral',
-      rating: 4.5,
-      passengers: 27,
-      price: 'RM 35.00',
-    },
-    {
-      id: 2,
-      name: 'Super Nice Express',
-      type: 'Executive (2+1)',
-      duration: '4h',
-      departureTime: '10:15',
-      departureLocation: 'JB Larkin',
-      arrivalTime: '14:15',
-      arrivalLocation: 'Penang Sentral',
-      rating: 4.5,
-      passengers: 27,
-      price: 'RM 35.80',
-    },
-    {
-      id: 3,
-      name: 'Super Nice Express',
-      type: 'Executive (2+1)',
-      duration: '4h',
-      departureTime: '10:15',
-      departureLocation: 'JB Larkin',
-      arrivalTime: '14:15',
-      arrivalLocation: 'Penang Sentral',
-      rating: 4.5,
-      passengers: 27,
-      price: 'RM 12.00',
-    },
-    {
-      id: 4,
-      name: 'Super Nice Express',
-      type: 'Executive (2+1)',
-      duration: '4h',
-      departureTime: '10:15',
-      departureLocation: 'JB Larkin',
-      arrivalTime: '14:15',
-      arrivalLocation: 'Penang Sentral',
-      rating: 4.5,
-      passengers: 27,
-      price: 'RM 35.00',
-    },
-    {
-      id: 5,
-      name: 'Super Nice Express',
-      type: 'Executive (2+1)',
-      duration: '4h',
-      departureTime: '10:15',
-      departureLocation: 'JB Larkin',
-      arrivalTime: '14:15',
-      arrivalLocation: 'Penang Sentral',
-      rating: 4.5,
-      passengers: 27,
-      price: 'RM 35.00',
-    },
-  ];
-
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [origin, setOrigin] = useState('');

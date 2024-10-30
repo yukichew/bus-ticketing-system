@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { GoPeople } from 'react-icons/go';
 import { LiaSquareFullSolid } from 'react-icons/lia';
-import { Link } from 'react-router-dom';
 import CustomButton from '../common/CustomButton';
+import Modal from '../common/Modal';
+import Tabs from '../common/Tabs';
+import { busInfoTabs } from '../constants/TabItems';
 
 const BusCard = ({ schedule }) => {
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50 border'>
       <div className='grid grid-cols-1 md:grid-cols-6 p-4 items-center'>
@@ -89,14 +93,23 @@ const BusCard = ({ schedule }) => {
           <div className='hidden md:block w-3/5'>
             <CustomButton title='SELECT' className='font-semibold' />
           </div>
-          <Link
-            to={`/bus/${schedule.id}`}
+          <button
+            onClick={() => setShowModal(true)}
             className='text-sm md:text-base text-primary mt-1 font-medium hover:underline'
           >
             More Info
-          </Link>
+          </button>
         </div>
       </div>
+
+      {/* Modal */}
+      <Modal
+        isVisible={showModal}
+        onClose={() => setShowModal(false)}
+        className='w-11/12 md:w-3/4 lg:w-1/2'
+      >
+        <Tabs tabs={busInfoTabs} orientation='vertical' />
+      </Modal>
     </div>
   );
 };
