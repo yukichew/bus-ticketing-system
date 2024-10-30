@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
+import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
-import NavbarItem from './NavbarItem';
+import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
+import { userLinks } from '../constants/NavbarItems';
+import Modal from './Modal';
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [currentView, setCurrentView] = useState('login');
+
+  const handleBackToLogin = () => setCurrentView('login');
 
   return (
     <nav className='bg-white shadow-lg'>
-      <div className='max-w-7xl mx-auto'>
+      <div className='mx-auto'>
         <div className='flex mx-auto justify-between w-5/6 items-center'>
           <div className='flex items-center gap-16 my-8'>
             {/* logo */}
@@ -22,17 +29,26 @@ const Navbar = () => {
 
             {/* Desktop nav bar items */}
             <div className='hidden lg:flex items-center space-x-8'>
-              <NavbarItem />
+              {userLinks.map((link) => (
+                <Link
+                  key={link.key}
+                  to={link.href}
+                  aria-label={link.name}
+                  className='font-poppins text-tertiary hover:text-primary transition duration-200 font-semibold'
+                >
+                  {link.name}
+                </Link>
+              ))}
             </div>
           </div>
 
           <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
-            <Link
-              to='/login'
+            <button
+              onClick={() => setShowModal(true)}
               className='font-semibold text-secondary hover:text-primary transition duration-200'
             >
               Login <span aria-hidden='true'>&rarr;</span>
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Menu */}
@@ -53,11 +69,33 @@ const Navbar = () => {
         {toggleMenu && (
           <div className='lg:hidden bg-white shadow-lg absolute top-16 left-0 right-0'>
             <div className='flex flex-col items-center space-y-4 py-4'>
-              <NavbarItem setToggleMenu={setToggleMenu} />
+              {/* <NavbarItem setToggleMenu={setToggleMenu} /> */}
             </div>
           </div>
         )}
       </div>
+
+      {/* modal for login and register */}
+      <Modal
+        isVisible={showModal}
+        onClose={() => setShowModal(false)}
+        backButton={
+          currentView !== 'login' && (
+            <IoArrowBackOutline
+              size={25}
+              className='cursor-pointer text-gray-400 hover:text-gray-800'
+              onClick={handleBackToLogin}
+              aria-label='Back'
+            />
+          )
+        }
+        className='w-2/6'
+      >
+        <LoginRegistrationModal
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+        />
+      </Modal>
     </nav>
   );
 };

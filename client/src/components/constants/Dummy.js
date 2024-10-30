@@ -1,0 +1,137 @@
+export const bus = {
+  name: 'KKKL Express',
+  images: [
+    'https://cdn.busonlineticket.com/vehicle-images/kkkl-express-1.jpg',
+    'https://cdn.busonlineticket.com/vehicle-images/kkkl-express-2.jpg',
+  ],
+};
+
+export const bookings = [
+  {
+    bookingID: 'BNG123456',
+    tripNo: 123456,
+    busOperator: 'Super Nice Express',
+    busType: 'Executive (2+1)',
+    date: '01/10/2024',
+    departureTime: '10:15',
+    departureLocation: 'Batu Pahat',
+    boardingLocation: 'Batu Pahat Bus Terminal',
+    arrivalTime: '14:15',
+    arrivalLocation: 'Kuala Lumpur',
+    price: '35.00',
+    seatNo: 'A1',
+    status: 'Completed',
+    purchaseAt: '01/10/2024',
+    passengerName: 'John Doe',
+  },
+  {
+    bookingID: 2,
+    tripNo: 123457,
+    busOperator: 'Super Nice Express',
+    busType: 'Executive (2+1)',
+    date: '01/10/2024',
+    departureTime: '10:15',
+    departureLocation: 'Batu Pahat',
+    boardingLocation: 'Batu Pahat Bus Terminal',
+    arrivalTime: '14:15',
+    arrivalLocation: 'Kuala Lumpur',
+    price: '35.00',
+    seatNo: 'A1',
+    status: 'Completed',
+    purchaseAt: '01/10/2024',
+    passengerName: 'John Doe',
+  },
+];
+
+export const busSchedule = [
+  {
+    id: 1,
+    name: 'Super Nice Express',
+    type: 'Executive (2+1)',
+    duration: '4h',
+    departureTime: '10:15',
+    departureLocation: 'JB Larkin',
+    arrivalTime: '14:15',
+    arrivalLocation: 'Penang Sentral',
+    rating: 4.5,
+    passengers: 27,
+    price: 'RM 35.00',
+  },
+  {
+    id: 2,
+    name: 'Super Nice Express',
+    type: 'Executive (2+1)',
+    duration: '4h',
+    departureTime: '10:15',
+    departureLocation: 'JB Larkin',
+    arrivalTime: '14:15',
+    arrivalLocation: 'Penang Sentral',
+    rating: 4.5,
+    passengers: 27,
+    price: 'RM 35.80',
+  },
+  {
+    id: 3,
+    name: 'Super Nice Express',
+    type: 'Executive (2+1)',
+    duration: '4h',
+    departureTime: '10:15',
+    departureLocation: 'JB Larkin',
+    arrivalTime: '14:15',
+    arrivalLocation: 'Penang Sentral',
+    rating: 4.5,
+    passengers: 27,
+    price: 'RM 12.00',
+  },
+  {
+    id: 4,
+    name: 'Super Nice Express',
+    type: 'Executive (2+1)',
+    duration: '4h',
+    departureTime: '10:15',
+    departureLocation: 'JB Larkin',
+    arrivalTime: '14:15',
+    arrivalLocation: 'Penang Sentral',
+    rating: 4.5,
+    passengers: 27,
+    price: 'RM 35.00',
+  },
+  {
+    id: 5,
+    name: 'Super Nice Express',
+    type: 'Executive (2+1)',
+    duration: '4h',
+    departureTime: '10:15',
+    departureLocation: 'JB Larkin',
+    arrivalTime: '14:15',
+    arrivalLocation: 'Penang Sentral',
+    rating: 4.5,
+    passengers: 27,
+    price: 'RM 35.00',
+  },
+];
+
+export const reviews = [
+  {
+    id: 1,
+    name: 'John Doe',
+    date: '20/01/2024',
+    rating: 4,
+    comment:
+      'The delay was over an hour which I thought they had pushed us to the next timing slot since there were only 3 passenger for the original allocated time slot. The driver was rude, smoked while driving, and the smell disrupt passenger on board.',
+  },
+  {
+    id: 2,
+    name: 'John Doe',
+    date: '20/01/2024',
+    rating: 3,
+    comment:
+      'The delay was over an hour which I thought they had pushed us to the next timing slot since there were only 3 passenger for the original allocated time slot.',
+  },
+];
+
+export const policies = [
+  'No rescheduling',
+  'No cancellation or refund after booking',
+  'No refund for no-show or late arrival',
+];
