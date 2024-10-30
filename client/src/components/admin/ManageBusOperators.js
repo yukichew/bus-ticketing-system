@@ -3,6 +3,7 @@ import { IoMdAdd } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
 import Table from "../../components/common/Table";
+import Status from "../../components/admin/Status";
 
 const ManageBusOperators = () => {
   const [data, setData] = useState([
@@ -12,6 +13,7 @@ const ManageBusOperators = () => {
       companyEmail: "info@transmalaysia.com",
       contactNumber: "+60387654321",
       address: "No. 25, Jalan Ampang, Kuala Lumpur, 50450",
+      status: "Active",
     },
     {
       id: "2",
@@ -19,6 +21,7 @@ const ManageBusOperators = () => {
       companyEmail: "support@goldencoach.com",
       contactNumber: "+60754321098",
       address: "45, Jalan Tebrau, Johor Bahru, 80000",
+      status: "Active",
     },
     {
       id: "3",
@@ -26,6 +29,7 @@ const ManageBusOperators = () => {
       companyEmail: "contact@rapidpenang.com",
       contactNumber: "+6045671234",
       address: "88, Lebuh Chulia, George Town, Penang, 10200",
+      status: "Active",
     },
     {
       id: "4",
@@ -33,6 +37,7 @@ const ManageBusOperators = () => {
       companyEmail: "inquiries@borneostarline.com",
       contactNumber: "+6082234567",
       address: "Lot 10, Jalan Tunku Abdul Rahman, Kota Kinabalu, 88000",
+      status: "Active",
     },
     {
       id: "5",
@@ -40,6 +45,7 @@ const ManageBusOperators = () => {
       companyEmail: "contact@eastcoasttravel.com",
       contactNumber: "+6092345678",
       address: "25, Jalan Sultan Ismail, Kuala Terengganu, 20100",
+      status: "Active",
     },
     {
       id: "6",
@@ -47,6 +53,7 @@ const ManageBusOperators = () => {
       companyEmail: "hello@southerncross.com",
       contactNumber: "+60125678910",
       address: "18, Jalan Tun Razak, Malacca City, 75200",
+      status: "Active",
     },
     {
       id: "7",
@@ -54,6 +61,7 @@ const ManageBusOperators = () => {
       companyEmail: "services@skylineexpress.com",
       contactNumber: "+60378901234",
       address: "12A, Persiaran KLCC, Kuala Lumpur, 50088",
+      status: "Active",
     },
     {
       id: "8",
@@ -61,6 +69,7 @@ const ManageBusOperators = () => {
       companyEmail: "support@greenlinetravels.com",
       contactNumber: "+6058765432",
       address: "19, Jalan Sultan Azlan Shah, Ipoh, Perak, 31400",
+      status: "Active",
     },
     {
       id: "9",
@@ -68,6 +77,7 @@ const ManageBusOperators = () => {
       companyEmail: "info@centralhighland.com",
       contactNumber: "+6052348765",
       address: "21, Cameron Valley, Tanah Rata, Pahang, 39000",
+      status: "Active",
     },
     {
       id: "10",
@@ -75,6 +85,7 @@ const ManageBusOperators = () => {
       companyEmail: "info@sabahadventures.com",
       contactNumber: "+6088223456",
       address: "Lot 30, Jalan Kepayan, Kota Kinabalu, Sabah, 88200",
+      status: "Active",
     },
   ]);
 
@@ -83,6 +94,7 @@ const ManageBusOperators = () => {
     "Company Email",
     "Contact Number",
     "Address",
+    "Status",
   ];
 
   const columnKeys = [
@@ -90,6 +102,7 @@ const ManageBusOperators = () => {
     "companyEmail",
     "contactNumber",
     "address",
+    "status",
   ];
 
   const actionIcons = (row) => (
@@ -97,7 +110,7 @@ const ManageBusOperators = () => {
       {/* Update Button */}
       <div className="relative group">
         <button className="text-green-500 hover:text-green-600">
-          <FaRegEdit className="text-xl" />
+          <FaRegEdit className="text-xl text-gray-500 cursor-pointer" />
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           Update
@@ -116,12 +129,17 @@ const ManageBusOperators = () => {
     </div>
   );
 
+  const enhancedData = data.map((item) => ({
+    ...item,
+    status: <Status status={item.status} />,
+  }));
+
   return (
     <>
       <div className="flex justify-between items-center mt-5">
         <p className="text-gray-500">
           <span className="font-semibold text-secondary">
-            10 bus operators{" "}
+            {data.length} bus operators{" "}
           </span>
           created
         </p>
@@ -136,7 +154,7 @@ const ManageBusOperators = () => {
 
       <div className="mt-3 mx-auto">
         <Table
-          data={data}
+          data={enhancedData}
           columns={columns}
           columnKeys={columnKeys}
           showActionColumn={true}
