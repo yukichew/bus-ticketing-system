@@ -1,76 +1,27 @@
 import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
-import Table from "../../components/admin/Table";
-import CustomButton from "../../components/common/CustomButton";
-import { FaRegEdit } from "react-icons/fa";
-import { TiUserDeleteOutline } from "react-icons/ti";
+import ManageUser from "../../components/admin/ManageUser";
+import ManageBusOperators from "../../components/admin/ManageBusOperators";
 
 const ManageUserPage = () => {
+  const [activeSection, setActiveSection] = useState("Main");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const columns = [
-    { label: "ID", accessor: "id" },
-    { label: "Name", accessor: "name" },
-    { label: "Email", accessor: "email" },
-    { label: "Role", accessor: "role" },
-    { label: "Status", accessor: "status" },
-    {
-      label: "Actions",
-      accessor: "actions",
-      Cell: ({ row }) => (
-        <div className="flex items-center space-x-2">
-          {/* Update Button with Tooltip */}
-          <div className="relative group">
-            <button className="text-blue-500 hover:text-blue-600">
-              <FaRegEdit className="text-xl" />
-            </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Update
-            </span>
-          </div>
-
-          {/* Deactivate Button with Tooltip */}
-          <div className="relative group">
-            <button className="text-red-500 hover:text-red-600">
-              <TiUserDeleteOutline className="text-xl" />
-            </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Deactivate
-            </span>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
-  const data = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Bus Operator",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "Admin",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      email: "michael@example.com",
-      role: "Bus Operator",
-      status: "Inactive",
-    },
-  ];
+  const renderContent = () => {
+    switch (activeSection) {
+      case "Users":
+        return <ManageUser />;
+      case "Bus Operators":
+        return <ManageBusOperators />;
+      default:
+        return <ManageUser />;
+    }
+  };
 
   return (
     <div className="relative flex h-screen overflow-hidden">
@@ -81,20 +32,42 @@ const ManageUserPage = () => {
       <Sidebar isSidebarOpen={isSidebarOpen} />
 
       <main
-        className={`flex-1 p-4 transition-all duration-300 mt-24 ${
+        className={`flex-1 p-4 transition-all duration-300 mt-20 ${
           isSidebarOpen ? "ml-64" : "ml-0"
         } overflow-y-auto`}
       >
-        <div className="container mx-auto p-6">
-          <h2 className="text-lg font-poppins font-semibold mb-4">
-            User Management
-          </h2>
-          <div className="mt-8 pb-5">
-            <div className="w-40">
-              <CustomButton title={"Create User"} />
+        <div className="w-4/5 mt-8 mx-auto">
+          <div className="flex items-center">
+            <h2 className="font-poppins font-bold text-2xl">
+              Users Management
+            </h2>
+          </div>
+
+          <div className="flex items-center space-x-8 mt-5 border-b">
+            <div
+              onClick={() => setActiveSection("Users")}
+              className={`cursor-pointer pb-2 border-b-2 ${
+                activeSection === "Users"
+                  ? "border-primary text-primary font-medium"
+                  : "border-transparent text-gray-400 hover:text-primary"
+              } transition duration-300 flex items-center`}
+            >
+              <span>Users</span>
+            </div>
+
+            <div
+              onClick={() => setActiveSection("Bus Operators")}
+              className={`cursor-pointer pb-2 border-b-2 ${
+                activeSection === "Bus Operators"
+                  ? "border-primary text-primary font-medium"
+                  : "border-transparent text-gray-400 hover:text-primary"
+              } transition duration-300 flex items-center`}
+            >
+              <span>Bus Operators</span>
             </div>
           </div>
-          <Table columns={columns} data={data} />
+
+          <div className="mt-6 mb-6">{renderContent()}</div>
         </div>
       </main>
     </div>
