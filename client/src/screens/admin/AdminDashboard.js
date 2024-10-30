@@ -34,7 +34,7 @@ const AdminDashboard = () => {
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <DashboardCard
-            title="Total Users"
+            title="Total Passengers"
             value="277"
             gradientColors={["#0A21C0", "#B3B4BD"]}
             iconType="up"
