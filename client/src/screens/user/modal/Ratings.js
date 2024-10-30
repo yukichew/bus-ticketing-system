@@ -1,7 +1,7 @@
 import React from 'react';
-import { reviews } from '../../../components/constants/Dummy';
 import RatingSummary from '../../../components/user/RatingSummary';
 import Review from '../../../components/user/Review';
+import { reviews } from '../../../constants/Dummy';
 
 const Ratings = () => {
   return (

@@ -4,14 +4,17 @@ import AdminDashboard from './screens/admin/AdminDashboard';
 import ManageApplicationPage from './screens/admin/ManageApplicationPage';
 import ManageBusRoutes from './screens/admin/ManageBusRoutes';
 import ManageUserPage from './screens/admin/ManageUserPage';
-import Home from './screens/user/Home';
-import UserProfile from './screens/busOperator/profile/UserProfile';
 import ManageBus from './screens/busOperator/busManagement/ManageBus';
+import UserProfile from './screens/busOperator/profile/UserProfile';
+import NotFound from './screens/NotFound';
+import Home from './screens/user/Home';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path='*' element={<NotFound />} />
+
         {/* User */}
         <Route path='/' element={<Home />} />
 
@@ -23,11 +26,10 @@ function App() {
           element={<ManageApplicationPage />}
         />
         <Route path='/manage-bus-routes' element={<ManageBusRoutes />} />
-        
+
         {/* Bus Operator */}
         <Route path='/bo/user-profile' element={<UserProfile />} />
         <Route path='/bo/bus' element={<ManageBus />} />
-
       </Routes>
     </BrowserRouter>
   );
