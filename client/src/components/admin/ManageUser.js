@@ -117,7 +117,7 @@ const ManageUser = () => {
         <div className="flex justify-end">
           <button className="flex items-center justify-center h-10 px-4 text-sm font-medium font-poppins tracking-wide text-white transition duration-200 rounded-lg shadow-md bg-primary hover:bg-secondary">
             <IoMdAdd className="mr-2 text-white text-base" />
-            New Users
+            New Passengers
           </button>
         </div>
       </div>

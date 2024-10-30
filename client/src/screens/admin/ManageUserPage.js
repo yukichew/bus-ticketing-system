@@ -52,7 +52,7 @@ const ManageUserPage = () => {
                   : "border-transparent text-gray-400 hover:text-primary"
               } transition duration-300 flex items-center`}
             >
-              <span>Users</span>
+              <span>Passengers</span>
             </div>
 
             <div
