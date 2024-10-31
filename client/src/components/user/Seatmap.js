@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { RiSteering2Line } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 import CustomButton from '../common/CustomButton';
-import Modal from '../common/Modal'; // Import the Modal component
+import Modal from '../common/Modal';
 import Seat from './Seat';
 
 const Seatmap = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const seats = Array.from({ length: 40 }, (_, i) => i + 1);
+  const navigate = useNavigate();
 
   const handleSelect = (seatNumber) => {
     setSelectedSeats((prevSelectedSeats) =>
@@ -57,7 +59,9 @@ const Seatmap = () => {
         <CustomButton
           title='Proceed to Book'
           type='button'
-          onClick={toggleModal}
+          onClick={() => {
+            navigate('/booking', { state: { selectedSeats } });
+          }}
         />
       </Modal>
     </>
