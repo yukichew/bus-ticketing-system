@@ -5,7 +5,7 @@ import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 
 const ManageBus = () => {
-  const [activeSection, setActiveSection] = useState('Main');
+  const [activeSection, setActiveSection] = useState('Bus Types');
 
   const renderContent = () => {
     switch (activeSection) {

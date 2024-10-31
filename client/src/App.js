@@ -8,6 +8,7 @@ import ManageBus from './screens/busOperator/busManagement/ManageBus';
 import UserProfile from './screens/busOperator/profile/UserProfile';
 import NotFound from './screens/NotFound';
 import Home from './screens/user/Home';
+import BODashboard from './screens/busOperator/dashboard/BODashboard';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path='/manage-bus-routes' element={<ManageBusRoutes />} />
 
         {/* Bus Operator */}
+        <Route path='/bo/dashboard' element={<BODashboard />} />
         <Route path='/bo/user-profile' element={<UserProfile />} />
         <Route path='/bo/bus' element={<ManageBus />} />
       </Routes>

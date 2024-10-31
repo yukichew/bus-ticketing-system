@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 
-const Card = ({ header, children, Icon, onClick, tooltip }) => {
+const Card = ({ header, children, Icon, onClick, tooltip, bgColor }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div className={`bg-slate-50 rounded-lg p-6 shadow-md mt-6 w-full mx-auto`}>
+    <div 
+      className={`rounded-lg p-6 shadow-md mt-6 w-full mx-auto ${bgColor || 'bg-slate-50'}`} // Use bgColor prop or fallback to default
+    >
       {header && (
         <div className="flex justify-between items-start">
           <div className="font-poppins font-semibold text-lg text-primary mb-4">
