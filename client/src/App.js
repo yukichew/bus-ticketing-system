@@ -10,7 +10,9 @@ import NotFound from './screens/NotFound';
 import Booking from './screens/user/booking/Booking';
 import Home from './screens/user/Home';
 import Payment from './screens/user/Payment';
-import BODashboard from './screens/busOperator/dashboard/BODashboard';
+import BODashboard from './screens/busOperator/BODashboard';
+import NewBusTypeForm from './screens/busOperator/busManagement/NewBusTypeForm';
+import EditBusTypeForm from './screens/busOperator/busManagement/EditBusTypeForm';
 
 function App() {
   return (
@@ -36,6 +38,10 @@ function App() {
         <Route path='/bo/dashboard' element={<BODashboard />} />
         <Route path='/bo/user-profile' element={<UserProfile />} />
         <Route path='/bo/bus' element={<ManageBus />} />
+        <Route path='/bo/bus/new-bus-type' element={<NewBusTypeForm />} />
+        <Route path='/bo/bus/edit-bus-type' element={<EditBusTypeForm />} />
+        {/* <Route path='/bo/bus/edit-bus-type/:bus_id' element={<EditBusTypeForm />} /> */}
+
       </Routes>
     </BrowserRouter>
   );

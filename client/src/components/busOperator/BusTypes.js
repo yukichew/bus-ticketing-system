@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { IoMdAdd } from "react-icons/io";
-import { CiEdit } from "react-icons/ci";
+import { useNavigate } from 'react-router-dom';
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { RiArrowDropDownLine } from "react-icons/ri";
+import { CiEdit, CiExport } from "react-icons/ci";
 import Table from '../common/Table';
 import StatusBox from './StatusBox';
 
@@ -8,7 +10,23 @@ const BusTypes = () => {
     const [selectedOption, setSelectedOption] = useState('all');
     const [driverName, setDriverName] = useState('');
     const [contactNumber, setContactNumber] = useState('');
-    
+    const [isStatusOpen, setIsStatusOpen] = useState(false);
+    const [selectedStatusOption, setSelectedStatusOption] = useState('Active');
+    const navigate = useNavigate();
+
+    const handleNavigate = (screen) => {
+        switch (screen) {
+            case 'newBus':
+                navigate('/bo/bus/new-bus-type');
+                break;
+            case 'editBus':
+                navigate('/bo/bus/edit-bus-type');
+                break;
+            default:
+                break;
+        }
+    };
+
     const [busData, setBusData] = useState([
         { id:"1", busPlate: "SMP5792", seats: '30', busType: '2+1', driver: 'John Doe', contactno: '123-456-7890', status: 'Available' },
         { id:"2", busPlate: "SB8204H", seats: '40', busType: '2+1', driver: 'Jane Smith', contactno: '234-567-8901', status: 'Pending' },
@@ -32,13 +50,23 @@ const BusTypes = () => {
         { id:"20", busPlate: "QWE4321", seats: '62', busType: '2+2', driver: 'Christopher Green', contactno: '012-345-6780', status: 'Available' }
     ]);
 
-    const columns = ['Bus Plate', 'No. of Seats', 'Bus Type', 'Driver', 'Contact No.', 'Status'];
+    const columns = ['Bus Plate', 'Bus Type', 'No. of Seats', 'Driver', 'Contact No.', 'Status'];
 
-    const columnKeys = ['busPlate', 'seats', 'busType', 'driver', 'contactno', 'status'];
+    const columnKeys = ['busPlate', 'busType', 'seats', 'driver', 'contactno', 'status'];
+
+    const statusOptions = ['Active', 'Inactive'];
 
     const actionIcons = (row) => (
         <div className="flex justify-center space-x-2">
-            <CiEdit className="text-gray-500 text-xl cursor-pointer" />
+            <div className="relative group">
+                <CiEdit 
+                    className="text-gray-500 text-xl cursor-pointer" 
+                    onClick={() => handleNavigate('editBus')}
+                />
+                <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-16 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
+                    Edit
+                </div>
+            </div>
         </div>
     );
 
@@ -58,18 +86,23 @@ const BusTypes = () => {
         setBusData(updatedData); 
     };
 
+    const handleSelectStatus = (option) => {
+        setSelectedOption(option);
+        setIsStatusOpen(false);
+    };
+
     const selectBoxOptions = ['Available', 'Pending', 'Not Available', 'On Road'];
 
     return (
         <>
-            <div className="border border-gray-100 rounded-lg p-4 bg-white shadow-md mt-5">
+            <div className="border border-gray-100 rounded-lg p-4 bg-white shadow-md mt-3">
                 <div className="flex justify-between gap-4">
                     <div className="w-1/3 pr-2">
                         <label htmlFor="busPlate" className="block text-md font-poppins font-medium text-gray-700">Bus Plate</label>
                         <input
                             type="text"
                             id="busPlate"
-                            className="mt-2 block w-full border border-gray-300 text-sm font-poppins rounded-lg p-2"
+                            className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
                             placeholder="Enter Bus Plate"
                         />
                     </div>
@@ -80,7 +113,7 @@ const BusTypes = () => {
                             type="number"
                             id="numSeats"
                             min="1"
-                            className="mt-2 block w-full border border-gray-300 text-sm font-poppins rounded-lg p-2"
+                            className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
                             placeholder="Enter Number of Seats"
                         />
                     </div>
@@ -135,7 +168,7 @@ const BusTypes = () => {
                             id="driverName"
                             value={driverName}
                             onChange={(e) => setDriverName(e.target.value)}
-                            className="mt-2 block w-full border border-gray-300 text-sm font-poppins rounded-lg p-2"
+                            className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
                             placeholder="Enter Driver Name"
                         />
                     </div>
@@ -147,37 +180,56 @@ const BusTypes = () => {
                             id="contactNumber"
                             value={contactNumber}
                             onChange={(e) => setContactNumber(e.target.value)}
-                            className="mt-2 block w-full border border-gray-300 text-sm font-poppins rounded-lg p-2"
+                            className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
                             placeholder="Enter Contact No."
                         />
                     </div>
 
-                    <div className="w-1/3 pl-2">
-                        <label className="block text-md font-poppins font-medium text-gray-700">Status</label>
-                        <select
-                            className="mt-2 block w-full border border-gray-300 text-sm font-poppins rounded-lg p-2"
+                    <div className="w-1/3 pl-2 relative inline-block text-left">
+                        <label htmlFor="status" className="block text-md font-poppins font-medium text-gray-700">Status</label>
+                        <button
+                            onClick={() => setIsStatusOpen(!isStatusOpen)}
+                            className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
                         >
-                            {selectBoxOptions.map(option => (
-                                <option key={option} value={option}>
-                                    {option}
-                                </option>
-                            ))}
-                        </select>
+                            {selectedStatusOption}
+                            <RiArrowDropDownLine className="ml-2 h-5 w-5" />
+                        </button>
+
+                        {isStatusOpen && (
+                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg ">
+                                <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                    {statusOptions.map((option, index) => (
+                                        <li
+                                            key={index}
+                                            onClick={() => handleStatusChange(option)}
+                                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+                                        >
+                                            {option}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            <div className="flex justify-between items-center mt-5">
+            <div className="flex justify-between items-center mt-7">
                 <p className='text-gray-500'>
                     <span className='font-semibold text-secondary'>20 buses </span>found
                 </p>
 
                 <div className="flex justify-end">
-                    <button
-                        className="flex items-center justify-center h-10 px-4 text-sm font-medium font-poppins tracking-wide text-white transition duration-200 rounded-lg shadow-md bg-primary hover:bg-secondary"
-                    >
-                        <IoMdAdd className="mr-2 text-white text-base" />
-                        New Bus
+                    <button className='ml-auto flex items-center font-medium hover:text-primary pr-1' onClick={() => handleNavigate('newBus')}>
+                        <IoIosAddCircleOutline size={16} />
+                        <p className='mx-1'>New Bus</p>
+                    </button>
+
+                    <span className="text-gray-400 mx-2">|</span>
+                            
+                    <button className='ml-auto flex items-center font-medium hover:text-primary pr-1'>
+                        <CiExport size={16} />
+                        <p className='mx-1'>Export</p>
                     </button>
                 </div>
             </div>

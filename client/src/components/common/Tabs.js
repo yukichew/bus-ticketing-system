@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Tabs = ({ tabs, orientation = 'horizontal' }) => {
-  const [activeTab, setActiveTab] = useState(tabs[0].label);
+const Tabs = ({ tabs, orientation = 'horizontal', activeTabProp }) => {
+  const [activeTab, setActiveTab] = useState(activeTabProp || tabs[0].label);
+
+  useEffect(() => {
+    if (activeTabProp) {
+      setActiveTab(activeTabProp);
+    }
+  }, [activeTabProp]);
 
   const renderTabContent = () => {
     const activeTabContent = tabs.find((tab) => tab.label === activeTab);
@@ -34,9 +40,7 @@ const Tabs = ({ tabs, orientation = 'horizontal' }) => {
         ))}
       </div>
       <div
-        className={`tab-content p-4 ${
-          orientation === 'vertical' ? 'w-5/6' : ''
-        }`}
+        className={`tab-content p-4 ${orientation === 'vertical' ? 'w-5/6' : ''}`}
       >
         {renderTabContent()}
       </div>

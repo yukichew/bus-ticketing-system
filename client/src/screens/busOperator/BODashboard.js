@@ -6,11 +6,11 @@ import { MdAttachMoney, MdOutlineStarRate, MdViewCompact } from "react-icons/md"
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoFilter } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
-import Table from '../../../components/common/Table';
-import StatusBox from '../../../components/busOperator/StatusBox';
-import Card from '../../../components/common/Card';
+import Navbar from '../../components/common/Navbar';
+import Footer from '../../components/Footer';
+import Table from '../../components/common/Table';
+import StatusBox from '../../components/busOperator/StatusBox';
+import Card from '../../components/common/Card';
 
 const BODashboard = () => {
     const currentDate = new Date();
@@ -298,10 +298,10 @@ const BODashboard = () => {
                             <Card>
                                 <div className="flex items-center justify-between gap-4">
                                     <div className="relative inline-block text-left w-1/2">
-                                        <label htmlFor="busPlate" className="block text-md font-poppins font-medium text-gray-700">Origin</label>
+                                        <label htmlFor="origin" className="block text-md font-poppins font-medium text-gray-700">Origin</label>
                                         <button
                                             onClick={() => setIsOriginOpen(!isOriginOpen)}
-                                            className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                            className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
                                         >
                                             {selectedOriginOption}
                                             <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -329,10 +329,10 @@ const BODashboard = () => {
                                     </div>
 
                                     <div className="relative inline-block text-left w-1/2">
-                                        <label htmlFor="busPlate" className="block text-md font-poppins font-medium text-gray-700">Destination</label>
+                                        <label htmlFor="destination" className="block text-md font-poppins font-medium text-gray-700">Destination</label>
                                         <button
                                             onClick={() => setIsDestinationOpen(!isDestinationOpen)}
-                                            className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                            className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
                                         >
                                             {selectedDestinationOption}
                                             <RiArrowDropDownLine className="ml-2 h-5 w-5" />
