@@ -4,8 +4,15 @@ import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
+import Modal from "../common/Modal";
+import BoUpdateForm from "./modal/BOUpdateForm";
+import BoCreateForm from "./modal/BOCreateForm";
 
 const ManageBusOperators = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setCreateModal] = useState(false);
+  const [selectedOperator, setSelectedOperator] = useState(null);
+
   const [data, setData] = useState([
     {
       id: "1",
@@ -109,7 +116,13 @@ const ManageBusOperators = () => {
     <div className="flex justify-center space-x-2">
       {/* Update Button */}
       <div className="relative group">
-        <button className="text-green-500 hover:text-green-600">
+        <button
+          onClick={() => {
+            setSelectedOperator(row);
+            setShowModal(true);
+          }}
+          className="text-green-500 hover:text-green-600"
+        >
           <FaRegEdit className="text-xl text-gray-500 cursor-pointer" />
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -145,7 +158,12 @@ const ManageBusOperators = () => {
         </p>
 
         <div className="flex justify-end">
-          <button className="flex items-center justify-center h-10 px-4 text-sm font-medium font-poppins tracking-wide text-white transition duration-200 rounded-lg shadow-md bg-primary hover:bg-secondary">
+          <button
+            onClick={() => {
+              setCreateModal(true);
+            }}
+            className="flex items-center justify-center h-10 px-4 text-sm font-medium font-poppins tracking-wide text-white transition duration-200 rounded-lg shadow-md bg-primary hover:bg-secondary"
+          >
             <IoMdAdd className="mr-2 text-white text-base" />
             New Bus Operators
           </button>
@@ -161,6 +179,27 @@ const ManageBusOperators = () => {
           actions={actionIcons}
         />
       </div>
+
+      {/* modal for update */}
+      <Modal
+        isVisible={showModal}
+        onClose={() => setShowModal(false)}
+        className="w-2/4"
+      >
+        <BoUpdateForm
+          operator={selectedOperator}
+          onClose={() => setShowModal(false)}
+        />
+      </Modal>
+
+      {/* modal for create */}
+      <Modal
+        isVisible={showCreateModal}
+        onClose={() => setCreateModal(false)}
+        className="w-2/4"
+      >
+        <BoCreateForm onClose={() => setCreateModal(false)} />
+      </Modal>
     </>
   );
 };
