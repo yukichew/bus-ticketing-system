@@ -16,7 +16,7 @@ const BusTickets = () => {
   return (
     <div className='py-5 font-poppins'>
       {/* search results header */}
-      <div className='my-4 relative flex flex-col bg-white shadow-md border-t-4 border-t-primary rounded-lg w-11/12 lg:max-w-7xl mx-auto p-4'>
+      <div className='my-4 flex flex-col bg-white shadow-md border-t-4 border-t-primary rounded-lg w-11/12 lg:max-w-7xl mx-auto p-4'>
         <div className='flex flex-row mb-2 font-semibold text-grey-800 text-base md:text-xl items-center'>
           <h5>Kuala Lumpur</h5>
           <TbArrowBigRightFilled className='mx-2' size={18} />

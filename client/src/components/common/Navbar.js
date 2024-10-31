@@ -1,10 +1,27 @@
 import React, { useState } from 'react';
-import { FaBars, FaBusAlt, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import Logo from '../../assets/Logo';
 import { userLinks } from '../../constants/NavbarItems';
 import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
 import Modal from './Modal';
+
+const NavbarLinks = () => {
+  return (
+    <>
+      {userLinks.map((link) => (
+        <Link
+          key={link.key}
+          to={link.href}
+          className='text-slate-600 hover:text-primary transition duration-200 font-medium'
+        >
+          {link.name}
+        </Link>
+      ))}
+    </>
+  );
+};
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
@@ -14,68 +31,58 @@ const Navbar = () => {
   const handleBackToLogin = () => setCurrentView('login');
 
   return (
-    <nav className='bg-white shadow-lg'>
-      <div className='mx-auto'>
-        <div className='flex mx-auto justify-between w-5/6 items-center'>
-          <div className='flex items-center gap-16 my-8'>
-            {/* logo */}
-            <Link
-              to='/'
-              className='flex gap-1 font-bold text-primary items-center'
-            >
-              <FaBusAlt className='h-6 w-6' />
-              <span>RideNGo</span>
-            </Link>
+    <nav className='w-full px-6 md:px-5 py-7 bg-white shadow-lg'>
+      <div className='container flex items-center justify-between mx-auto text-slate-800'>
+        {/* logo */}
+        <Logo />
 
-            {/* Desktop nav bar items */}
-            <div className='hidden lg:flex items-center space-x-8'>
-              {userLinks.map((link) => (
-                <Link
-                  key={link.key}
-                  to={link.href}
-                  aria-label={link.name}
-                  className='font-poppins text-tertiary hover:text-primary transition duration-200 font-semibold'
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-          </div>
+        {/* desktop links */}
+        <div className='hidden lg:flex gap-6 items-center'>
+          <NavbarLinks />
+        </div>
 
-          <div className='hidden lg:flex lg:flex-1 lg:justify-end'>
+        {/* desktop login button */}
+        <div className='hidden lg:flex'>
+          <button
+            onClick={() => setShowModal(true)}
+            className='text-secondary font-semibold hover:text-primary transition duration-200 underline-offset-2'
+          >
+            Login
+          </button>
+        </div>
+
+        {/* mobile view */}
+        <button
+          className='lg:hidden text-primary z-20 relative'
+          onClick={() => setToggleMenu(!toggleMenu)}
+        >
+          {toggleMenu ? (
+            <FaTimes className='h-6 w-6' />
+          ) : (
+            <FaBars className='h-6 w-6' />
+          )}
+        </button>
+      </div>
+
+      {/* mobile menu */}
+      {toggleMenu && (
+        <div className='lg:hidden fixed inset-0 bg-white shadow-lg z-10 flex justify-center items-center'>
+          <div className='flex flex-col items-center space-y-4'>
+            <NavbarLinks />
             <button
-              onClick={() => setShowModal(true)}
-              className='font-semibold text-secondary hover:text-primary transition duration-200'
+              onClick={() => {
+                setShowModal(true);
+                setToggleMenu(false);
+              }}
+              className='text-secondary font-semibold hover:text-primary hover:underline transition duration-200'
             >
-              Login <span aria-hidden='true'>&rarr;</span>
-            </button>
-          </div>
-
-          {/* Mobile Menu */}
-          <div className='lg:hidden'>
-            <button
-              onClick={() => setToggleMenu(!toggleMenu)}
-              className='text-secondary hover:text-primary focus:outline-none'
-            >
-              {toggleMenu ? (
-                <FaTimes className='h-6 w-6' />
-              ) : (
-                <FaBars className='h-6 w-6' />
-              )}
+              Login
             </button>
           </div>
         </div>
+      )}
 
-        {toggleMenu && (
-          <div className='lg:hidden bg-white shadow-lg absolute top-16 left-0 right-0'>
-            <div className='flex flex-col items-center space-y-4 py-4'>
-              {/* <NavbarItem setToggleMenu={setToggleMenu} /> */}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* modal for login and register */}
+      {/* login modal */}
       <Modal
         isVisible={showModal}
         onClose={() => setShowModal(false)}
@@ -89,7 +96,7 @@ const Navbar = () => {
             />
           )
         }
-        className='w-2/6'
+        className='w-full sm:w-4/6 lg:w-2/6'
       >
         <LoginRegistrationModal
           currentView={currentView}
