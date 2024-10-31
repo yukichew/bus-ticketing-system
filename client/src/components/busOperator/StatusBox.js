@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { RiArrowDropDownLine } from "react-icons/ri";
 
-const StatusBox = ({ status, onStatusChange }) => {
+const StatusBox = ({ status, variant = 'info', onStatusChange }) => {
     const [currentStatus, setCurrentStatus] = useState(status);
 
-    const statusOptions = ['Available', 'Not Available', 'Pending', 'On Road'];
+    const statusOptions = ['Success', 'Danger', 'Warning', 'Info'];
 
-    const statusStyles = {
-        Available: 'text-lime-700 bg-lime-100',
-        'Not Available': 'text-red-600 bg-red-100',
-        Pending: 'text-yellow-600 bg-yellow-100',
-        'On Road': 'text-sky-700 bg-sky-100',
+    const variantStyles = {
+        success: 'text-lime-700 bg-lime-100', 
+        danger: 'text-red-600 bg-red-100',
+        warning: 'text-yellow-600 bg-yellow-100',
+        info: 'text-sky-700 bg-sky-100',
     };
 
-    const appliedStyles = statusStyles[currentStatus] || statusStyles['Available'];
+    const appliedStyles = variantStyles[variant] || variantStyles['info'];
 
     const handleStatusChange = (e) => {
         const newStatus = e.target.value;

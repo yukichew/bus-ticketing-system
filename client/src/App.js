@@ -10,6 +10,7 @@ import NotFound from './screens/NotFound';
 import Booking from './screens/user/booking/Booking';
 import Home from './screens/user/Home';
 import Payment from './screens/user/Payment';
+import BODashboard from './screens/busOperator/dashboard/BODashboard';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path='/manage-bus-routes' element={<ManageBusRoutes />} />
 
         {/* Bus Operator */}
+        <Route path='/bo/dashboard' element={<BODashboard />} />
         <Route path='/bo/user-profile' element={<UserProfile />} />
         <Route path='/bo/bus' element={<ManageBus />} />
       </Routes>
