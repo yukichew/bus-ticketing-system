@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Table from "../../components/common/Table";
-import { TiTick } from "react-icons/ti";
 import { MdCancel } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
+import Modal from "../../components/common/Modal";
+import ApplicationForm from "../../components/admin/modal/ViewApplication";
 
-const ManageUserPage = () => {
+const ManageApplicationPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOperator, setSelectedOperator] = useState(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -101,13 +104,19 @@ const ManageUserPage = () => {
 
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
-      {/* approve button */}
+      {/* view Button */}
       <div className="relative group">
-        <button className="text-green-500 hover:text-green-600">
-          <TiTick className="text-xl" />
+        <button
+          onClick={() => {
+            setShowModal(true);
+            setSelectedOperator(row);
+          }}
+          className="text-grey-500 hover:text-grey-600"
+        >
+          <IoEye className="text-xl" />
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          Approve
+          View Details
         </span>
       </div>
 
@@ -118,16 +127,6 @@ const ManageUserPage = () => {
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           Reject
-        </span>
-      </div>
-
-      {/* View Button */}
-      <div className="relative group">
-        <button className="text-grey-500 hover:text-grey-600">
-          <IoEye className="text-xl" />
-        </button>
-        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          View Details
         </span>
       </div>
     </div>
@@ -148,10 +147,11 @@ const ManageUserPage = () => {
       >
         <div className="w-4/5 mt-8 mx-auto">
           <div className="flex items-center">
-            <h2 className="font-poppins font-bold text-2xl pb-10">
+            <h2 className="font-poppins font-bold text-2xl pb-8">
               Applications Management
             </h2>
           </div>
+
           <div className="mt-3 mx-auto">
             <Table
               data={data}
@@ -161,10 +161,22 @@ const ManageUserPage = () => {
               actions={actionIcons}
             />
           </div>
+
+          {/* modal for view details */}
+          <Modal
+            isVisible={showModal}
+            onClose={() => setShowModal(false)}
+            className="w-2/4"
+          >
+            <ApplicationForm
+              operator={selectedOperator}
+              onClose={() => setShowModal(false)}
+            />
+          </Modal>
         </div>
       </main>
     </div>
   );
 };
 
-export default ManageUserPage;
+export default ManageApplicationPage;
