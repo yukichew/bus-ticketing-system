@@ -125,9 +125,9 @@ const BODashboard = () => {
         }
     ]);         
 
-    const columns = ['Bus Plate', 'Route', 'Seats Availability', 'Driver', 'Status'];
+    const columns = ['Bus Plate', 'Route', 'Seats Availability', 'Driver'];
 
-    const columnKeys = ['busPlate', 'route', 'seats', 'driver', 'status'];
+    const columnKeys = ['busPlate', 'route', 'seats', 'driver'];
 
     const selectBoxOptions = ['Scheduled', 'En Route', 'Delayed', 'Canceled'];
 

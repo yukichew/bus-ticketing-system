@@ -98,7 +98,7 @@ const Table = ({ data, columns, columnKeys, showActionColumn = false, actions })
             <table className="min-w-full table-auto rounded-lg border border-gray-200">
                 <thead className="bg-slate-50">
                     <tr>
-                        {/* Checkbox column */}
+                        {/* checkbox column */}
                         <th className="px-4 py-2 border text-center w-16">
                             <input
                                 type="checkbox"
@@ -107,13 +107,15 @@ const Table = ({ data, columns, columnKeys, showActionColumn = false, actions })
                                 className="mx-auto"
                             />
                         </th>
-                        {/* Index column */}
+                        {/* index column */}
                         <th className="px-4 py-2 text-center text-base border font-poppins font-semibold w-16">No.</th>
                         {columns.map((col, index) => (
                             <th key={index} className="px-4 py-2 text-left text-base border font-poppins font-semibold">
                                 {col}
                             </th>
                         ))}
+                        {/* Status column */}
+                        <th className="px-4 py-2 text-center text-base border font-poppins font-semibold w-40">Status</th>
                         {showActionColumn && (
                             <th className="px-4 py-2 text-center text-base border font-poppins font-semibold w-28">Action</th>
                         )}
@@ -122,7 +124,7 @@ const Table = ({ data, columns, columnKeys, showActionColumn = false, actions })
                 <tbody>
                     {currentRows.map((row, index) => (
                         <tr key={index} className="hover:bg-gray-100">
-                            {/* Checkbox column */}
+                            {/* checkbox column */}
                             <td className="px-4 py-2 border text-center">
                                 <input
                                     type="checkbox"
@@ -131,7 +133,7 @@ const Table = ({ data, columns, columnKeys, showActionColumn = false, actions })
                                     className="mx-auto"
                                 />
                             </td>
-                            {/* Index column */}
+                            {/* index column */}
                             <td className="px-4 py-2 text-md text-center text-gray-600 border font-poppins">
                                 {(currentPage - 1) * rowsPerPage + index + 1}
                             </td>
@@ -140,7 +142,11 @@ const Table = ({ data, columns, columnKeys, showActionColumn = false, actions })
                                     {row[key]}
                                 </td>
                             ))}
-                            {/* Action column */}
+                            {/* Status column */}
+                            <td className="px-4 py-2 text-md text-center text-gray-600 border font-poppins">
+                                {row.status}
+                            </td>
+                            {/* action column */}
                             {showActionColumn && (
                                 <td className="px-4 py-2 text-center text-md text-gray-600 border font-poppins">
                                     {actions ? actions(row) : null}
