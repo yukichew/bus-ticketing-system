@@ -36,7 +36,7 @@ const SidebarItems = () => {
     {
       key: 5,
       name: "Manage Transactions",
-      href: "/admin-dashboard",
+      href: "/manage-transactions",
       icon: "MoneyIcon",
     },
     {
