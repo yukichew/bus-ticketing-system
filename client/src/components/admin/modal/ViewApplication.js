@@ -34,6 +34,12 @@ const ApplicationForm = ({ operator, onClose }) => {
     <div className="flex flex-col space-y-4 w-full">
       <Card header="Application Details">
         <div className="pointer-events-none">
+          <label
+            htmlFor="companyname"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Company Name
+          </label>
           <CustomInput
             placeholder="Enter company name"
             id="companyname"
@@ -45,6 +51,12 @@ const ApplicationForm = ({ operator, onClose }) => {
           />
         </div>
         <div className="pointer-events-none">
+          <label
+            htmlFor="companyemail"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Company Email
+          </label>
           <CustomInput
             placeholder="Enter company email"
             id="companyemail"
@@ -56,6 +68,12 @@ const ApplicationForm = ({ operator, onClose }) => {
           />
         </div>
         <div className="pointer-events-none">
+          <label
+            htmlFor="companycontact"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Company Contact
+          </label>
           <CustomInput
             placeholder="Enter company contact number"
             id="companycontact"
@@ -67,6 +85,12 @@ const ApplicationForm = ({ operator, onClose }) => {
           />
         </div>
         <div className="pointer-events-none">
+          <label
+            htmlFor="address"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Address
+          </label>
           <CustomInput
             placeholder="Enter address"
             id="address"
