@@ -33,42 +33,50 @@ const ApplicationForm = ({ operator, onClose }) => {
   return (
     <div className="flex flex-col space-y-4 w-full">
       <Card header="Application Details">
-        <CustomInput
-          placeholder="Enter company name"
-          id="companyname"
-          name="companyname"
-          type="text"
-          value={companyInfo.companyname}
-          onChange={handleCompanyChange}
-          required
-        />
-        <CustomInput
-          placeholder="Enter company email"
-          id="companyemail"
-          name="companyemail"
-          type="email"
-          value={companyInfo.companyemail}
-          onChange={handleCompanyChange}
-          required
-        />
-        <CustomInput
-          placeholder="Enter company contact number"
-          id="companycontact"
-          name="companycontact"
-          type="text"
-          value={companyInfo.companycontact}
-          onChange={handleCompanyChange}
-          required
-        />
-        <CustomInput
-          placeholder="Enter address"
-          id="address"
-          name="address"
-          type="text"
-          value={companyInfo.address}
-          onChange={handleCompanyChange}
-          multiline
-        />
+        <div className="pointer-events-none">
+          <CustomInput
+            placeholder="Enter company name"
+            id="companyname"
+            name="companyname"
+            type="text"
+            value={companyInfo.companyname}
+            onChange={handleCompanyChange}
+            required
+          />
+        </div>
+        <div className="pointer-events-none">
+          <CustomInput
+            placeholder="Enter company email"
+            id="companyemail"
+            name="companyemail"
+            type="email"
+            value={companyInfo.companyemail}
+            onChange={handleCompanyChange}
+            required
+          />
+        </div>
+        <div className="pointer-events-none">
+          <CustomInput
+            placeholder="Enter company contact number"
+            id="companycontact"
+            name="companycontact"
+            type="text"
+            value={companyInfo.companycontact}
+            onChange={handleCompanyChange}
+            required
+          />
+        </div>
+        <div className="pointer-events-none">
+          <CustomInput
+            placeholder="Enter address"
+            id="address"
+            name="address"
+            type="text"
+            value={companyInfo.address}
+            onChange={handleCompanyChange}
+            multiline
+          />
+        </div>
         <CustomButton title={"Approve Application"} />
       </Card>
     </div>
