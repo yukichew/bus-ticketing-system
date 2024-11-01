@@ -40,42 +40,74 @@ const PassengerUpdateForm = ({ operator, onClose }) => {
   return (
     <div className="flex flex-col space-y-4 w-full mx-auto">
       <Card header="Edit Passenger">
-        <CustomInput
-          placeholder="Enter full name"
-          id="fullName"
-          name="fullName"
-          type="text"
-          value={userInfo.fullName}
-          onChange={handleChange}
-          required
-        />
-        <CustomInput
-          placeholder="Enter email"
-          id="email"
-          name="email"
-          type="email"
-          value={userInfo.email}
-          onChange={handleChange}
-          required
-        />
-        <CustomInput
-          placeholder="Enter date of birth"
-          id="dob"
-          name="dob"
-          type="date"
-          value={userInfo.dob}
-          onChange={handleChange}
-          required
-        />
-        <CustomInput
-          placeholder="Enter phone number"
-          id="phoneNumber"
-          name="phoneNumber"
-          type="text"
-          value={userInfo.phoneNumber}
-          onChange={handleChange}
-          required
-        />
+        <div>
+          <label
+            htmlFor="fullName"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Full Name
+          </label>
+          <CustomInput
+            placeholder="Enter full name"
+            id="fullName"
+            name="fullName"
+            type="text"
+            value={userInfo.fullName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Email
+          </label>
+          <CustomInput
+            placeholder="Enter email"
+            id="email"
+            name="email"
+            type="email"
+            value={userInfo.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="dob"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Date of Birth
+          </label>
+          <CustomInput
+            placeholder="Enter date of birth"
+            id="dob"
+            name="dob"
+            type="date"
+            value={userInfo.dob}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="phoneNumber"
+            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+          >
+            Phone Number
+          </label>
+          <CustomInput
+            placeholder="Enter phone number"
+            id="phoneNumber"
+            name="phoneNumber"
+            type="text"
+            value={userInfo.phoneNumber}
+            onChange={handleChange}
+            required
+          />
+        </div>
         <CustomButton title="Save Changes" onClick={handleSubmit} />
       </Card>
     </div>
