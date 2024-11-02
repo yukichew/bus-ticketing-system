@@ -4,7 +4,7 @@ import AdminDashboard from "./screens/admin/AdminDashboard";
 import ManageApplicationPage from "./screens/admin/ManageApplicationPage";
 import ManageBusRoutes from "./screens/admin/ManageBusRoutes";
 import ManageUserPage from "./screens/admin/ManageUserPage";
-import ManageTransactions from "./screens/admin/ManageTransactions";
+import ManageTransactionsPage from "./screens/admin/ManageTransactionsPage";
 import Home from "./screens/user/Home";
 import UserProfile from "./screens/busOperator/profile/UserProfile";
 import ManageBus from "./screens/busOperator/busManagement/ManageBus";
@@ -24,7 +24,10 @@ function App() {
           element={<ManageApplicationPage />}
         />
         <Route path="/manage-bus-routes" element={<ManageBusRoutes />} />
-        <Route path="/manage-transactions" element={<ManageTransactions />} />
+        <Route
+          path="/manage-transactions"
+          element={<ManageTransactionsPage />}
+        />
 
         {/* Bus Operator */}
         <Route path="/bo/user-profile" element={<UserProfile />} />

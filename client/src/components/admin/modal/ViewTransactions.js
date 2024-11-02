@@ -1,42 +1,38 @@
 import React, { useState, useEffect } from "react";
-import CustomButton from "../../../components/common/CustomButton";
-import CustomInput from "../../../components/common/CustomInput";
-import Card from "../../../components/common/Card";
+import CustomButton from "../../common/CustomButton";
+import CustomInput from "../../common/CustomInput";
+import Card from "../../common/Card";
 
-const RefundForm = ({ operator, onClose }) => {
-  const [refundDetails, setRefundDetails] = useState({
+const ViewTransaction = ({ operator, onClose }) => {
+  const [transactionDetails, setTransactionDetails] = useState({
     transactionNo: "",
     purchaseAt: "",
     purchaseBy: "",
     paymentType: "",
     amountPaid: "",
     refundReason: "",
+    status: "",
   });
 
   useEffect(() => {
     if (operator) {
-      setRefundDetails({
+      setTransactionDetails({
         transactionNo: operator.transactionNo,
         purchaseAt: operator.purchaseAt,
         purchaseBy: operator.purchaseBy,
         paymentType: operator.paymentType,
         amountPaid: operator.amountPaid,
-        refundReason: "",
+        refundReason: operator.refundReason,
+        status: operator.originalStatus,
       });
     }
   }, [operator]);
 
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setRefundDetails((prevDetails) => ({
-      ...prevDetails,
-      [id]: value,
-    }));
-  };
+  console.log("status:", operator.originalStatus);
 
   return (
     <div className="flex flex-col space-y-4 w-full">
-      <Card header="Refund Details">
+      <Card header="Transaction Details">
         <div className="pointer-events-none">
           <label
             htmlFor="transactionNo"
@@ -49,8 +45,7 @@ const RefundForm = ({ operator, onClose }) => {
             id="transactionNo"
             name="transactionNo"
             type="text"
-            value={refundDetails.transactionNo}
-            onChange={handleInputChange}
+            value={transactionDetails.transactionNo}
             readOnly
           />
         </div>
@@ -66,8 +61,7 @@ const RefundForm = ({ operator, onClose }) => {
             id="purchaseAt"
             name="purchaseAt"
             type="text"
-            value={refundDetails.purchaseAt}
-            onChange={handleInputChange}
+            value={transactionDetails.purchaseAt}
             readOnly
           />
         </div>
@@ -83,8 +77,7 @@ const RefundForm = ({ operator, onClose }) => {
             id="purchaseBy"
             name="purchaseBy"
             type="text"
-            value={refundDetails.purchaseBy}
-            onChange={handleInputChange}
+            value={transactionDetails.purchaseBy}
             readOnly
           />
         </div>
@@ -100,8 +93,7 @@ const RefundForm = ({ operator, onClose }) => {
             id="paymentType"
             name="paymentType"
             type="text"
-            value={refundDetails.paymentType}
-            onChange={handleInputChange}
+            value={transactionDetails.paymentType}
             readOnly
           />
         </div>
@@ -117,32 +109,37 @@ const RefundForm = ({ operator, onClose }) => {
             id="amountPaid"
             name="amountPaid"
             type="text"
-            value={refundDetails.amountPaid}
-            onChange={handleInputChange}
+            value={transactionDetails.amountPaid}
             readOnly
           />
         </div>
-        <div>
-          <label
-            htmlFor="refundReason"
-            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-          >
-            Refund Reason
-          </label>
-          <CustomInput
-            placeholder="Enter refund reason"
-            id="refundReason"
-            name="refundReason"
-            type="text"
-            value={refundDetails.refundReason}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <CustomButton title={"Process Refund"} />
+
+        {transactionDetails.refundReason && (
+          <div className="pointer-events-none">
+            <label
+              htmlFor="refundReason"
+              className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+            >
+              Refund Reason
+            </label>
+            <CustomInput
+              id="refundReason"
+              name="refundReason"
+              type="text"
+              value={transactionDetails.refundReason}
+              readOnly
+            />
+          </div>
+        )}
+
+        {operator.originalStatus !== "Completed" &&
+          operator.originalStatus !== "Refunded" &&
+          operator.originalStatus !== "Processing Refund" && (
+            <CustomButton title="Process Refund" />
+          )}
       </Card>
     </div>
   );
 };
 
-export default RefundForm;
+export default ViewTransaction;

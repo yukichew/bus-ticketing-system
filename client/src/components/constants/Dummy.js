@@ -143,6 +143,8 @@ export const transactions = [
     purchaseBy: "John Doe",
     paymentType: "Credit Card",
     amountPaid: 150.0,
+    refundReason: "Cancellation",
+    status: "Request for Refund",
   },
   {
     transactionNo: "TXN002",
@@ -150,6 +152,8 @@ export const transactions = [
     purchaseBy: "Jane Smith",
     paymentType: "PayPal",
     amountPaid: 75.5,
+    refundReason: "Cancellation",
+    status: "Request for Refund",
   },
   {
     transactionNo: "TXN003",
@@ -157,6 +161,8 @@ export const transactions = [
     purchaseBy: "Alice Johnson",
     paymentType: "Debit Card",
     amountPaid: 200.0,
+    refundReason: "Cancellation",
+    status: "Request for Refund",
   },
   {
     transactionNo: "TXN004",
@@ -164,6 +170,8 @@ export const transactions = [
     purchaseBy: "Bob Brown",
     paymentType: "Bank Transfer",
     amountPaid: 300.75,
+    refundReason: "Cancellation",
+    status: "Processing Refund",
   },
   {
     transactionNo: "TXN005",
@@ -171,6 +179,8 @@ export const transactions = [
     purchaseBy: "Charlie Davis",
     paymentType: "Cash",
     amountPaid: 120.25,
+    refundReason: "Cancellation",
+    status: "Processing Refund",
   },
   {
     transactionNo: "TXN006",
@@ -178,6 +188,8 @@ export const transactions = [
     purchaseBy: "Emily Clark",
     paymentType: "Mobile Payment",
     amountPaid: 45.99,
+    refundReason: "",
+    status: "Completed",
   },
   {
     transactionNo: "TXN007",
@@ -185,6 +197,8 @@ export const transactions = [
     purchaseBy: "David Wilson",
     paymentType: "Credit Card",
     amountPaid: 180.5,
+    refundReason: "Cancellation",
+    status: "Refunded",
   },
   {
     transactionNo: "TXN008",
@@ -192,6 +206,8 @@ export const transactions = [
     purchaseBy: "Grace Lee",
     paymentType: "PayPal",
     amountPaid: 99.99,
+    refundReason: "Cancellation",
+    status: "Refunded",
   },
   {
     transactionNo: "TXN009",
@@ -199,6 +215,8 @@ export const transactions = [
     purchaseBy: "Michael Harris",
     paymentType: "Debit Card",
     amountPaid: 250.0,
+    refundReason: "",
+    status: "Completed",
   },
   {
     transactionNo: "TXN010",
@@ -206,5 +224,7 @@ export const transactions = [
     purchaseBy: "Sarah Wilson",
     paymentType: "Cash",
     amountPaid: 60.0,
+    refundReason: "",
+    status: "Completed",
   },
 ];
