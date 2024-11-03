@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { PiUploadSimple } from "react-icons/pi";
 import { AiOutlineDelete } from "react-icons/ai";
 
-const FilesUploadButton = ({ setImages, initialFiles = [] }) => {
+const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFileSize = 2 * 1024 * 1024, aspectRatio = "square" }) => {
     const [files, setFiles] = useState(initialFiles);
 
     useEffect(() => {
@@ -12,7 +12,7 @@ const FilesUploadButton = ({ setImages, initialFiles = [] }) => {
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
         const validFiles = selectedFiles.filter(validateFile);
-        const newFiles = [...files, ...validFiles].slice(0, 2);
+        const newFiles = [...files, ...validFiles].slice(0, maxFiles);
         setFiles(newFiles);
     };
 
@@ -20,18 +20,21 @@ const FilesUploadButton = ({ setImages, initialFiles = [] }) => {
         e.preventDefault();
         const droppedFiles = Array.from(e.dataTransfer.files);
         const validFiles = droppedFiles.filter(validateFile);
-        const newFiles = [...files, ...validFiles].slice(0, 2);
+        const newFiles = [...files, ...validFiles].slice(0, maxFiles);
         setFiles(newFiles);
     };
 
     const validateFile = (file) => {
         const validFormats = ['image/svg+xml', 'image/jpeg', 'image/png'];
-        if (file && validFormats.includes(file.type)) {
-            return true;
-        } else {
+        if (!validFormats.includes(file.type)) {
             alert('Only SVG, JPG, and PNG files are supported.');
             return false;
         }
+        if (file.size > maxFileSize) {
+            alert(`File size should not exceed ${maxFileSize / (1024 * 1024)} MB.`);
+            return false;
+        }
+        return true;
     };
 
     const handleDragOver = (e) => {
@@ -72,25 +75,25 @@ const FilesUploadButton = ({ setImages, initialFiles = [] }) => {
                 </div>
 
                 {files.length > 0 && (
-                    <div className="mt-6 w-full">
-                        <div className={`grid gap-2 justify-items-center grid-cols-2`}>
+                    <div className="mt-2 w-full">
+                        <div className="flex flex-col space-y-2">
                             {files.map((file, index) => (
-                                <div key={index} className="relative w-full">
-                                    <div className="w-full h-36 bg-gray-100 overflow-hidden">
+                                <div key={index} className="flex items-center justify-between w-full">
+                                    <div className={`flex-shrink-0 ${aspectRatio === "square" ? "h-20 w-20" : "h-16 w-24"}`}>
                                         <img
                                             src={URL.createObjectURL(file)}
                                             alt={file.name}
-                                            className="w-full h-full object-cover"
+                                            className={`w-full h-full object-cover ${aspectRatio === "square" ? "aspect-square" : "aspect-[16/9]"}`}
                                         />
                                     </div>
-                                    <div className="flex items-center justify-center mt-2 mr-2 font-poppins text-sm break-words">
+                                    <div className="flex-grow ml-3 flex items-center justify-between"> {/* Allow file name to grow and be on the right */}
+                                        <span className="font-poppins text-sm break-words">{file.name}</span>
                                         <button
                                             onClick={() => handleDelete(index)}
-                                            className="rounded-full p-1 border border-gray-100 shadow-lg hover:bg-red-100 transition duration-200 mr-2"
+                                            className="rounded-full p-1 border border-gray-100 shadow-lg hover:bg-red-100 transition duration-200"
                                         >
                                             <AiOutlineDelete className="text-red-500" size={20} />
                                         </button>
-                                        <span>{file.name}</span>
                                     </div>
                                 </div>
                             ))}
