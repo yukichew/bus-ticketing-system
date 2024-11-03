@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { FaLongArrowAltRight } from "react-icons/fa";
 import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
@@ -11,13 +10,17 @@ import CustomInput from '../../../components/common/CustomInput';
 
 const NewBusScheduleForm = () => {
     const [isBusPlateOpen, setIsBusPlateOpen] = useState(false);
-    const [selectedBusPlateOption, setSelectedBusPlateOption] = useState('Select Bus Plate');
+    const [selectedBusPlateOption, setSelectedBusPlateOption] = useState('Select a bus plate');
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
     const [isBusStatusOpen, setIsBusStatusOpen] = useState(false);
     const [isOriginOpen, setIsOriginOpen] = useState(false);
     const [selectedOriginOption, setSelectedOriginOption] = useState('Select an origin');
+    const [isBoardingLocationOpen, setIsBoardingLocationOpen] = useState(false);
+    const [selectedBoardingLocationOption, setSelectedBoardingLocationOption] = useState('Select a boarding location');
     const [isDestinationOpen, setIsDestinationOpen] = useState(false);
-    const [selectedDestinationOption, setSelectedDestinationOption] = useState('Select an destination');
+    const [selectedDestinationOption, setSelectedDestinationOption] = useState('Select a destination');
+    const [isArrivalLocationOpen, setIsArrivalLocationOpen] = useState(false);
+    const [selectedArrivalLocationOption, setSelectedArrivalLocationOption] = useState('Select an arrival location');
     const [isRecurringOptionOpen, setIsRecurringOptionOpen] = useState(false);
     const [selectedRecurringOption, setSelectedRecurringOption] = useState('None');
     const [fromDate, setFromDate] = useState('');
@@ -38,8 +41,10 @@ const NewBusScheduleForm = () => {
 
         // route information
         origin: '',
+        boardingLocation: '',
         etd: '',
         destination: '',
+        arrivalLocation: '',
         eta: '',
 
         // recurring information
@@ -55,7 +60,11 @@ const NewBusScheduleForm = () => {
 
     const originOptions = ['Kuala Lumpur', 'Johor Bahru', 'Penang', 'Shah Alam', 'Putrajaya'];
 
+    const boardingLocationOptions = ['Downtown Bus Terminal', 'Terminal Bersepadu Selatan'];
+
     const destinationOptions = ['Melaka', 'Ipoh', 'Kuantan', 'Butterworth', 'Klang'];
+
+    const arrivalLocationOptions = ['Airport Terminal 1', 'Airport Terminal 2', 'Railway Crossing Stop'];
 
     const recurringOptions = ['None', 'Daily', 'Monthly'];
 
@@ -115,9 +124,19 @@ const NewBusScheduleForm = () => {
         setIsOriginOpen(false);
     };
 
+    const handleSelectBoardingLocation = (option) => {
+        setSelectedBoardingLocationOption(option);
+        setIsBoardingLocationOpen(false);
+    };
+
     const handleSelectDestination = (option) => {
         setSelectedDestinationOption(option);
         setIsDestinationOpen(false);
+    };
+
+    const handleSelectArrivalLocation = (option) => {
+        setSelectedArrivalLocationOption(option);
+        setIsArrivalLocationOpen(false);
     };
 
     const handleSelectRecurringOption = (option) => {
@@ -161,10 +180,10 @@ const NewBusScheduleForm = () => {
                         <div className='w-1/2'>
                             <Card header="Bus Information">
                                 <div className="relative inline-block text-left w-full mt-2">
-                                    <label htmlFor="busPlate" className="block text-md font-poppins font-medium text-gray-700">Bus Plate</label>
+                                    <label htmlFor="busPlate" className="block text-sm font-poppins font-medium text-gray-700">Bus Plate</label>
                                     <button
                                         onClick={() => setIsBusPlateOpen(!isBusPlateOpen)}
-                                        className="inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                        className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedBusPlateOption === 'Select a bus plate' ? 'text-gray-400' : 'text-black'}`}
                                     >
                                         {selectedBusPlateOption}
                                         <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -188,7 +207,7 @@ const NewBusScheduleForm = () => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="numSeats" className="block text-md font-poppins font-medium text-gray-700 mb-2">No. of Seats</label>
+                                    <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700 mb-2">No. of Seats</label>
                                     <CustomInput
                                         id={'numSeats'}
                                         name={'numSeats'}
@@ -200,12 +219,12 @@ const NewBusScheduleForm = () => {
                                 </div>
 
                                 <div className="relative inline-block text-left w-full">
-                                    <label htmlFor="busType" className="block text-md font-poppins font-medium text-gray-700">Bus Type</label>
+                                    <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
                                     <button
                                         onClick={() => setIsBusTypeOpen(!isBusTypeOpen)}
-                                        className="inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                        className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${!formData.busTypes || formData.busTypes === 'Select a bus type' ? 'text-gray-400' : 'text-black'}`}
                                     >
-                                        {formData.busTypes || 'Select Bus Type'}
+                                        {formData.busTypes || 'Select a bus type'}
                                         <RiArrowDropDownLine className="ml-2 h-5 w-5" />
                                     </button>
 
@@ -227,12 +246,12 @@ const NewBusScheduleForm = () => {
                                 </div>
 
                                 <div className="relative inline-block text-left w-full">
-                                    <label htmlFor="status" className="block text-md font-poppins font-medium text-gray-700">Bus Status</label>
+                                    <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">Bus Status</label>
                                     <button
                                         onClick={() => setIsBusStatusOpen(!isBusStatusOpen)}
-                                        className="inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                        className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${!formData.status || formData.status === 'Select a bus status' ? 'text-gray-400' : 'text-black'}`}
                                     >
-                                        {formData.status || 'Select Bus Status'}
+                                        {formData.status || 'Select a bus status'}
                                         <RiArrowDropDownLine className="ml-2 h-5 w-5" />
                                     </button>
 
@@ -258,7 +277,7 @@ const NewBusScheduleForm = () => {
                         <div className='w-1/2'>
                             <Card header="Driver Information">
                                 <div className='mt-2'>
-                                    <label htmlFor="fullname" className="block text-md font-poppins font-medium text-gray-700 mb-2">Full Name</label>
+                                    <label htmlFor="fullname" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Full Name</label>
                                     <CustomInput
                                         id={'fullname'}
                                         name={'fullname'}
@@ -270,7 +289,7 @@ const NewBusScheduleForm = () => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="icNo" className="block text-md font-poppins font-medium text-gray-700 mb-2">IC Number</label>
+                                    <label htmlFor="icNo" className="block text-sm font-poppins font-medium text-gray-700 mb-2">IC Number</label>
                                     <CustomInput
                                         id={'icNo'}
                                         name={'icNo'}
@@ -282,7 +301,7 @@ const NewBusScheduleForm = () => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="contactNo" className="block text-md font-poppins font-medium text-gray-700 mb-2">Contact No.</label>
+                                    <label htmlFor="contactNo" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Contact No.</label>
                                     <CustomInput
                                         id={'contactNo'}
                                         name={'contactNo'}
@@ -294,11 +313,11 @@ const NewBusScheduleForm = () => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="licenseExpiryDate" className="block text-md font-poppins font-medium text-gray-700 mb-2">Driving License Expiry Date</label>
+                                    <label htmlFor="licenseExpiryDate" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Driving License Expiry Date</label>
                                     <DatePickerField
                                         id={'licenseExpiryDate'}
                                         name={'licenseExpiryDate'}
-                                        placeholder={'Select License Expiry Date'}
+                                        placeholder={'Select a date'}
                                         required
                                     />
                                 </div>
@@ -311,12 +330,11 @@ const NewBusScheduleForm = () => {
                 <div>
                     <Card header="Route Information">
                         <div className="flex items-center justify-between gap-4">
-                            {/* Origin */}
-                            <div className="relative inline-block text-left w-1/4">
+                            <div className="relative inline-block text-left w-1/3">
                                 <label htmlFor="origin" className="block text-md font-poppins font-medium text-gray-700">Origin</label>
                                 <button
                                     onClick={() => setIsOriginOpen(!isOriginOpen)}
-                                    className="inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-1 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedOriginOption === 'Select an origin' ? 'text-gray-400' : 'text-black'}`}
                                 >
                                     {selectedOriginOption}
                                     <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -338,8 +356,33 @@ const NewBusScheduleForm = () => {
                                 )}
                             </div>
 
-                            {/* ETD */}
-                            <div className="relative inline-block w-1/4">
+                            <div className="relative inline-block text-left w-1/3">
+                                <label htmlFor="boardingLocation" className="block text-md font-poppins font-medium text-gray-700">Boarding Location</label>
+                                <button
+                                    onClick={() => setIsBoardingLocationOpen(!isBoardingLocationOpen)}
+                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedBoardingLocationOption === 'Select a boarding location' ? 'text-gray-400' : 'text-black'}`}
+                                >
+                                    {selectedBoardingLocationOption}
+                                    <RiArrowDropDownLine className="ml-2 h-5 w-5" />
+                                </button>
+                                {isBoardingLocationOpen && (
+                                    <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                                        <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                            {boardingLocationOptions.map((option, index) => (
+                                                <li
+                                                    key={index}
+                                                    onClick={() => handleSelectBoardingLocation(option)}
+                                                    className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+                                                >
+                                                    {option}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="relative inline-block w-1/3">
                                 <label htmlFor="etd" className="block text-md font-poppins font-medium text-gray-700 mb-1">ETD</label>
                                 <CustomInput
                                     type="time"
@@ -347,18 +390,14 @@ const NewBusScheduleForm = () => {
                                     required
                                 />
                             </div>
+                        </div>
 
-                            {/* Arrow */}
-                            <div className="flex items-center justify-center w-auto mt-8">
-                                <FaLongArrowAltRight className="text-xl text-gray-500" />
-                            </div>
-
-                            {/* Destination */}
-                            <div className="relative inline-block text-left w-1/4">
+                        <div className="flex items-center justify-between gap-4 mt-4">
+                            <div className="relative inline-block text-left w-1/3">
                                 <label htmlFor="destination" className="block text-md font-poppins font-medium text-gray-700">Destination</label>
                                 <button
                                     onClick={() => setIsDestinationOpen(!isDestinationOpen)}
-                                    className="inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-1 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedDestinationOption === 'Select a destination' ? 'text-gray-400' : 'text-black'}`}
                                 >
                                     {selectedDestinationOption}
                                     <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -380,8 +419,33 @@ const NewBusScheduleForm = () => {
                                 )}
                             </div>
 
-                            {/* ETA */}
-                            <div className="relative inline-block w-1/4">
+                            <div className="relative inline-block text-left w-1/3">
+                                <label htmlFor="arrivalLocation" className="block text-md font-poppins font-medium text-gray-700">Arrival Location</label>
+                                <button
+                                    onClick={() => setIsArrivalLocationOpen(!isArrivalLocationOpen)}
+                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedArrivalLocationOption === 'Select an arrival location' ? 'text-gray-400' : 'text-black'}`}
+                                >
+                                    {selectedArrivalLocationOption}
+                                    <RiArrowDropDownLine className="ml-2 h-5 w-5" />
+                                </button>
+                                {isArrivalLocationOpen && (
+                                    <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                                        <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                            {arrivalLocationOptions.map((option, index) => (
+                                                <li
+                                                    key={index}
+                                                    onClick={() => handleSelectArrivalLocation(option)}
+                                                    className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+                                                >
+                                                    {option}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="relative inline-block w-1/3">
                                 <label htmlFor="eta" className="block text-md font-poppins font-medium text-gray-700 mb-1">ETA</label>
                                 <CustomInput
                                     type="time"
@@ -397,10 +461,10 @@ const NewBusScheduleForm = () => {
                 <div>
                     <Card header="Recurring Options">
                         <div className="relative inline-block text-left w-full mt-2">
-                            <label htmlFor="recurringOption" className="block text-md font-poppins font-medium text-gray-700">Options</label>
+                            <label htmlFor="recurringOption" className="block text-sm font-poppins font-medium text-gray-700">Options</label>
                             <button
                                 onClick={() => setIsRecurringOptionOpen(!isRecurringOptionOpen)}
-                                className="inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-1 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedRecurringOption === 'None' ? 'text-gray-400' : 'text-black'}`}
                             >
                                 {selectedRecurringOption}
                                 <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -425,10 +489,11 @@ const NewBusScheduleForm = () => {
 
                         {selectedRecurringOption === 'None' && (
                             <div className="mt-4">
-                                <label htmlFor="date" className="block text-md font-poppins font-medium text-gray-700">Select Date</label>
+                                <label htmlFor="date" className="block text-sm font-poppins font-medium text-gray-700">Select Date</label>
                                 <DatePickerField
                                     id={'date'}
                                     type="date"
+                                    placeholder={'Select a date'}
                                     value={fromDate}
                                     onChange={(e) => setFromDate(e.target.value)}
                                     className="mt-1 block w-full h-10 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -440,10 +505,11 @@ const NewBusScheduleForm = () => {
                             <div className="mt-4">
                                 <div className="flex gap-4">
                                     <div className="flex-1">
-                                        <label htmlFor="fromDate" className="block text-md font-poppins font-medium text-gray-700">From Date</label>
+                                        <label htmlFor="fromDate" className="block text-sm font-poppins font-medium text-gray-700">From Date</label>
                                         <DatePickerField
                                             id={'fromDate'}
                                             type="date"
+                                            placeholder={'Select a date'}
                                             value={fromDate}
                                             onChange={(e) => setFromDate(e.target.value)}
                                             className="mt-1 block w-full h-10 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -451,10 +517,11 @@ const NewBusScheduleForm = () => {
                                     </div>
 
                                     <div className="flex-1">
-                                        <label htmlFor="toDate" className="block text-md font-poppins font-medium text-gray-700">To Date</label>
+                                        <label htmlFor="toDate" className="block text-sm font-poppins font-medium text-gray-700">To Date</label>
                                         <DatePickerField
                                             id={'toDate'}
                                             type="date"
+                                            placeholder={'Select a date'}
                                             value={toDate}
                                             onChange={(e) => setToDate(e.target.value)}
                                             className="mt-1 block w-full h-10 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircleOutline, IoIosBus } from "react-icons/io";
 import { CiEdit, CiExport } from "react-icons/ci";
@@ -7,20 +7,24 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import Table from '../common/Table';
 import StatusBox from './StatusBox';
 import Card from '../common/Card';
+import { BusScheduleStatus } from './BusScheduleStatus';
 
 const BusScheduling = () => {
     const navigate = useNavigate();
     const [isOriginOpen, setIsOriginOpen] = useState(false);
     const [selectedOriginOption, setSelectedOriginOption] = useState('Select an origin');
     const [isDestinationOpen, setIsDestinationOpen] = useState(false);
-    const [selectedDestinationOption, setSelectedDestinationOption] = useState('Select an destination');
+    const [selectedDestinationOption, setSelectedDestinationOption] = useState('Select a destination');
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
+    const originDropdownRef = useRef(null);
+    const destinationDropdownRef = useRef(null);
+    const statusDropdownRef = useRef(null);
 
     const handleNavigate = (screen) => {
         switch (screen) {
             case 'viewSchedule':
-                navigate('/bo/bus/bus-schedule-details');
+                navigate('/bo/bus/bus-schedule');
                 break;
             case 'newSchedule':
                 navigate('/bo/bus/new-bus-schedule');
@@ -144,22 +148,7 @@ const BusScheduling = () => {
 
     const destinationOptions = ['Melaka', 'Ipoh', 'Kuantan', 'Butterworth', 'Klang'];
 
-    const statusOptions = ['Scheduled', 'En Route', 'Delayed', 'Canceled'];
-
-    const getVariantForStatus = (status) => {
-        switch (status) {
-            case 'Scheduled':
-                return 'success';
-            case 'En Route':
-                return 'info';
-            case 'Delayed':
-                return 'warning';
-            case 'Canceled':
-                return 'danger';
-            default:
-                return 'info';
-        }
-    };
+    const statusOptions = ['Scheduled', 'On Time', 'En Route', 'Delayed', 'Postponed', 'Canceled'];
 
     const handleStatusChange = (newStatus, index) => {
         const updatedData = [...busData];
@@ -212,9 +201,8 @@ const BusScheduling = () => {
             </div>
         ),
         status: (
-            <StatusBox
+            <BusScheduleStatus
                 status={item.status}
-                variant={getVariantForStatus(item.status)}
                 onStatusChange={(newStatus) => handleStatusChange(newStatus, index)} 
             />
         )
@@ -246,16 +234,35 @@ const BusScheduling = () => {
         </div>
     );
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (originDropdownRef.current && !originDropdownRef.current.contains(event.target)) {
+                setIsOriginOpen(false);
+            }
+            if (destinationDropdownRef.current && !destinationDropdownRef.current.contains(event.target)) {
+                setIsDestinationOpen(false);
+            }
+            if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target)) {
+                setIsStatusOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return(
         <>
             <div className='mb-8 -mt-5'>
                 <Card>
                     <div className="flex items-center justify-between gap-4">
-                        <div className="relative inline-block text-left w-1/2">
-                            <label htmlFor="origin" className="block text-md font-poppins font-medium text-gray-700">Origin</label>
+                        <div ref={originDropdownRef} className="relative inline-block text-left w-1/2">
+                            <label htmlFor="origin" className="block text-sm font-poppins font-medium text-gray-700">Origin</label>
                             <button
                                 onClick={() => setIsOriginOpen(!isOriginOpen)}
-                                className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedOriginOption === 'Select an origin' ? 'text-gray-400' : 'text-black'}`}
                             >
                                 {selectedOriginOption}
                                 <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -282,11 +289,11 @@ const BusScheduling = () => {
                             <FaLongArrowAltRight className="text-xl text-gray-500" />
                         </div>
 
-                        <div className="relative inline-block text-left w-1/2">
-                            <label htmlFor="destination" className="block text-md font-poppins font-medium text-gray-700">Destination</label>
+                        <div ref={destinationDropdownRef} className="relative inline-block text-left w-1/2">
+                            <label htmlFor="destination" className="block text-sm font-poppins font-medium text-gray-700">Destination</label>
                             <button
                                 onClick={() => setIsDestinationOpen(!isDestinationOpen)}
-                                className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedDestinationOption === 'Select a destination' ? 'text-gray-400' : 'text-black'}`}
                             >
                                 {selectedDestinationOption}
                                 <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -312,7 +319,7 @@ const BusScheduling = () => {
 
                     <div className="flex justify-between gap-4 mt-3">
                         <div className="w-1/3 pr-2">
-                            <label htmlFor="busPlate" className="block text-md font-poppins font-medium text-gray-700">Bus Plate</label>
+                            <label htmlFor="busPlate" className="block text-sm font-poppins font-medium text-gray-700">Bus Plate</label>
                             <input
                                 type="text"
                                 id="busPlate"
@@ -322,7 +329,7 @@ const BusScheduling = () => {
                         </div>
 
                         <div className="w-1/3 pr-2">
-                            <label htmlFor="driverName" className="block text-md font-poppins font-medium text-gray-700">Driver Name</label>
+                            <label htmlFor="driverName" className="block text-sm font-poppins font-medium text-gray-700">Driver Name</label>
                             <input
                                 type="text"
                                 id="driverName"
@@ -331,11 +338,11 @@ const BusScheduling = () => {
                             />
                         </div>
 
-                        <div className="relative inline-block text-left w-1/3">
-                            <label htmlFor="status" className="block text-md font-poppins font-medium text-gray-700">Status</label>
+                        <div ref={statusDropdownRef} className="relative inline-block text-left w-1/3">
+                            <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">Status</label>
                             <button
                                 onClick={() => setIsStatusOpen(!isStatusOpen)}
-                                className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                                className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedStatusOption === 'Select a status' ? 'text-gray-400' : 'text-black'}`}
                             >
                                 {selectedStatusOption}
                                 <RiArrowDropDownLine className="ml-2 h-5 w-5" />

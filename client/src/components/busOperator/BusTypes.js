@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiEdit, CiExport } from "react-icons/ci";
 import Table from '../common/Table';
-import StatusBox from './StatusBox';
+import { BusTypeStatus } from './BusTypeStatus';
 
 const BusTypes = () => {
     const navigate = useNavigate();
-    const [selectedOption, setSelectedOption] = useState('all');
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
     const [selectedBusTypeOption, setSelectedBusTypeOption] = useState('All');
     const [isStatusOpen, setIsStatusOpen] = useState(false);
-    const [selectedStatusOption, setSelectedStatusOption] = useState('Active');
+    const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
+    const busTypeDropdownRef = useRef(null);
+    const statusDropdownRef = useRef(null);
 
     const handleNavigate = (screen) => {
         switch (screen) {
@@ -75,7 +76,7 @@ const BusTypes = () => {
     const enhancedData = busData.map((item, index) => ({
         ...item,
         status: (
-            <StatusBox
+            <BusTypeStatus
                 status={item.status}
                 onStatusChange={(newStatus) => handleStatusChange(newStatus, index)}
             />
@@ -94,18 +95,32 @@ const BusTypes = () => {
     };
 
     const handleSelectStatus = (option) => {
-        setSelectedOption(option);
+        setSelectedStatusOption(option);
         setIsStatusOpen(false);
     };
 
-    const selectBoxOptions = ['Available', 'Pending', 'Not Available', 'On Road'];
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (busTypeDropdownRef.current && !busTypeDropdownRef.current.contains(event.target)) {
+                setIsBusTypeOpen(false);
+            }
+            if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target)) {
+                setIsStatusOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
         <>
             <div className="border border-gray-100 rounded-lg p-4 bg-white shadow-md mt-3">
                 <div className="flex justify-between gap-4">
                     <div className="w-1/4 pr-2">
-                        <label htmlFor="busPlate" className="block text-md font-poppins font-medium text-gray-700">Bus Plate</label>
+                        <label htmlFor="busPlate" className="block text-sm font-poppins font-medium text-gray-700">Bus Plate</label>
                         <input
                             type="text"
                             id="busPlate"
@@ -114,18 +129,18 @@ const BusTypes = () => {
                         />
                     </div>
 
-                    <div className="w-1/4 pl-2 relative inline-block text-left">
-                        <label htmlFor="busType" className="block text-md font-poppins font-medium text-gray-700">Bus Type</label>
+                    <div ref={busTypeDropdownRef} className="relative inline-block text-left w-1/4">
+                        <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
                         <button
                             onClick={() => setIsBusTypeOpen(!isBusTypeOpen)}
-                            className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                            className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedBusTypeOption === 'All' ? 'text-gray-400' : 'text-black'}`}
                         >
                             {selectedBusTypeOption}
                             <RiArrowDropDownLine className="ml-2 h-5 w-5" />
                         </button>
 
                         {isBusTypeOpen && (
-                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg ">
+                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                 <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                     {busTypeOptions.map((option, index) => (
                                         <li
@@ -142,7 +157,7 @@ const BusTypes = () => {
                     </div>
 
                     <div className="w-1/4 px-2">
-                        <label htmlFor="numSeats" className="block text-md font-poppins font-medium text-gray-700">No. of Seats</label>
+                        <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700">No. of Seats</label>
                         <input
                             type="number"
                             id="numSeats"
@@ -152,18 +167,18 @@ const BusTypes = () => {
                         />
                     </div>
 
-                    <div className="w-1/4 pl-2 relative inline-block text-left">
-                        <label htmlFor="status" className="block text-md font-poppins font-medium text-gray-700">Status</label>
+                    <div ref={statusDropdownRef} className="relative inline-block text-left w-1/4">
+                        <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">Status</label>
                         <button
                             onClick={() => setIsStatusOpen(!isStatusOpen)}
-                            className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+                            className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedStatusOption === 'Select a status' ? 'text-gray-400' : 'text-black'}`}
                         >
                             {selectedStatusOption}
                             <RiArrowDropDownLine className="ml-2 h-5 w-5" />
                         </button>
 
                         {isStatusOpen && (
-                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg ">
+                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                 <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                                     {statusOptions.map((option, index) => (
                                         <li

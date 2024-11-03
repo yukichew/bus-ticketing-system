@@ -13,8 +13,10 @@ import Payment from './screens/user/Payment';
 import BODashboard from './screens/busOperator/BODashboard';
 import NewBusTypeForm from './screens/busOperator/busManagement/NewBusTypeForm';
 import EditBusTypeForm from './screens/busOperator/busManagement/EditBusTypeForm';
+import ViewBusSchedule from './screens/busOperator/busManagement/ViewBusSchedule';
 import NewBusScheduleForm from './screens/busOperator/busManagement/NewBusScheduleForm';
 import EditBusScheduleForm from './screens/busOperator/busManagement/EditBusScheduleForm';
+import PassengerList from './screens/busOperator/busManagement/PassengerList';
 
 function App() {
   return (
@@ -43,9 +45,12 @@ function App() {
         <Route path='/bo/bus/new-bus-type' element={<NewBusTypeForm />} />
         <Route path='/bo/bus/edit-bus-type' element={<EditBusTypeForm />} />
         {/* <Route path='/bo/bus/edit-bus-type/:bus_id' element={<EditBusTypeForm />} /> */}
+        <Route path='/bo/bus/bus-schedule' element={<ViewBusSchedule />} />
         <Route path='/bo/bus/new-bus-schedule' element={<NewBusScheduleForm />} />
         <Route path='/bo/bus/edit-bus-schedule' element={<EditBusScheduleForm />} />
         {/* <Route path='/bo/bus/edit-bus-schedule/:bus_schedule_id' element={<EditBusScheduleForm />} /> */}
+        <Route path='/bo/bus/bus-schedule/passenger-lists' element={<PassengerList />} />
+
 
       </Routes>
     </BrowserRouter>
