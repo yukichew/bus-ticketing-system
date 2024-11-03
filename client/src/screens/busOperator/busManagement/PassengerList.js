@@ -75,7 +75,7 @@ const PassengerList = () => {
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
-                    <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
+                    <h2 className='font-poppins font-bold text-2xl'>Passenger List</h2>
                 </div>
 
                 <div className="border border-gray-100 rounded-lg p-4 bg-white shadow-md mt-4">

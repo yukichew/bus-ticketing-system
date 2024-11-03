@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { HiOutlineUsers } from "react-icons/hi2";
 import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
@@ -57,6 +58,10 @@ const EditBusScheduleForm = () => {
         to: '',
         days: '',
     });
+
+    const handleNavigate = () => {
+        navigate('/bo/bus/bus-schedule/passenger-lists');
+    };
 
     const handleCancel = () => {
         setFormData({
@@ -199,8 +204,12 @@ const EditBusScheduleForm = () => {
             <Navbar />
 
             <div className='w-4/5 mt-8 mx-auto'>
-                <div className='flex items-center'>
+                <div className='flex items-center justify-between'>
                     <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
+                    <button className='ml-auto flex items-center font-medium hover:text-primary pr-1' onClick={handleNavigate}>
+                        <HiOutlineUsers size={20} />
+                        <p className='ml-2 text-lg'>Passenger List</p>
+                    </button>
                 </div>
 
                 {/* bus & driver */}
@@ -579,16 +588,9 @@ const EditBusScheduleForm = () => {
                         )}
                     </Card>
                 </div>
-
-                {/* seats information */}
-                <div>
-                    <Card header="Seats Overview">
-
-                    </Card>
-                </div>
                 
                 <div className='mt-8 mb-10 flex justify-between'>
-                    <CustomButton title='Cancel' className='w-24' onClick={handleCancel}/>
+                    <CustomButton title='Cancel' className='w-10' onClick={handleCancel}/>
                     <CustomButton title='Save' className='w-24'/>
                 </div>
             </div>

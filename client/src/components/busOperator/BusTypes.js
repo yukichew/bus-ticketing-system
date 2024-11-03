@@ -4,6 +4,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiEdit, CiExport } from "react-icons/ci";
 import Table from '../common/Table';
+import Card from '../common/Card';
 import { BusTypeStatus } from './BusTypeStatus';
 
 const BusTypes = () => {
@@ -117,83 +118,85 @@ const BusTypes = () => {
 
     return (
         <>
-            <div className="border border-gray-100 rounded-lg p-4 bg-white shadow-md mt-3">
-                <div className="flex justify-between gap-4">
-                    <div className="w-1/4 pr-2">
-                        <label htmlFor="busPlate" className="block text-sm font-poppins font-medium text-gray-700">Bus Plate</label>
-                        <input
-                            type="text"
-                            id="busPlate"
-                            className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
-                            placeholder="Enter Bus Plate"
-                        />
+            <div className='mb-8 -mt-5'>
+                <Card>
+                    <div className="flex justify-between gap-4">
+                        <div className="w-1/4 pr-2">
+                            <label htmlFor="busPlate" className="block text-sm font-poppins font-medium text-gray-700">Bus Plate</label>
+                            <input
+                                type="text"
+                                id="busPlate"
+                                className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
+                                placeholder="Enter Bus Plate"
+                            />
+                        </div>
+
+                        <div ref={busTypeDropdownRef} className="relative inline-block text-left w-1/4">
+                            <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
+                            <button
+                                onClick={() => setIsBusTypeOpen(!isBusTypeOpen)}
+                                className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedBusTypeOption === 'All' ? 'text-gray-400' : 'text-black'}`}
+                            >
+                                {selectedBusTypeOption}
+                                <RiArrowDropDownLine className="ml-2 h-5 w-5" />
+                            </button>
+
+                            {isBusTypeOpen && (
+                                <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                                    <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                        {busTypeOptions.map((option, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() => handleSelectBusType(option)}
+                                                className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+                                            >
+                                                {option}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="w-1/4 px-2">
+                            <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700">No. of Seats</label>
+                            <input
+                                type="number"
+                                id="numSeats"
+                                min="1"
+                                className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
+                                placeholder="Enter Number of Seats"
+                            />
+                        </div>
+
+                        <div ref={statusDropdownRef} className="relative inline-block text-left w-1/4">
+                            <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">Status</label>
+                            <button
+                                onClick={() => setIsStatusOpen(!isStatusOpen)}
+                                className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedStatusOption === 'Select a status' ? 'text-gray-400' : 'text-black'}`}
+                            >
+                                {selectedStatusOption}
+                                <RiArrowDropDownLine className="ml-2 h-5 w-5" />
+                            </button>
+
+                            {isStatusOpen && (
+                                <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                                    <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                        {statusOptions.map((option, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() => handleSelectStatus(option)}
+                                                className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+                                            >
+                                                {option}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
                     </div>
-
-                    <div ref={busTypeDropdownRef} className="relative inline-block text-left w-1/4">
-                        <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
-                        <button
-                            onClick={() => setIsBusTypeOpen(!isBusTypeOpen)}
-                            className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedBusTypeOption === 'All' ? 'text-gray-400' : 'text-black'}`}
-                        >
-                            {selectedBusTypeOption}
-                            <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                        </button>
-
-                        {isBusTypeOpen && (
-                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                                <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                    {busTypeOptions.map((option, index) => (
-                                        <li
-                                            key={index}
-                                            onClick={() => handleSelectBusType(option)}
-                                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                                        >
-                                            {option}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="w-1/4 px-2">
-                        <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700">No. of Seats</label>
-                        <input
-                            type="number"
-                            id="numSeats"
-                            min="1"
-                            className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
-                            placeholder="Enter Number of Seats"
-                        />
-                    </div>
-
-                    <div ref={statusDropdownRef} className="relative inline-block text-left w-1/4">
-                        <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">Status</label>
-                        <button
-                            onClick={() => setIsStatusOpen(!isStatusOpen)}
-                            className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedStatusOption === 'Select a status' ? 'text-gray-400' : 'text-black'}`}
-                        >
-                            {selectedStatusOption}
-                            <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                        </button>
-
-                        {isStatusOpen && (
-                            <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                                <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                    {statusOptions.map((option, index) => (
-                                        <li
-                                            key={index}
-                                            onClick={() => handleSelectStatus(option)}
-                                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                                        >
-                                            {option}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                </Card>
             </div>
 
             <div className="flex justify-between items-center mt-7">
