@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
+import { busOperators } from "../../components/constants/Dummy";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
@@ -12,89 +13,6 @@ const ManageBusOperators = () => {
   const [showModal, setShowModal] = useState(false);
   const [showCreateModal, setCreateModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
-
-  const [data, setData] = useState([
-    {
-      id: "1",
-      companyName: "Trans Malaysia Express",
-      companyEmail: "info@transmalaysia.com",
-      contactNumber: "+60387654321",
-      address: "No. 25, Jalan Ampang, Kuala Lumpur, 50450",
-      status: "Active",
-    },
-    {
-      id: "2",
-      companyName: "Golden Coach Travels",
-      companyEmail: "support@goldencoach.com",
-      contactNumber: "+60754321098",
-      address: "45, Jalan Tebrau, Johor Bahru, 80000",
-      status: "Active",
-    },
-    {
-      id: "3",
-      companyName: "Rapid Penang Express",
-      companyEmail: "contact@rapidpenang.com",
-      contactNumber: "+6045671234",
-      address: "88, Lebuh Chulia, George Town, Penang, 10200",
-      status: "Active",
-    },
-    {
-      id: "4",
-      companyName: "Borneo Star Line",
-      companyEmail: "inquiries@borneostarline.com",
-      contactNumber: "+6082234567",
-      address: "Lot 10, Jalan Tunku Abdul Rahman, Kota Kinabalu, 88000",
-      status: "Active",
-    },
-    {
-      id: "5",
-      companyName: "East Coast Travel",
-      companyEmail: "contact@eastcoasttravel.com",
-      contactNumber: "+6092345678",
-      address: "25, Jalan Sultan Ismail, Kuala Terengganu, 20100",
-      status: "Active",
-    },
-    {
-      id: "6",
-      companyName: "Southern Cross Coaches",
-      companyEmail: "hello@southerncross.com",
-      contactNumber: "+60125678910",
-      address: "18, Jalan Tun Razak, Malacca City, 75200",
-      status: "Active",
-    },
-    {
-      id: "7",
-      companyName: "Skyline Express",
-      companyEmail: "services@skylineexpress.com",
-      contactNumber: "+60378901234",
-      address: "12A, Persiaran KLCC, Kuala Lumpur, 50088",
-      status: "Active",
-    },
-    {
-      id: "8",
-      companyName: "Green Line Travels",
-      companyEmail: "support@greenlinetravels.com",
-      contactNumber: "+6058765432",
-      address: "19, Jalan Sultan Azlan Shah, Ipoh, Perak, 31400",
-      status: "Active",
-    },
-    {
-      id: "9",
-      companyName: "Central Highland Coaches",
-      companyEmail: "info@centralhighland.com",
-      contactNumber: "+6052348765",
-      address: "21, Cameron Valley, Tanah Rata, Pahang, 39000",
-      status: "Active",
-    },
-    {
-      id: "10",
-      companyName: "Sabah Adventures Travel",
-      companyEmail: "info@sabahadventures.com",
-      contactNumber: "+6088223456",
-      address: "Lot 30, Jalan Kepayan, Kota Kinabalu, Sabah, 88200",
-      status: "Active",
-    },
-  ]);
 
   const columns = [
     "Company Name",
@@ -142,7 +60,7 @@ const ManageBusOperators = () => {
     </div>
   );
 
-  const enhancedData = data.map((item) => ({
+  const enhancedData = busOperators.map((item) => ({
     ...item,
     status: <Status status={item.status} />,
   }));
@@ -152,7 +70,7 @@ const ManageBusOperators = () => {
       <div className="flex justify-between items-center mt-5">
         <p className="text-gray-500">
           <span className="font-semibold text-secondary">
-            {data.length} bus operators{" "}
+            {busOperators.length} bus operators{" "}
           </span>
           created
         </p>
@@ -184,7 +102,7 @@ const ManageBusOperators = () => {
       <Modal
         isVisible={showModal}
         onClose={() => setShowModal(false)}
-        className="w-2/4"
+        className="w-[400px]"
       >
         <BoUpdateForm
           operator={selectedOperator}
@@ -196,7 +114,7 @@ const ManageBusOperators = () => {
       <Modal
         isVisible={showCreateModal}
         onClose={() => setCreateModal(false)}
-        className="w-2/4"
+        className="w-[400px]"
       >
         <BoCreateForm onClose={() => setCreateModal(false)} />
       </Modal>

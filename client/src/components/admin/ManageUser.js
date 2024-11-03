@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
+import { passengers } from "../../components/constants/Dummy";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
 import PassengerUpdateForm from "./modal/PassengerUpdateForm";
@@ -12,88 +13,6 @@ const ManageUser = () => {
   const [showModal, setShowModal] = useState(false);
   const [showCreateModal, setCreateModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
-  const [data, setData] = useState([
-    {
-      id: "1",
-      fullName: "Aminah Abdul Rahim",
-      email: "aminah.rahim@example.com",
-      dob: "1987-04-12",
-      phoneNumber: "+60123456789",
-      status: "Active",
-    },
-    {
-      id: "2",
-      fullName: "Hafiz Mohamed Yusof",
-      email: "hafiz.yusof@example.com",
-      dob: "1992-11-21",
-      phoneNumber: "+60129876543",
-      status: "Active",
-    },
-    {
-      id: "3",
-      fullName: "Nurul Iman Binti Ismail",
-      email: "nurul.iman@example.com",
-      dob: "1995-08-30",
-      phoneNumber: "+60172345678",
-      status: "Active",
-    },
-    {
-      id: "4",
-      fullName: "Kavitha Krishnan",
-      email: "kavitha.krishnan@example.com",
-      dob: "1989-03-15",
-      phoneNumber: "+60125678901",
-      status: "Active",
-    },
-    {
-      id: "5",
-      fullName: "Lee Chong Wei",
-      email: "lee.chongwei@example.com",
-      dob: "1984-10-21",
-      phoneNumber: "+60167854321",
-      status: "Active",
-    },
-    {
-      id: "6",
-      fullName: "Jessica Tan",
-      email: "jessica.tan@example.com",
-      dob: "1990-12-05",
-      phoneNumber: "+60123467890",
-      status: "Active",
-    },
-    {
-      id: "7",
-      fullName: "Ahmad Bin Zulkifli",
-      email: "ahmad.zulkifli@example.com",
-      dob: "1994-02-18",
-      phoneNumber: "+60123458976",
-      status: "Active",
-    },
-    {
-      id: "8",
-      fullName: "Sara Mohd Amir",
-      email: "sara.amir@example.com",
-      dob: "1993-07-27",
-      phoneNumber: "+60183456789",
-      status: "Active",
-    },
-    {
-      id: "9",
-      fullName: "Farhan Abdullah",
-      email: "farhan.abdullah@example.com",
-      dob: "1985-05-30",
-      phoneNumber: "+60197812345",
-      status: "Active",
-    },
-    {
-      id: "10",
-      fullName: "Liyana Hashim",
-      email: "liyana.hashim@example.com",
-      dob: "1996-09-13",
-      phoneNumber: "+60165432789",
-      status: "Active",
-    },
-  ]);
 
   const columns = ["Full Name", "Email", "DoB", "Phone Number", "Status"];
   const columnKeys = ["fullName", "email", "dob", "phoneNumber", "status"];
@@ -127,7 +46,7 @@ const ManageUser = () => {
     </div>
   );
 
-  const enhancedData = data.map((item) => ({
+  const enhancedData = passengers.map((item) => ({
     ...item,
     status: <Status status={item.status} />,
   }));
@@ -167,7 +86,7 @@ const ManageUser = () => {
       <Modal
         isVisible={showModal}
         onClose={() => setShowModal(false)}
-        className="w-2/4"
+        className="w-[400px]"
       >
         <PassengerUpdateForm
           operator={selectedOperator}
@@ -179,7 +98,7 @@ const ManageUser = () => {
       <Modal
         isVisible={showCreateModal}
         onClose={() => setCreateModal(false)}
-        className="w-2/4"
+        className="w-[400px]"
       >
         <PassengerCreateForm onClose={() => setCreateModal(false)} />
       </Modal>
