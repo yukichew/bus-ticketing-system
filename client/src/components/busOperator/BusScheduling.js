@@ -375,7 +375,7 @@ const BusScheduling = () => {
                 <div className="flex justify-end items-center">
                     <button className='ml-auto flex items-center font-medium hover:text-primary pr-1' onClick={() => handleNavigate('newSchedule')}>
                         <IoIosAddCircleOutline size={16} />
-                        <p className='mx-1'>New Bus</p>
+                        <p className='mx-1'>New Schedule</p>
                     </button>
                     
                     <span className="text-gray-400 mx-2">|</span>

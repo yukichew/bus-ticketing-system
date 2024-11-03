@@ -63,7 +63,7 @@ const ViewBusSchedule = () => {
         <>
             <Navbar />
 
-            <div className='w-4/5 mt-8 mx-auto'>
+            <div className='w-4/5 mt-8 mb-8 mx-auto'>
                 <div className='flex items-center'>
                     <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
                 </div>
@@ -265,10 +265,6 @@ const ViewBusSchedule = () => {
                     >
 
                     </Card>
-                </div>
-
-                <div className='mt-8 mb-10'>
-                    <CustomButton title='Create' className='font-semibold' />
                 </div>
             </div>
             

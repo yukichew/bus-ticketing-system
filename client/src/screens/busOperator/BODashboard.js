@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircleOutline, IoIosBus } from "react-icons/io";
 import { CiEdit, CiExport } from "react-icons/ci";
 import { FaLongArrowAltRight } from "react-icons/fa";
@@ -9,10 +10,11 @@ import { Link } from 'react-router-dom';
 import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/Footer';
 import Table from '../../components/common/Table';
-import StatusBox from '../../components/busOperator/StatusBox';
 import Card from '../../components/common/Card';
+import { BusScheduleStatus } from '../../components/busOperator/BusScheduleStatus';
 
 const BODashboard = () => {
+    const navigate = useNavigate();
     const currentDate = new Date();
     const customDate = { day: '2-digit', month: 'short', year: 'numeric' };
     const formattedDate = currentDate.toLocaleDateString('en-GB', customDate);
@@ -21,6 +23,22 @@ const BODashboard = () => {
     const [isDestinationOpen, setIsDestinationOpen] = useState(false);
     const [selectedDestinationOption, setSelectedDestinationOption] = useState('Select an destination');
     const [isFilterShow, setIsFilterShow] = useState(false);
+
+    const handleNavigate = (screen) => {
+        switch (screen) {
+            case 'viewSchedule':
+                navigate('/bo/bus/bus-schedule');
+                break;
+            case 'newSchedule':
+                navigate('/bo/bus/new-bus-schedule');
+                break;
+            case 'editSchedule':
+                navigate('/bo/bus/edit-bus-schedule');
+                break;
+            default:
+                break;
+        }
+    };
 
     const [busData, setBusData] = useState([
         { 
@@ -196,9 +214,8 @@ const BODashboard = () => {
             </div>
         ),
         status: (
-            <StatusBox
+            <BusScheduleStatus
                 status={item.status}
-                variant={getVariantForStatus(item.status)}
                 onStatusChange={(newStatus) => handleStatusChange(newStatus, index)} 
             />
         )
@@ -207,7 +224,10 @@ const BODashboard = () => {
     const actionIcons = (row) => (
         <div className="flex justify-center items-center space-x-2">
             <div className="relative group">
-                <IoIosBus className="text-gray-500 text-xl cursor-pointer" />
+                <IoIosBus 
+                    className="text-gray-500 text-xl cursor-pointer" 
+                    onClick={() => handleNavigate('viewSchedule')}
+                />
                 <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-28 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
                     Bus Details
                 </div>
@@ -216,7 +236,10 @@ const BODashboard = () => {
             <div className="h-4 w-px bg-gray-400" />
     
             <div className="relative group">
-                <CiEdit className="text-gray-500 text-xl cursor-pointer" />
+                <CiEdit 
+                    className="text-gray-500 text-xl cursor-pointer"
+                    onClick={() => handleNavigate('editSchedule')}
+                />
                 <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-16 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
                     Edit
                 </div>
@@ -399,9 +422,9 @@ const BODashboard = () => {
                             <span className='font-semibold text-secondary'>{busData.length} buses </span>found
                         </p>
                         <div className="flex justify-end items-center">
-                            <button className='ml-auto flex items-center font-medium hover:text-primary pr-1'>
+                            <button className='ml-auto flex items-center font-medium hover:text-primary pr-1' onClick={() => handleNavigate('newSchedule')}>
                                 <IoIosAddCircleOutline size={16} />
-                                <p className='mx-1'>New Bus</p>
+                                <p className='mx-1'>New Schedule</p>
                             </button>
                             
                             <span className="text-gray-400 mx-2">|</span>
