@@ -51,7 +51,7 @@ function App() {
         <Route path='/bo/bus/edit-bus-schedule' element={<EditBusScheduleForm />} />
         {/* <Route path='/bo/bus/edit-bus-schedule/:bus_schedule_id' element={<EditBusScheduleForm />} /> */}
         <Route path='/bo/bus/bus-schedule/passenger-lists' element={<PassengerList />} />
-        <Route path='/bo/bus/rates-and-reviews' element={<BORatesAndReviews />} />
+        <Route path='/bo/rates-and-reviews' element={<BORatesAndReviews />} />
 
 
       </Routes>

@@ -304,7 +304,7 @@ const BODashboard = () => {
                             </div>
                         </div>
                         <Link
-                            to='/bo/bus/rates-and-reviews'
+                            to='/bo/rates-and-reviews'
                             className='flex items-center gap-1 font-poppins text-sm text-gray-500 underline hover:text-primary'
                         >
                             <MdViewCompact className="text-3xl" />
