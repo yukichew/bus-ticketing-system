@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IoIosAddCircleOutline, IoIosBus } from "react-icons/io";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { HiOutlineUsers } from "react-icons/hi2";
 import { CiEdit, CiExport } from "react-icons/ci";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Table from '../common/Table';
-import StatusBox from './StatusBox';
 import Card from '../common/Card';
 import { BusScheduleStatus } from './BusScheduleStatus';
 
@@ -23,8 +23,8 @@ const BusScheduling = () => {
 
     const handleNavigate = (screen) => {
         switch (screen) {
-            case 'viewSchedule':
-                navigate('/bo/bus/bus-schedule');
+            case 'viewPassenger':
+                navigate('/bo/bus/bus-schedule/passenger-lists');
                 break;
             case 'newSchedule':
                 navigate('/bo/bus/new-bus-schedule');
@@ -211,24 +211,24 @@ const BusScheduling = () => {
     const actionIcons = (row) => (
         <div className="flex justify-center items-center space-x-2">
             <div className="relative group">
-                <IoIosBus 
-                    className="text-gray-500 text-xl cursor-pointer"
-                    onClick={() => handleNavigate('viewSchedule')}
-                />
-                <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-28 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
-                    Bus Details
-                </div>
-            </div>
-    
-            <div className="h-4 w-px bg-gray-400" />
-    
-            <div className="relative group">
                 <CiEdit 
                     className="text-gray-500 text-xl cursor-pointer"
                     onClick={() => handleNavigate('editSchedule')}
                 />
                 <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-16 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
                     Edit
+                </div>
+            </div>
+
+            <div className="h-4 w-px bg-gray-400" />
+
+            <div className="relative group">
+                <HiOutlineUsers 
+                    className="text-gray-500 text-lg cursor-pointer"
+                    onClick={() => handleNavigate('viewPassenger')}
+                />
+                <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-28 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
+                    Passenger List
                 </div>
             </div>
         </div>

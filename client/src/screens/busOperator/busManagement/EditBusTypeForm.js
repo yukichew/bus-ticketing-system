@@ -6,7 +6,6 @@ import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
-import Breadcrumb from '../../../components/common/Breadcrumb';
 
 const EditBusTypeForm = () => {
     const navigate = useNavigate();
@@ -49,11 +48,6 @@ const EditBusTypeForm = () => {
         });
     };
 
-    const breadcrumbItems = [
-        { name: 'Bus Types', link: '/bo/bus?tab=Bus Types' },
-        { name: 'Edit Bus Type' }
-    ];
-
     const busTypeOptions = ['2+1', '2+2'];
 
     const statusOptions = ['Active', 'Inactive'];
@@ -65,10 +59,6 @@ const EditBusTypeForm = () => {
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
                     <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
-                </div>
-
-                <div className='mt-4'>
-                    <Breadcrumb items={breadcrumbItems} />
                 </div>
 
                 <Card header="Bus Information">

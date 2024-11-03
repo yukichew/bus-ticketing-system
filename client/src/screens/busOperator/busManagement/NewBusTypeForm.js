@@ -5,7 +5,6 @@ import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
-import Breadcrumb from '../../../components/common/Breadcrumb';
 
 const NewBusTypeForm = () => {
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
@@ -27,11 +26,6 @@ const NewBusTypeForm = () => {
         setIsBusStatusOpen(false);
     };
 
-    const breadcrumbItems = [
-        { name: 'Bus Types', link: '/bo/bus?tab=Bus Types' },
-        { name: 'New Bus Type' }
-    ];
-
     return(
         <>
             <Navbar />
@@ -39,10 +33,6 @@ const NewBusTypeForm = () => {
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
                     <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
-                </div>
-
-                <div className='mt-4'>
-                    <Breadcrumb items={breadcrumbItems} />
                 </div>
 
                 <Card header="Bus Information">

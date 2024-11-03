@@ -12,5 +12,5 @@ export const busOperatorLinks = [
   { key: 1, name: 'Dashboard', href: '/bo/dashboard' },
   { key: 2, name: 'Bus Management', href: '/bo/bus'},
   { key: 3, name: 'Sales Revenue', href: '/bo/sales-revenue' },
-  { key: 4, name: 'Rates & Review', href: '/bo/rates-and-review' },
+  { key: 4, name: 'Rates & Review', href: '/bo/rates-and-reviews' },
 ];
