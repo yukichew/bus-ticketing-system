@@ -17,6 +17,7 @@ import ViewBusSchedule from './screens/busOperator/busManagement/ViewBusSchedule
 import NewBusScheduleForm from './screens/busOperator/busManagement/NewBusScheduleForm';
 import EditBusScheduleForm from './screens/busOperator/busManagement/EditBusScheduleForm';
 import PassengerList from './screens/busOperator/busManagement/PassengerList';
+import BORatesAndReviews from './screens/busOperator/BORatesAndReviews';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
         <Route path='/bo/bus/edit-bus-schedule' element={<EditBusScheduleForm />} />
         {/* <Route path='/bo/bus/edit-bus-schedule/:bus_schedule_id' element={<EditBusScheduleForm />} /> */}
         <Route path='/bo/bus/bus-schedule/passenger-lists' element={<PassengerList />} />
+        <Route path='/bo/bus/rates-and-reviews' element={<BORatesAndReviews />} />
 
 
       </Routes>

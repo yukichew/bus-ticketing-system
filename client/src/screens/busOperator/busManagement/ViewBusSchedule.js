@@ -5,7 +5,6 @@ import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
-import Breadcrumb from '../../../components/common/Breadcrumb';
 import DatePickerField from '../../../components/common/DatePickerField';
 import CustomInput from '../../../components/common/CustomInput';
 
@@ -50,11 +49,6 @@ const ViewBusSchedule = () => {
         { label: 'S', fullDay: 'Sunday' }
     ];
 
-    const breadcrumbItems = [
-        { name: 'Bus Scheduling', link: '/bo/bus?tab=Bus Scheduling' },
-        { name: 'Bus Schedule' }
-    ];
-
     const handleNavigate = () => {
         navigate('/bo/bus/bus-schedule/passenger-lists');
     };
@@ -66,10 +60,6 @@ const ViewBusSchedule = () => {
             <div className='w-4/5 mt-8 mb-8 mx-auto'>
                 <div className='flex items-center'>
                     <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
-                </div>
-
-                <div className='mt-4'>
-                    <Breadcrumb items={breadcrumbItems} />
                 </div>
 
                 {/* bus & driver */}

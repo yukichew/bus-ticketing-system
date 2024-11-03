@@ -6,7 +6,6 @@ import { CiExport } from "react-icons/ci";
 import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 import Table from '../../../components/common/Table';
-import Breadcrumb from '../../../components/common/Breadcrumb';
 
 const PassengerList = () => {
     const [isStatusOpen, setIsStatusOpen] = useState(false);
@@ -70,12 +69,6 @@ const PassengerList = () => {
         };
     }, []);
 
-    const breadcrumbItems = [
-        { name: 'Bus Scheduling', link: '/bo/bus?tab=Bus Scheduling' },
-        { name: 'Bus Schedule', link: '/bo/bus/bus-schedule' },
-        { name: 'Passenger Lists ' }
-    ];
-
     return(
         <>
             <Navbar />
@@ -83,10 +76,6 @@ const PassengerList = () => {
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
                     <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
-                </div>
-
-                <div className='mt-4'>
-                    <Breadcrumb items={breadcrumbItems} />
                 </div>
 
                 <div className="border border-gray-100 rounded-lg p-4 bg-white shadow-md mt-4">

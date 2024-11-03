@@ -5,7 +5,6 @@ import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
-import Breadcrumb from '../../../components/common/Breadcrumb';
 import DatePickerField from '../../../components/common/DatePickerField';
 import CustomInput from '../../../components/common/CustomInput';
 
@@ -79,11 +78,6 @@ const EditBusScheduleForm = () => {
             days: '',
         });
     };
-
-    const breadcrumbItems = [
-        { name: 'Bus Scheduling', link: '/bo/bus?tab=Bus Scheduling' },
-        { name: 'Edit Bus Scheduling' }
-    ];
 
     const busTypeOptions = ['2+1', '2+2'];
 
@@ -207,10 +201,6 @@ const EditBusScheduleForm = () => {
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
                     <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
-                </div>
-
-                <div className='mt-4'>
-                    <Breadcrumb items={breadcrumbItems} />
                 </div>
 
                 {/* bus & driver */}
