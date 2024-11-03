@@ -4,11 +4,12 @@ import { IoMdAddCircleOutline } from 'react-icons/io';
 import { MdOutlineSubtitles, MdOutlineTitle } from 'react-icons/md';
 import { RiServiceLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
+import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomField from '../../../components/common/CustomInput';
-import Navbar from '../../../components/common/Navbar';
+import FilesUploadButton from '../../../components/common/FilesUploadButton';
 
 const UserProfile = () => {
   const [showBioFields, setShowBioFields] = useState(false);
@@ -19,6 +20,8 @@ const UserProfile = () => {
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [isEditingService, setIsEditingService] = useState(false);
+  const [images, setImages] = useState([]);
+  const [selectedRefundableOption, setSelectedRefundableOption] = useState('');
 
   const handleEdit = (form) => {
     if (form === 'company') {
@@ -66,6 +69,10 @@ const UserProfile = () => {
   const handleAddService = () => {
     setShowServiceFields(true);
     setIsServiceDisabled(true);
+  };
+
+  const handleRefundableChange = (event) => {
+    setSelectedRefundableOption(event.target.value);
   };
 
   const [companyInfo, setCompanyInfo] = useState({
@@ -269,31 +276,52 @@ const UserProfile = () => {
           </Card>
         </div>
 
-        <div>
-          <Card
-            header='Bus Photos'
-            Icon={CiEdit}
-            onClick={handleEdit}
-            tooltip='Edit'
-          >
-            <div className='flex justify-between space-x-4'>
-              <div className='w-1/2 h-40 bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden'>
-                <img
-                  className='object-cover h-full w-full'
-                  src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                  alt='Bus Image 1'
-                />
-              </div>
+        <div className='flex space-x-4'>
+          <div className='w-1/3 flex flex-col'>
+            <Card
+              header='Company Profile'
+              Icon={CiEdit}
+              onClick={handleEdit}
+              tooltip='Edit'
+              className='flex-grow'
+            >
+              <FilesUploadButton
+                  setImages={setImages}
+                  initialFiles={images.map((name) => new File([], name))}
+                  maxFiles={2}
+                  maxFileSize={2 * 1024 * 1024}
+                  aspectRatio="square"
+              />
+            </Card>
+          </div>
 
-              <div className='w-1/2 h-40 bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden'>
-                <img
-                  className='object-cover h-full w-full'
-                  src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                  alt='Bus Image 2'
-                />
+          <div className='w-2/3 flex flex-col'>
+            <Card
+              header='Bus Photos'
+              Icon={CiEdit}
+              onClick={handleEdit}
+              tooltip='Edit'
+              className='flex-grow'
+            >
+              <div className='flex justify-between space-x-4 h-full'>
+                <div className='w-1/2 h-full bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden'>
+                  <img
+                    className='object-cover h-full w-full'
+                    src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+                    alt='Bus Image 1'
+                  />
+                </div>
+
+                <div className='w-1/2 h-full bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden'>
+                  <img
+                    className='object-cover h-full w-full'
+                    src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+                    alt='Bus Image 2'
+                  />
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
 
         <div>
@@ -362,6 +390,34 @@ const UserProfile = () => {
             onClick={isEditingService ? null : () => handleEdit('service')}
             tooltip='Edit'
           >
+            <div className='mt-4 flex items-center'>
+              <label htmlFor="refundableOption" className="text-md font-poppins font-medium text-gray-700 mr-4"> 
+                Allowed for Refundable?
+              </label>
+              <div className='flex items-center space-x-4'>
+                <label className='flex items-center'>
+                  <input
+                    type='radio'
+                    value='yes'
+                    checked={selectedRefundableOption === 'yes'}
+                    onChange={handleRefundableChange}
+                    className='mr-1'
+                  />
+                  Yes
+                </label>
+                <label className='flex items-center'>
+                  <input
+                    type='radio'
+                    value='no'
+                    checked={selectedRefundableOption === 'no'}
+                    onChange={handleRefundableChange}
+                    className='mr-1'
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+
             {showServiceFields && (
               <>
                 <CustomField
