@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import CustomButton from "../../../components/common/CustomButton";
 import CustomInput from "../../../components/common/CustomInput";
 
-const PassengerUpdateForm = ({ operator, onClose }) => {
+const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
   const [userInfo, setUserInfo] = useState({
     fullName: "",
     email: "",
@@ -31,14 +31,9 @@ const PassengerUpdateForm = ({ operator, onClose }) => {
     }));
   };
 
-  const handleSubmit = () => {
-    // Add logic for saving updated user info
-    onClose(); // Close the modal after submission
-  };
-
   return (
     <div className="flex flex-col space-y-4 w-[400px] mx-auto">
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="fullName"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -55,7 +50,7 @@ const PassengerUpdateForm = ({ operator, onClose }) => {
           required
         />
       </div>
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="email"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -72,7 +67,7 @@ const PassengerUpdateForm = ({ operator, onClose }) => {
           required
         />
       </div>
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="dob"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -89,7 +84,7 @@ const PassengerUpdateForm = ({ operator, onClose }) => {
           required
         />
       </div>
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="phoneNumber"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -106,7 +101,10 @@ const PassengerUpdateForm = ({ operator, onClose }) => {
           required
         />
       </div>
-      <CustomButton title="Save Changes" onClick={handleSubmit} />
+
+      {!isDeactivated && (
+        <CustomButton title={"Save Changes"} onClick={handleSubmit} />
+      )}
     </div>
   );
 };

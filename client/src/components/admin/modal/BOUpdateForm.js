@@ -3,7 +3,7 @@ import CustomButton from "../../../components/common/CustomButton";
 import CustomInput from "../../../components/common/CustomInput";
 import Card from "../../../components/common/Card";
 
-const BoUpdateForm = ({ operator, onClose }) => {
+const BoUpdateForm = ({ operator, onClose, isDeactivated }) => {
   const [companyInfo, setCompanyInfo] = useState({
     companyname: "",
     companyemail: "",
@@ -32,7 +32,7 @@ const BoUpdateForm = ({ operator, onClose }) => {
 
   return (
     <div className="flex flex-col space-y-4 w-[400px]">
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="companyname"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -49,7 +49,7 @@ const BoUpdateForm = ({ operator, onClose }) => {
           required
         />
       </div>
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="companyemail"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -66,7 +66,7 @@ const BoUpdateForm = ({ operator, onClose }) => {
           required
         />
       </div>
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="companycontact"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -83,7 +83,7 @@ const BoUpdateForm = ({ operator, onClose }) => {
           required
         />
       </div>
-      <div>
+      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="address"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -100,7 +100,7 @@ const BoUpdateForm = ({ operator, onClose }) => {
           multiline
         />
       </div>
-      <CustomButton title={"Save Changes"} />
+      {!isDeactivated && <CustomButton title={"Save Changes"} />}
     </div>
   );
 };

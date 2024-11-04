@@ -3,6 +3,7 @@ import { IoMdAdd } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
 import { IoFilter } from "react-icons/io5";
+import { IoEye } from "react-icons/io5";
 import { busOperators } from "../../components/constants/Dummy";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
@@ -13,8 +14,9 @@ import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 
 const ManageBusOperators = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [showCreateModal, setCreateModal] = useState(false);
+  const [showModal, setShowModal] = useState(false); // state for update modal
+  const [showCreateModal, setCreateModal] = useState(false); // state for create modal
+  const [showDetailsModal, setShowDetailsModal] = useState(false); // state for details modal
   const [showFilters, setShowFilters] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [filters, setFilters] = useState({
@@ -87,6 +89,24 @@ const ManageBusOperators = () => {
           </button>
           <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             Deactivate
+          </span>
+        </div>
+      )}
+
+      {/* View Details Button */}
+      {row.originalStatus !== "Active" && (
+        <div className="relative group">
+          <button
+            onClick={() => {
+              setShowDetailsModal(true); // Set the details modal to show
+              setSelectedOperator(row);
+            }}
+            className="text-grey-500 hover:text-grey-600"
+          >
+            <IoEye className="text-xl" />
+          </button>
+          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            View Details
           </span>
         </div>
       )}
@@ -183,6 +203,7 @@ const ManageBusOperators = () => {
         />
       </div>
 
+      {/* modal for update */}
       <Modal isVisible={showModal} onClose={() => setShowModal(false)}>
         <BoUpdateForm
           operator={selectedOperator}
@@ -190,8 +211,21 @@ const ManageBusOperators = () => {
         />
       </Modal>
 
+      {/* modal for create  */}
       <Modal isVisible={showCreateModal} onClose={() => setCreateModal(false)}>
         <BoCreateForm onClose={() => setCreateModal(false)} />
+      </Modal>
+
+      {/* modal for view details */}
+      <Modal
+        isVisible={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+      >
+        <BoUpdateForm
+          operator={selectedOperator}
+          onClose={() => setShowDetailsModal(false)}
+          isDeactivated={selectedOperator?.originalStatus === "Deactivated"}
+        />
       </Modal>
     </>
   );
