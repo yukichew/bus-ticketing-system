@@ -71,7 +71,7 @@ const ManageUser = () => {
     </div>
   );
 
-  const enhancedData = passengers.map((item) => ({
+  const enhancedData = filteredData.map((item) => ({
     ...item,
     status: <Status status={item.status} />,
   }));
@@ -160,7 +160,7 @@ const ManageUser = () => {
 
       <div className="mt-3 mx-auto">
         <Table
-          data={filteredData}
+          data={enhancedData}
           columns={columns}
           columnKeys={columnKeys}
           showActionColumn={true}
