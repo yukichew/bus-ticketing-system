@@ -4,131 +4,117 @@ import AdminHeader from "../../components/admin/AdminHeader";
 import Table from "../../components/common/Table";
 import { MdCancel } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
+import { TiTick } from "react-icons/ti";
+import { applications } from "../../components/constants/Dummy";
+import { IoFilter } from "react-icons/io5";
 import Modal from "../../components/common/Modal";
 import ApplicationForm from "../../components/admin/modal/ViewApplication";
+import Status from "../../components/admin/Status";
+import Card from "../../components/common/Card";
+import CustomInput from "../../components/common/CustomInput";
 
 const ManageApplicationPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showApprovalModal, setShowApprovalModal] = useState(false); // Separate state for approval modal
+  const [showDetailsModal, setShowDetailsModal] = useState(false); // Separate state for details modal
   const [selectedOperator, setSelectedOperator] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    companyName: "",
+    companyEmail: "",
+    contactNumber: "",
+    address: "",
+    status: "",
+  });
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
-
-  const [data, setData] = useState([
-    {
-      id: "1",
-      companyName: "Trans Malaysia Express",
-      companyEmail: "info@transmalaysia.com",
-      contactNumber: "+60387654321",
-      address: "No. 25, Jalan Ampang, Kuala Lumpur, 50450",
-    },
-    {
-      id: "2",
-      companyName: "Golden Coach Travels",
-      companyEmail: "support@goldencoach.com",
-      contactNumber: "+60754321098",
-      address: "45, Jalan Tebrau, Johor Bahru, 80000",
-    },
-    {
-      id: "3",
-      companyName: "Rapid Penang Express",
-      companyEmail: "contact@rapidpenang.com",
-      contactNumber: "+6045671234",
-      address: "88, Lebuh Chulia, George Town, Penang, 10200",
-    },
-    {
-      id: "4",
-      companyName: "Borneo Star Line",
-      companyEmail: "inquiries@borneostarline.com",
-      contactNumber: "+6082234567",
-      address: "Lot 10, Jalan Tunku Abdul Rahman, Kota Kinabalu, 88000",
-    },
-    {
-      id: "5",
-      companyName: "East Coast Travel",
-      companyEmail: "contact@eastcoasttravel.com",
-      contactNumber: "+6092345678",
-      address: "25, Jalan Sultan Ismail, Kuala Terengganu, 20100",
-    },
-    {
-      id: "6",
-      companyName: "Southern Cross Coaches",
-      companyEmail: "hello@southerncross.com",
-      contactNumber: "+60125678910",
-      address: "18, Jalan Tun Razak, Malacca City, 75200",
-    },
-    {
-      id: "7",
-      companyName: "Skyline Express",
-      companyEmail: "services@skylineexpress.com",
-      contactNumber: "+60378901234",
-      address: "12A, Persiaran KLCC, Kuala Lumpur, 50088",
-    },
-    {
-      id: "8",
-      companyName: "Green Line Travels",
-      companyEmail: "support@greenlinetravels.com",
-      contactNumber: "+6058765432",
-      address: "19, Jalan Sultan Azlan Shah, Ipoh, Perak, 31400",
-    },
-    {
-      id: "9",
-      companyName: "Central Highland Coaches",
-      companyEmail: "info@centralhighland.com",
-      contactNumber: "+6052348765",
-      address: "21, Cameron Valley, Tanah Rata, Pahang, 39000",
-    },
-    {
-      id: "10",
-      companyName: "Sabah Adventures Travel",
-      companyEmail: "info@sabahadventures.com",
-      contactNumber: "+6088223456",
-      address: "Lot 30, Jalan Kepayan, Kota Kinabalu, Sabah, 88200",
-    },
-  ]);
 
   const columns = [
     "Company Name",
     "Company Email",
     "Contact Number",
     "Address",
+    "Status",
   ];
   const columnKeys = [
     "companyName",
     "companyEmail",
     "contactNumber",
     "address",
+    "status",
   ];
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const filteredData = applications.filter((operator) =>
+    Object.keys(filters).every((key) =>
+      operator[key].toLowerCase().includes(filters[key].toLowerCase())
+    )
+  );
+
+  const enhancedData = filteredData.map((item) => ({
+    ...item,
+    status: <Status status={item.status} />,
+    originalStatus: item.status,
+  }));
 
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
-      {/* view Button */}
-      <div className="relative group">
-        <button
-          onClick={() => {
-            setShowModal(true);
-            setSelectedOperator(row);
-          }}
-          className="text-grey-500 hover:text-grey-600"
-        >
-          <IoEye className="text-xl" />
-        </button>
-        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          View Details
-        </span>
-      </div>
+      {/* Approve Button */}
+      {row.originalStatus !== "Approved" && (
+        <div className="relative group">
+          <button
+            onClick={() => {
+              setShowApprovalModal(true);
+              setSelectedOperator(row);
+            }}
+            className="text-green-500 hover:text-green-600"
+          >
+            <TiTick className="text-2xl" />
+          </button>
+          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Approve
+          </span>
+        </div>
+      )}
 
-      {/* reject button */}
-      <div className="relative group">
-        <button className="text-red-500 hover:text-red-600">
-          <MdCancel className="text-xl" />
-        </button>
-        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          Reject
-        </span>
-      </div>
+      {/* Reject Button */}
+      {row.originalStatus !== "Approved" && (
+        <div className="relative group">
+          <button className="text-red-500 hover:text-red-600">
+            <MdCancel className="text-xl" />
+          </button>
+          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Reject
+          </span>
+        </div>
+      )}
+
+      {/* View Details Button */}
+      {row.originalStatus !== "Pending" && (
+        <div className="relative group">
+          <button
+            onClick={() => {
+              setShowDetailsModal(true); // Set the details modal to show
+              setSelectedOperator(row);
+            }}
+            className="text-grey-500 hover:text-grey-600"
+          >
+            <IoEye className="text-xl" />
+          </button>
+          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            View Details
+          </span>
+        </div>
+      )}
     </div>
   );
 
@@ -152,9 +138,79 @@ const ManageApplicationPage = () => {
             </h2>
           </div>
 
+          {/* filter button */}
+          <button
+            className="ml-auto flex items-center font-medium hover:text-primary pr-1"
+            onClick={() => setShowFilters((prev) => !prev)} // Toggle filter visibility
+          >
+            <IoFilter size={16} />
+            <p className="mx-1">Filters</p>
+          </button>
+
+          {/* filter input */}
+          {showFilters && (
+            <Card>
+              <div className="flex justify-between gap-4">
+                <CustomInput
+                  placeholder="Filter by Company Name"
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  value={filters.companyName}
+                  onChange={handleFilterChange}
+                />
+                <CustomInput
+                  placeholder="Filter by Company Email"
+                  id="companyEmail"
+                  name="companyEmail"
+                  type="text"
+                  value={filters.companyEmail}
+                  onChange={handleFilterChange}
+                />
+                <CustomInput
+                  placeholder="Filter by Contact Number"
+                  id="contactNumber"
+                  name="contactNumber"
+                  type="text"
+                  value={filters.contactNumber}
+                  onChange={handleFilterChange}
+                />
+                <CustomInput
+                  placeholder="Filter by Address"
+                  id="address"
+                  name="address"
+                  type="text"
+                  value={filters.address}
+                  onChange={handleFilterChange}
+                />
+                {/* Dropdown for Status */}
+                <select
+                  id="status"
+                  name="status"
+                  value={filters.status}
+                  onChange={handleFilterChange}
+                  className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
+                >
+                  <option value="">All Status</option>{" "}
+                  <option value="approved">Approved</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+            </Card>
+          )}
+
+          <div className="flex justify-between items-center mt-8">
+            <p className="text-gray-500">
+              <span className="font-semibold text-secondary">
+                {filteredData.length} applications
+              </span>{" "}
+              found
+            </p>
+          </div>
+
           <div className="mt-3 mx-auto">
             <Table
-              data={data}
+              data={enhancedData}
               columns={columns}
               columnKeys={columnKeys}
               showActionColumn={true}
@@ -162,15 +218,26 @@ const ManageApplicationPage = () => {
             />
           </div>
 
-          {/* modal for view details */}
+          {/* Modal for Approve Application */}
           <Modal
-            isVisible={showModal}
-            onClose={() => setShowModal(false)}
-            className="w-2/4"
+            isVisible={showApprovalModal}
+            onClose={() => setShowApprovalModal(false)}
           >
             <ApplicationForm
               operator={selectedOperator}
-              onClose={() => setShowModal(false)}
+              onClose={() => setShowApprovalModal(false)}
+            />
+          </Modal>
+
+          {/* Modal for View Details */}
+          <Modal
+            isVisible={showDetailsModal}
+            onClose={() => setShowDetailsModal(false)}
+          >
+            <ApplicationForm
+              operator={selectedOperator}
+              onClose={() => setShowDetailsModal(false)}
+              isApproved={selectedOperator?.originalStatus === "Approved"}
             />
           </Modal>
         </div>
