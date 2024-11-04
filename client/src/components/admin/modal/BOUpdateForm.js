@@ -31,7 +31,7 @@ const BoUpdateForm = ({ operator, onClose }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-4 w-100">
+    <div className="flex flex-col space-y-4 w-[400px]">
       <div>
         <label
           htmlFor="companyname"

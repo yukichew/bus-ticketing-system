@@ -2,20 +2,45 @@ import React, { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
+import { IoFilter } from "react-icons/io5";
 import { passengers } from "../../components/constants/Dummy";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
 import PassengerUpdateForm from "./modal/PassengerUpdateForm";
 import PassengerCreateForm from "./modal/PassengerCreateForm";
 import Modal from "../common/Modal";
+import Card from "../../components/common/Card";
+import CustomInput from "../../components/common/CustomInput";
 
 const ManageUser = () => {
   const [showModal, setShowModal] = useState(false);
   const [showCreateModal, setCreateModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    fullName: "",
+    email: "",
+    dob: "",
+    phoneNumber: "",
+    status: "",
+  });
 
   const columns = ["Full Name", "Email", "DoB", "Phone Number", "Status"];
   const columnKeys = ["fullName", "email", "dob", "phoneNumber", "status"];
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const filteredData = passengers.filter((operator) =>
+    Object.keys(filters).every((key) =>
+      operator[key].toLowerCase().includes(filters[key].toLowerCase())
+    )
+  );
 
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
@@ -53,10 +78,71 @@ const ManageUser = () => {
 
   return (
     <>
+      <button
+        className="ml-auto flex items-center font-medium hover:text-primary pr-1"
+        onClick={() => setShowFilters((prev) => !prev)} // Toggle filter visibility
+      >
+        <IoFilter size={16} />
+        <p className="mx-1">Filters</p>
+      </button>
+
+      {showFilters && (
+        <Card>
+          <div className="flex justify-between gap-4">
+            <CustomInput
+              placeholder="Filter by Full Name"
+              id="fullName"
+              name="fullName"
+              type="text"
+              value={filters.fullName}
+              onChange={handleFilterChange}
+            />
+            <CustomInput
+              placeholder="Filter by Email"
+              id="email"
+              name="email"
+              type="text"
+              value={filters.email}
+              onChange={handleFilterChange}
+            />
+            <CustomInput
+              placeholder="Filter by Date of Birth"
+              id="dob"
+              name="dob"
+              type="date"
+              value={filters.dob}
+              onChange={handleFilterChange}
+            />
+            <CustomInput
+              placeholder="Filter by Phone Number"
+              id="phoneNumber"
+              name="phoneNumber"
+              type="text"
+              value={filters.phoneNumber}
+              onChange={handleFilterChange}
+            />
+            {/* Dropdown for Status */}
+            <select
+              id="status"
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
+            >
+              <option value="">All Status</option>{" "}
+              <option value="active">Active</option>
+              <option value="deactivated">Deactivated</option>
+            </select>
+          </div>
+        </Card>
+      )}
+
       <div className="flex justify-between items-center mt-5">
         <p className="text-gray-500">
-          <span className="font-semibold text-secondary">10 users </span>
-          created
+          <span className="font-semibold text-secondary">
+            {filteredData.length} passengers
+          </span>{" "}
+          found
         </p>
 
         <div className="flex justify-end">
@@ -74,7 +160,7 @@ const ManageUser = () => {
 
       <div className="mt-3 mx-auto">
         <Table
-          data={enhancedData}
+          data={filteredData}
           columns={columns}
           columnKeys={columnKeys}
           showActionColumn={true}

@@ -37,7 +37,7 @@ const PassengerUpdateForm = ({ operator, onClose }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-4 w-full mx-auto">
+    <div className="flex flex-col space-y-4 w-[400px] mx-auto">
       <div>
         <label
           htmlFor="fullName"
