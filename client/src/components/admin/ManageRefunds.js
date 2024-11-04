@@ -23,13 +23,6 @@ const ManageRefunds = () => {
     status: "",
   });
 
-  // Filter for only refund-related transactions
-  const refundTransactions = transactions.filter(
-    (transaction) =>
-      transaction.status === "Request for Refund" ||
-      transaction.status === "Processing Refund"
-  );
-
   const columns = [
     "Transaction No",
     "Purchase At",
@@ -125,7 +118,7 @@ const ManageRefunds = () => {
         <Card>
           <div className="flex justify-between gap-4">
             <CustomInput
-              placeholder="Filter by Transaction No"
+              placeholder="Transaction No"
               id="transactionNo"
               name="transactionNo"
               type="text"

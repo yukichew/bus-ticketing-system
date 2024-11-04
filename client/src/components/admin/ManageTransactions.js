@@ -118,7 +118,7 @@ const ManageTransactions = () => {
         <Card>
           <div className="flex justify-between gap-4">
             <CustomInput
-              placeholder="Filter by Transaction No"
+              placeholder="Transaction No"
               id="transactionNo"
               name="transactionNo"
               type="text"
@@ -126,7 +126,7 @@ const ManageTransactions = () => {
               onChange={handleFilterChange}
             />
             <CustomInput
-              placeholder="Filter by Purchase at"
+              placeholder="Purchase at"
               id="purchaseAt"
               name="purchaseAt"
               type="date"
