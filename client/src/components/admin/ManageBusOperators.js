@@ -58,33 +58,38 @@ const ManageBusOperators = () => {
   const enhancedData = filteredData.map((item) => ({
     ...item,
     status: <Status status={item.status} />,
+    originalStatus: item.status,
   }));
 
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
-      <div className="relative group">
-        <button
-          onClick={() => {
-            setSelectedOperator(row);
-            setShowModal(true);
-          }}
-          className="text-green-500 hover:text-green-600"
-        >
-          <FaRegEdit className="text-xl text-gray-500 cursor-pointer" />
-        </button>
-        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          Update
-        </span>
-      </div>
+      {row.originalStatus !== "Deactivated" && (
+        <div className="relative group">
+          <button
+            onClick={() => {
+              setSelectedOperator(row);
+              setShowModal(true);
+            }}
+            className="text-green-500 hover:text-green-600"
+          >
+            <FaRegEdit className="text-xl text-gray-500 cursor-pointer" />
+          </button>
+          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Update
+          </span>
+        </div>
+      )}
 
-      <div className="relative group">
-        <button className="text-red-500 hover:text-red-600">
-          <TiUserDeleteOutline className="text-xl" />
-        </button>
-        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          Deactivate
-        </span>
-      </div>
+      {row.originalStatus !== "Deactivated" && (
+        <div className="relative group">
+          <button className="text-red-500 hover:text-red-600">
+            <TiUserDeleteOutline className="text-xl" />
+          </button>
+          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Deactivate
+          </span>
+        </div>
+      )}
     </div>
   );
 
@@ -141,6 +146,7 @@ const ManageBusOperators = () => {
               onChange={handleFilterChange}
               className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
             >
+              <option value="">All Status</option>{" "}
               <option value="active">Active</option>
               <option value="deactivated">Deactivated</option>
             </select>

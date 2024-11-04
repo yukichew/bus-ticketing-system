@@ -276,7 +276,7 @@ export const passengers = [
     email: "jessica.tan@example.com",
     dob: "1990-12-05",
     phoneNumber: "+60123467890",
-    status: "Active",
+    status: "Deactivated",
   },
   {
     id: "7",
@@ -308,7 +308,7 @@ export const passengers = [
     email: "liyana.hashim@example.com",
     dob: "1996-09-13",
     phoneNumber: "+60165432789",
-    status: "Active",
+    status: "Deactivated",
   },
 ];
 
@@ -319,7 +319,7 @@ export const busOperators = [
     companyEmail: "info@transmalaysia.com",
     contactNumber: "+60387654321",
     address: "No. 25, Jalan Ampang, Kuala Lumpur, 50450",
-    status: "Active",
+    status: "Deactivated",
   },
   {
     id: "2",
@@ -343,7 +343,7 @@ export const busOperators = [
     companyEmail: "inquiries@borneostarline.com",
     contactNumber: "+6082234567",
     address: "Lot 10, Jalan Tunku Abdul Rahman, Kota Kinabalu, 88000",
-    status: "Active",
+    status: "Deactivated",
   },
   {
     id: "5",
