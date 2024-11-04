@@ -6,21 +6,54 @@ import Modal from "../../components/common/Modal";
 import React, { useState } from "react";
 import { IoEye } from "react-icons/io5";
 import { MdDeleteForever } from "react-icons/md";
+import { IoFilter } from "react-icons/io5";
+import Card from "../../components/common/Card";
+import CustomInput from "../../components/common/CustomInput";
 
 const ManageTransactions = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
   const [showModal, setShowModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    transactionNo: "",
+    purchaseAt: "",
+    purchaseBy: "",
+    paymentType: "",
+    amountPaid: "",
+    status: "",
+  });
 
-  // Filter out refund-related transactions
-  const nonRefundTransactions = transactions.filter(
-    (transaction) =>
-      transaction.status !== "Request for Refund" &&
-      transaction.status !== "Processing Refund"
-  );
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const filteredData = transactions
+    .filter((operator) =>
+      // Only apply filters with non-empty values
+      Object.keys(filters).every((key) =>
+        filters[key]
+          ? String(operator[key] || "")
+              .toLowerCase()
+              .includes(filters[key].toLowerCase())
+          : true
+      )
+    )
+    .filter(
+      // Exclude refund-related transactions
+      (transaction) =>
+        transaction.status !== "Request for Refund" &&
+        transaction.status !== "Processing Refund"
+    );
+
+  const enhancedData = filteredData.map((transaction) => ({
+    ...transaction,
+    originalStatus: transaction.status,
+    status: <Status status={transaction.status} />,
+  }));
 
   const columns = [
     "Transaction No",
@@ -38,12 +71,6 @@ const ManageTransactions = () => {
     "amountPaid",
     "status",
   ];
-
-  const enhancedData = nonRefundTransactions.map((transaction) => ({
-    ...transaction,
-    originalStatus: transaction.status,
-    status: <Status status={transaction.status} />,
-  }));
 
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
@@ -78,32 +105,109 @@ const ManageTransactions = () => {
   );
 
   return (
-    <div className="mt-3 mx-auto">
-      <Table
-        data={enhancedData}
-        columns={columns}
-        columnKeys={columnKeys}
-        showActionColumn={true}
-        actions={actionIcons}
-      />
-
-      {/* Modal for view details */}
-      <Modal
-        isVisible={showModal}
-        onClose={() => {
-          setShowModal(false);
-          setSelectedOperator(null);
-        }}
-        className="w-2/5"
+    <>
+      <button
+        className="ml-auto flex items-center font-medium hover:text-primary pr-1"
+        onClick={() => setShowFilters((prev) => !prev)} // Toggle filter visibility
       >
-        {selectedOperator && (
-          <ViewTransaction
-            operator={selectedOperator}
-            onClose={() => setShowModal(false)}
-          />
-        )}
-      </Modal>
-    </div>
+        <IoFilter size={16} />
+        <p className="mx-1">Filters</p>
+      </button>
+
+      {showFilters && (
+        <Card>
+          <div className="flex justify-between gap-4">
+            <CustomInput
+              placeholder="Filter by Transaction No"
+              id="transactionNo"
+              name="transactionNo"
+              type="text"
+              value={filters.transactionNo}
+              onChange={handleFilterChange}
+            />
+            <CustomInput
+              placeholder="Filter by Purchase at"
+              id="purchaseAt"
+              name="purchaseAt"
+              type="date"
+              value={filters.purchaseAt}
+              onChange={handleFilterChange}
+            />
+            <CustomInput
+              placeholder="Purchase By"
+              id="purchaseBy"
+              name="purchaseBy"
+              type="text"
+              value={filters.purchaseBy}
+              onChange={handleFilterChange}
+            />
+            <CustomInput
+              placeholder="Payment Type"
+              id="paymentType"
+              name="paymentType"
+              type="text"
+              value={filters.paymentType}
+              onChange={handleFilterChange}
+            />
+            <CustomInput
+              placeholder="Amount Paid"
+              id="amountPaid"
+              name="amountPaid"
+              type="text"
+              value={filters.amountPaid}
+              onChange={handleFilterChange}
+            />
+            {/* Dropdown for Status */}
+            <select
+              id="status"
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
+            >
+              <option value="">All Status</option>{" "}
+              <option value="completed">Completed</option>
+              <option value="refunded">Refunded</option>
+            </select>
+          </div>
+        </Card>
+      )}
+
+      <div className="flex justify-between items-center mt-5">
+        <p className="text-gray-500">
+          <span className="font-semibold text-secondary">
+            {filteredData.length} transactions
+          </span>{" "}
+          found
+        </p>
+      </div>
+
+      <div className="mt-3 mx-auto">
+        <Table
+          data={enhancedData}
+          columns={columns}
+          columnKeys={columnKeys}
+          showActionColumn={true}
+          actions={actionIcons}
+        />
+
+        {/* Modal for view details */}
+        <Modal
+          isVisible={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedOperator(null);
+          }}
+        >
+          {selectedOperator && (
+            <ViewTransaction
+              operator={selectedOperator}
+              onClose={() => setShowModal(false)}
+            />
+          )}
+        </Modal>
+      </div>
+    </>
   );
 };
 
