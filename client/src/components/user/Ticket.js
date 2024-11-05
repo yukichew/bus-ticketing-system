@@ -1,6 +1,6 @@
 import html2pdf from 'html2pdf.js';
 import React, { useRef } from 'react';
-import { FaBusAlt } from 'react-icons/fa';
+import Logo from '../../assets/Logo';
 import CustomButton from '../common/CustomButton';
 
 const Ticket = ({ booking }) => {
@@ -23,10 +23,7 @@ const Ticket = ({ booking }) => {
     <>
       <div ref={ticketRef} className='p-6 rounded-lg border font-poppins m-4'>
         <div className='flex flex-row'>
-          <div className='flex gap-1 font-bold text-primary items-center mb-5'>
-            <FaBusAlt className='h-4 w-4 2xl:h-5 2xl:w-5' />
-            <span className='text-sm 2xl:text-base'>RideNGo</span>
-          </div>
+          <Logo />
 
           <p className='text-xs text-gray-400 flex ml-auto'>
             Booking ID: {booking.bookingID}

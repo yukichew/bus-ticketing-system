@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { GoPeople } from 'react-icons/go';
 import { LiaSquareFullSolid } from 'react-icons/lia';
+import { busInfoTabs } from '../../constants/TabItems';
 import CustomButton from '../common/CustomButton';
 import Modal from '../common/Modal';
 import Tabs from '../common/Tabs';
-import { busInfoTabs } from '../constants/TabItems';
 
 const BusCard = ({ schedule }) => {
   const [showModal, setShowModal] = useState(false);

@@ -1,8 +1,8 @@
 import React from 'react';
-import { bookings } from '../../components/constants/Dummy';
 import BookingCard from '../../components/user/BookingCard';
+import { bookings } from '../../constants/Dummy';
 
-const Bookings = () => {
+const Trips = () => {
   return (
     <div className='py-5 font-poppins'>
       <div className=''>
@@ -14,4 +14,4 @@ const Bookings = () => {
   );
 };
 
-export default Bookings;
+export default Trips;

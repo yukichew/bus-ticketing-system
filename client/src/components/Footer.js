@@ -1,6 +1,6 @@
 import React from 'react';
-import { FaBusAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import Logo from '../assets/Logo';
 
 const Footer = () => {
   return (
@@ -9,10 +9,7 @@ const Footer = () => {
         <div className='grid grid-cols-2 gap-8 lg:grid-cols-4'>
           <div className='col-span-2 sm:col-span-1'>
             <div className='text-teal-600'>
-              <div className='flex gap-1 font-bold text-primary items-center text-lg'>
-                <FaBusAlt className='h-6 w-6' />
-                <span>RideNGo</span>
-              </div>
+              <Logo />
             </div>
 
             <p className='mt-3 text-sm font-poppins text-gray-500'>
