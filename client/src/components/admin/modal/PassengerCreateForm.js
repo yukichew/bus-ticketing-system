@@ -1,5 +1,6 @@
 import CustomButton from "../../../components/common/CustomButton";
 import CustomInput from "../../../components/common/CustomInput";
+import DatePickerField from "../../common/DatePickerField";
 
 const PassengerCreateForm = () => {
   return (
@@ -22,12 +23,11 @@ const PassengerCreateForm = () => {
         type="email"
         required
       />
-      <CustomInput
-        placeholder="Enter date of birth"
+      <DatePickerField
         id="dob"
         name="dob"
         type="date"
-        required
+        placeholder={"Date of Birth"}
       />
       <CustomInput
         placeholder="Enter phone number"

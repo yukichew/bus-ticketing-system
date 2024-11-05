@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CustomButton from "../../../components/common/CustomButton";
 import CustomInput from "../../../components/common/CustomInput";
+import DatePickerField from "../../common/DatePickerField";
 
 const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
   const [userInfo, setUserInfo] = useState({
@@ -102,9 +103,7 @@ const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
         />
       </div>
 
-      {!isDeactivated && (
-        <CustomButton title={"Save Changes"} onClick={handleSubmit} />
-      )}
+      {!isDeactivated && <CustomButton title={"Save Changes"} />}
     </div>
   );
 };
