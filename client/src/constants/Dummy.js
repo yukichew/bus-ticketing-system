@@ -720,7 +720,7 @@ export const faqData = [
     category: "Manage Booking",
     question: "Can I reschedule my trip?",
     answer:
-      "Reschedule Policy may differ for each operator. If applicable, you can reschedule your bus trip via BusOnlineTicket.com Member Panel. Just log in to your member account and Manage your booking. You will see an option to Reschedule Booking if the booking is reschedulable.",
+      "Reschedule Policy may differ for each operator. If applicable, you can reschedule your bus trip via RideNGo Member Panel. Just log in to your member account and Manage your booking. You will see an option to Reschedule Booking if the booking is reschedulable.",
     status: "Active",
   },
   {
@@ -728,7 +728,7 @@ export const faqData = [
     category: "Manage Booking",
     question: "Can I cancel my booking?",
     answer:
-      "Cancellation and Refund Policy may differ for each operator. If applicable, cancellation and refund request can be done via BusOnlineTicket.com Member Panel or via Check My Booking. Just log in to your member account and Manage your booking. You will see an option to Cancel Booking if the booking is cancellable.",
+      "Cancellation and Refund Policy may differ for each operator. If applicable, cancellation and refund request can be done via RideNGo Member Panel or via Check My Booking. Just log in to your member account and Manage your booking. You will see an option to Cancel Booking if the booking is cancellable.",
     status: "Active",
   },
   {

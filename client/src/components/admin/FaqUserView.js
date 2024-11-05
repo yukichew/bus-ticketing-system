@@ -12,7 +12,7 @@ const FaqUserView = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState(null); // Track the expanded category
   const [expandedQuestion, setExpandedQuestion] = useState(null); // Track the expanded question
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -62,13 +62,13 @@ const FaqUserView = () => {
             <p className="mx-1">Return to Admin View</p>
           </button>
           <Card>
-            {Object.keys(categorizedFaqs).map((category) => (
+            {Object.keys(categorizedFaqs).map((category, index) => (
               <div key={category} className="mb-6">
                 <h3
                   className="text-xl font-bold mb-10 cursor-pointer font-poppins hover:text-primary"
                   onClick={() => handleCategoryClick(category)}
                 >
-                  {category}
+                  {index + 1}. {category}
                 </h3>
                 {/* Show questions for the expanded category */}
                 {expandedCategory === category && (
