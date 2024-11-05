@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import AdminDashboard from "./screens/admin/AdminDashboard";
 import ManageApplicationPage from "./screens/admin/ManageApplicationPage";
+import ManageTransactionsPage from "./screens/admin/ManageTransactionsPage";
 import ManageBusRoutes from "./screens/admin/ManageBusRoutes";
 import ManageUserPage from "./screens/admin/ManageUserPage";
 import ManageBus from "./screens/busOperator/busManagement/ManageBus";
@@ -38,11 +39,11 @@ function App() {
           element={<ManageApplicationPage />}
         />
         <Route path="/manage-bus-routes" element={<ManageBusRoutes />} />
+        <Route path="/manage-bus-routes" element={<ManageBusRoutes />} />
         <Route
           path="/manage-transactions"
           element={<ManageTransactionsPage />}
         />
-        <Route path="/manage-bus-routes" element={<ManageBusRoutes />} />
 
         {/* Bus Operator */}
         <Route path="/bo/dashboard" element={<BODashboard />} />

@@ -1,4 +1,4 @@
-import { transactions } from "../../components/constants/Dummy";
+import { transactions } from "../../constants/Dummy";
 import Status from "../../components/admin/Status";
 import ViewTransaction from "../../components/admin/modal/ViewTransactions";
 import Table from "../../components/common/Table";
@@ -29,7 +29,6 @@ const ManageRefunds = () => {
     "Purchase By",
     "Payment Type",
     "Amount Paid",
-    "Status",
   ];
   const columnKeys = [
     "transactionNo",
@@ -37,7 +36,6 @@ const ManageRefunds = () => {
     "purchaseBy",
     "paymentType",
     "amountPaid",
-    "status",
   ];
 
   const handleFilterChange = (e) => {

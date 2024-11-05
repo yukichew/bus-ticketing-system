@@ -4,7 +4,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
 import { IoFilter } from "react-icons/io5";
 import { IoEye } from "react-icons/io5";
-import { passengers } from "../../components/constants/Dummy";
+import { passengers } from "../../constants/Dummy";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
 import PassengerUpdateForm from "./modal/PassengerUpdateForm";
@@ -27,8 +27,8 @@ const ManageUser = () => {
     status: "",
   });
 
-  const columns = ["Full Name", "Email", "DoB", "Phone Number", "Status"];
-  const columnKeys = ["fullName", "email", "dob", "phoneNumber", "status"];
+  const columns = ["Full Name", "Email", "DoB", "Phone Number"];
+  const columnKeys = ["fullName", "email", "dob", "phoneNumber"];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

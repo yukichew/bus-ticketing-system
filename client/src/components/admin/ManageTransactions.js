@@ -1,4 +1,4 @@
-import { transactions } from "../../components/constants/Dummy";
+import { transactions } from "../../constants/Dummy";
 import Status from "../../components/admin/Status";
 import ViewTransaction from "../../components/admin/modal/ViewTransactions";
 import Table from "../../components/common/Table";
@@ -61,7 +61,6 @@ const ManageTransactions = () => {
     "Purchase By",
     "Payment Type",
     "Amount Paid",
-    "Status",
   ];
   const columnKeys = [
     "transactionNo",
@@ -69,7 +68,6 @@ const ManageTransactions = () => {
     "purchaseBy",
     "paymentType",
     "amountPaid",
-    "status",
   ];
 
   const actionIcons = (row) => (

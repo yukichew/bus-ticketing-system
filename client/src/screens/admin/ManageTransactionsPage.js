@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
-import ManageUser from "../../components/admin/ManageUser";
 import ManageTransactions from "../../components/admin/ManageTransactions";
 import ManageRefunds from "../../components/admin/ManageRefunds";
 

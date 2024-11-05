@@ -4,7 +4,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { TiUserDeleteOutline } from "react-icons/ti";
 import { IoFilter } from "react-icons/io5";
 import { IoEye } from "react-icons/io5";
-import { busOperators } from "../../components/constants/Dummy";
+import { busOperators } from "../../constants/Dummy";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
@@ -32,7 +32,6 @@ const ManageBusOperators = () => {
     "Company Email",
     "Contact Number",
     "Address",
-    "Status",
   ];
 
   const columnKeys = [
@@ -40,7 +39,6 @@ const ManageBusOperators = () => {
     "companyEmail",
     "contactNumber",
     "address",
-    "status",
   ];
 
   const handleFilterChange = (e) => {

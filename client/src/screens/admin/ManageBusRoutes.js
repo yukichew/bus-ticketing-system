@@ -6,7 +6,7 @@ import { MdCancel } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
 import { TiTick } from "react-icons/ti";
 import { IoFilter } from "react-icons/io5";
-import { busRoutes } from "../../components/constants/Dummy";
+import { busRoutes } from "../../constants/Dummy";
 import Modal from "../../components/common/Modal";
 import ViewBusRoutes from "../../components/admin/modal/ViewBusRoutes";
 import Status from "../../components/admin/Status";
@@ -38,7 +38,6 @@ const ManageBusRoutes = () => {
     "Destination",
     "ETD",
     "ETA",
-    "Status",
   ];
   const columnKeys = [
     "busPlate",
@@ -46,7 +45,6 @@ const ManageBusRoutes = () => {
     "destination",
     "etd",
     "eta",
-    "status",
   ];
 
   const handleFilterChange = (e) => {

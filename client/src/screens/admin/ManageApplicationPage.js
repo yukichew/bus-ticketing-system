@@ -5,7 +5,7 @@ import Table from "../../components/common/Table";
 import { MdCancel } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
 import { TiTick } from "react-icons/ti";
-import { applications } from "../../components/constants/Dummy";
+import { applications } from "../../constants/Dummy";
 import { IoFilter } from "react-icons/io5";
 import Modal from "../../components/common/Modal";
 import ApplicationForm from "../../components/admin/modal/ViewApplication";
@@ -36,14 +36,12 @@ const ManageApplicationPage = () => {
     "Company Email",
     "Contact Number",
     "Address",
-    "Status",
   ];
   const columnKeys = [
     "companyName",
     "companyEmail",
     "contactNumber",
     "address",
-    "status",
   ];
 
   const handleFilterChange = (e) => {
