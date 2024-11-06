@@ -734,9 +734,10 @@ export const faqData = [
   {
     id: 5,
     category: "Payment & Refund",
-    question: "How do I reset my password?",
+    question:
+      "How long would it take to receive my booking confirmation after I made the payment? What should I do if I don’t receive it?",
     answer:
-      "To reset your password, click on 'Forgot Password?' on the login page. Enter your registered email, and we’ll send you a link to create a new password.",
+      "It depends on the payment method that you choose. Usually, you will get the booking confirmation almost instantly. However, sometimes payment is delayed by the bank/credit card company and this could take up to 24 hours for the payment to be confirmed. If you did not receive the booking confirmation email by then, please call our customer service hotline for assistance.",
     status: "Active",
   },
   {
@@ -782,4 +783,92 @@ export const faqData = [
   },
 ];
 
-export default faqData;
+export const policyData = [
+  {
+    id: 1,
+    policy_title: "Refund Policy",
+    terms: [
+      "Refunds are available within 24 hours of booking if departure is more than 48 hours away.",
+      "A 50% refund is available within 24-48 hours before departure.",
+      "No refund is available within 24 hours of departure.",
+      "A processing fee of 10% applies to all refunds.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 2,
+    policy_title: "Reschedule Policy",
+    terms: [
+      "Rescheduling is allowed up to 48 hours before departure.",
+      "Only one reschedule is allowed per ticket.",
+      "A rescheduling fee of 10% of the ticket price applies.",
+      "Rescheduled tickets are non-refundable.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 3,
+    policy_title: "Cancellation Policy",
+    terms: [
+      "Cancellations are allowed up to 24 hours before departure.",
+      "A 50% cancellation fee applies.",
+      "No cancellations are allowed within 24 hours of departure.",
+      "Refunds may take 5-10 business days to process.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 4,
+    policy_title: "Passenger Conduct",
+    terms: [
+      "Passengers must carry a valid ID for verification.",
+      "No smoking, alcohol, or prohibited substances allowed onboard.",
+      "Passengers causing disturbances may be removed without a refund.",
+      "Children under 12 must be accompanied by an adult.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 5,
+    policy_title: "Baggage Policy",
+    terms: [
+      "Each passenger is allowed one carry-on and one checked bag.",
+      "Additional bags are charged extra.",
+      "No dangerous or restricted items are allowed.",
+      "The company is not liable for loss of valuable items.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 6,
+    policy_title: "No-Show Policy",
+    terms: [
+      "Tickets are forfeited if passengers do not arrive 15 minutes before departure.",
+      "No refunds or rescheduling are allowed for no-shows.",
+      "Passengers are advised to check in 30 minutes before departure.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 7,
+    policy_title: "Safety and Emergency Policy",
+    terms: [
+      "Follow all crew instructions during emergencies.",
+      "Life vests and first aid kits are available onboard.",
+      "Emergency exits are located at marked points.",
+      "Passengers should familiarize themselves with safety procedures.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 8,
+    policy_title: "Lost & Found Policy",
+    terms: [
+      "Lost items are held for 30 days.",
+      "Passengers can contact customer support to claim lost items.",
+      "The company is not responsible for items left onboard after disembarking.",
+      "Valuable items should not be left unattended.",
+    ],
+    status: "Active",
+  },
+];

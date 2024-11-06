@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import ManageFaq from "../../components/admin/ManageFaq";
+import ManagePolicy from "../../components/admin/ManagePolicy";
 
 const ManageContents = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -16,7 +17,7 @@ const ManageContents = () => {
       case "FAQs":
         return <ManageFaq />;
       case "Terms and Conditions":
-        return <ManageFaq />;
+        return <ManagePolicy />;
       default:
         return <ManageFaq />;
     }

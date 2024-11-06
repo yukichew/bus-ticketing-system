@@ -4,14 +4,18 @@ import AdminHeader from "../../components/admin/AdminHeader";
 import Sidebar from "../../components/admin/Sidebar";
 import Card from "../../components/common/Card";
 import { FaRegQuestionCircle } from "react-icons/fa";
-import { RiQuestionAnswerLine } from "react-icons/ri";
+import {
+  RiQuestionAnswerLine,
+  RiArrowDropDownLine,
+  RiArrowDropUpLine,
+} from "react-icons/ri";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
 const FaqUserView = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [expandedCategory, setExpandedCategory] = useState(null); // Track the expanded category
-  const [expandedQuestion, setExpandedQuestion] = useState(null); // Track the expanded question
+  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [expandedQuestion, setExpandedQuestion] = useState(null);
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
@@ -19,12 +23,10 @@ const FaqUserView = () => {
   };
 
   const handleCategoryClick = (category) => {
-    // Toggle the currently expanded category
     setExpandedCategory((prev) => (prev === category ? null : category));
   };
 
   const handleQuestionClick = (question) => {
-    // Toggle the currently expanded question
     setExpandedQuestion((prev) => (prev === question ? null : question));
   };
 
@@ -70,10 +72,8 @@ const FaqUserView = () => {
                 >
                   {index + 1}. {category}
                 </h3>
-                {/* Show questions for the expanded category */}
                 {expandedCategory === category && (
                   <ul className="list-none pl-0">
-                    {" "}
                     {categorizedFaqs[category].map((faq) => (
                       <li
                         key={faq.question}
@@ -84,14 +84,24 @@ const FaqUserView = () => {
                           onClick={() => handleQuestionClick(faq.question)}
                         >
                           <FaRegQuestionCircle className="mr-2 text-gray-500" />
-                          <h4 className="font-semibold">{faq.question}</h4>
+                          <h4 className="font-semibold flex-grow">
+                            {faq.question}
+                          </h4>
+                          {expandedQuestion === faq.question ? (
+                            <RiArrowDropUpLine
+                              size={24}
+                              className="text-gray-500"
+                            />
+                          ) : (
+                            <RiArrowDropDownLine
+                              size={24}
+                              className="text-gray-500"
+                            />
+                          )}
                         </div>
-                        {/* Show answer if the question is expanded */}
                         {expandedQuestion === faq.question && (
                           <div className="flex items-start mt-1 border-t pt-2">
                             <div className="flex items-center justify-center w-8 h-8 mr-2 text-gray-500">
-                              {" "}
-                              {/* Fixed icon size */}
                               <RiQuestionAnswerLine className="w-4 h-4" />
                             </div>
                             <p className="max-w-full overflow-hidden text-ellipsis whitespace-normal text-justify">
@@ -106,6 +116,9 @@ const FaqUserView = () => {
               </div>
             ))}
           </Card>
+          <p className="ml-auto flex items-center font-medium text-gray-500 pt-4">
+            Note: The info above are subjected to changes from time to time.
+          </p>
         </div>
       </main>
     </div>
