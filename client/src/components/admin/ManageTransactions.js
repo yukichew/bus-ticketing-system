@@ -4,9 +4,8 @@ import ViewTransaction from "../../components/admin/modal/ViewTransactions";
 import Table from "../../components/common/Table";
 import Modal from "../../components/common/Modal";
 import React, { useState } from "react";
-import { IoEye } from "react-icons/io5";
-import { MdDeleteForever } from "react-icons/md";
 import { IoFilter } from "react-icons/io5";
+import { FaRegTrashAlt, FaRegEye } from "react-icons/fa";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 
@@ -83,17 +82,19 @@ const ManageTransactions = () => {
           }}
           className="text-grey-200 hover:text-grey-600"
         >
-          <IoEye className="text-xl" />
+          <FaRegEye className="text-lg text-gray-500 cursor-pointer" />
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           View Details
         </span>
       </div>
 
+      <div className="h-4 w-px bg-gray-400"></div>
+
       {/* delete button */}
       <div className="relative group">
-        <button className="text-red-600 hover:text-red-700">
-          <MdDeleteForever className="text-xl" />
+        <button className="text-grey-500 hover:text-grey-600">
+          <FaRegTrashAlt className="text-lg text-gray-500 cursor-pointer" />
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           Delete
