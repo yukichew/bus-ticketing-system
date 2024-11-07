@@ -160,7 +160,7 @@ const ManagePolicy = () => {
         </div>
       )}
 
-      <div className="flex justify-between items-center mt-12">
+      <div className="flex justify-between items-center mt-12 mb-4">
         <p className="text-gray-500">
           <span className="font-semibold text-secondary">
             {filteredData.length} Policies
