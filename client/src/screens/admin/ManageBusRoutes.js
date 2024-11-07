@@ -3,7 +3,6 @@ import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Table from "../../components/common/Table";
 import { MdOutlineCancel } from "react-icons/md";
-import { TiTick } from "react-icons/ti";
 import { SiTicktick } from "react-icons/si";
 import { IoFilter } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
