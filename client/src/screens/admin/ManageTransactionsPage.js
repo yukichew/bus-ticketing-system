@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { transactions } from "../../constants/Dummy";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import ManageTransactions from "../../components/admin/ManageTransactions";
@@ -7,6 +8,17 @@ import ManageRefunds from "../../components/admin/ManageRefunds";
 const ManageTransactionsPage = () => {
   const [activeSection, setActiveSection] = useState("Main");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [refundRequestCount, setRefundRequestCount] = useState(0);
+
+  useEffect(() => {
+    // Calculate total refund requests (both "Request for Refund" and "Processing Refund")
+    const totalRefundRequests = transactions.filter(
+      (transaction) =>
+        transaction.status === "Request for Refund" ||
+        transaction.status === "Processing Refund"
+    ).length;
+    setRefundRequestCount(totalRefundRequests);
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -57,13 +69,18 @@ const ManageTransactionsPage = () => {
 
             <div
               onClick={() => setActiveSection("Refunds")}
-              className={`cursor-pointer pb-2 border-b-2 ${
+              className={`relative cursor-pointer pb-2 border-b-2 ${
                 activeSection === "Refunds"
                   ? "border-primary text-primary font-medium"
                   : "border-transparent text-gray-400 hover:text-primary"
               } transition duration-300 flex items-center`}
             >
               <span>Refunds Request</span>
+              {refundRequestCount > 0 && (
+                <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                  {refundRequestCount}
+                </span>
+              )}
             </div>
           </div>
 

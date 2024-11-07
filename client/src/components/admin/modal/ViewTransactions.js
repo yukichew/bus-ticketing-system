@@ -101,7 +101,7 @@ const ViewTransaction = ({ operator, onClose }) => {
           htmlFor="amountPaid"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Amount Paid
+          Amount Paid (RM)
         </label>
         <CustomInput
           placeholder="Amount Paid"
