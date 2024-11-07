@@ -48,7 +48,7 @@ const PolicyUserView = () => {
           <Card>
             {policyData.map((policy, index) => (
               <div key={policy.id} className="mb-6">
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <h3
                     className="text-xl font-bold mb-10 cursor-pointer font-poppins hover:text-primary"
                     onClick={() => handlePolicyClick(policy.policy_title)}

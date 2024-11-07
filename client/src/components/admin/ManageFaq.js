@@ -1,23 +1,58 @@
 import React, { useState } from "react";
 import Table from "../../components/common/Table";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { faqData } from "../../constants/Dummy";
-import { IoMdAdd } from "react-icons/io";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import { IoFilter } from "react-icons/io5";
 import { FaExchangeAlt } from "react-icons/fa";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
 import FaqEditForm from "./modal/FaqEditForm";
 import FaqCreateForm from "./modal/FaqCreateForm";
+import Card from "../../components/common/Card";
+import CustomInput from "../../components/common/CustomInput";
+
+const categories = [
+  "General",
+  "Manage Booking",
+  "Payment & Refund",
+  "Technical",
+  "Journey & Visa",
+];
 
 const ManageFaq = () => {
+  const navigate = useNavigate();
   const columns = ["Question", "Answer", "Category"];
   const columnKeys = ["question", "answer", "category"];
-  const [showEditModal, setShowEditModal] = useState(false); // state for edit modal
-  const [showCreateModal, setShowCreateModal] = useState(false); // state for create modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
+  const [isFilterShow, setIsFilterShow] = useState(false);
+  const [filters, setFilters] = useState({
+    question: "",
+    answer: "",
+    category: "",
+    status: "",
+  });
 
-  const enhancedData = faqData.map((item) => ({
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
+  const filteredData = faqData.filter((item) =>
+    Object.keys(filters).every((key) =>
+      filters[key]
+        ? item[key]?.toLowerCase().includes(filters[key].toLowerCase())
+        : true
+    )
+  );
+
+  const enhancedData = filteredData.map((item) => ({
     ...item,
     status: <Status status={item.status} />,
     originalStatus: item.status,
@@ -31,7 +66,7 @@ const ManageFaq = () => {
           onClick={() => {
             setSelectedOperator({
               ...row,
-              originalStatus: row.originalStatus, // pass the original status from the row
+              originalStatus: row.originalStatus,
             });
             setShowEditModal(true);
           }}
@@ -59,23 +94,124 @@ const ManageFaq = () => {
 
   return (
     <>
-      <div className="flex justify-end">
-        {/* Add Questions button to open create modal */}
-        <button
-          onClick={() => setShowCreateModal(true)} // Update to open the create modal
-          className="flex items-center justify-center h-10 px-4 text-sm font-medium font-poppins tracking-wide text-white transition duration-200 rounded-lg shadow-md bg-primary hover:bg-secondary"
-        >
-          <IoMdAdd className="mr-2 text-white text-base" />
-          Add Questions
-        </button>
-        <div className="pl-2">
-          <Link
-            to="/faq" // Navigate to FAQ User View
-            className="flex items-center justify-center h-10 px-4 text-sm font-medium font-poppins tracking-wide text-white transition duration-200 rounded-lg shadow-md bg-primary hover:bg-secondary"
+      {isFilterShow && (
+        <div className="mb-8 mt-5">
+          <Card>
+            <div className="flex justify-between gap-4">
+              <div className="w-1/3 pr-2">
+                <label
+                  htmlFor="question"
+                  className="block text-md font-poppins font-medium text-gray-700 mb-2"
+                >
+                  Question
+                </label>
+                <CustomInput
+                  placeholder="Filter by Question"
+                  id="question"
+                  name="question"
+                  type="text"
+                  value={filters.question}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <div className="w-1/3 pr-2">
+                <label
+                  htmlFor="answer"
+                  className="block text-md font-poppins font-medium text-gray-700 mb-2"
+                >
+                  Answer
+                </label>
+                <CustomInput
+                  placeholder="Filter by Answer"
+                  id="answer"
+                  name="answer"
+                  type="text"
+                  value={filters.answer}
+                  onChange={handleFilterChange}
+                />
+              </div>
+              <div className="w-1/3 pr-2">
+                <label
+                  htmlFor="category"
+                  className="block text-md font-poppins font-medium text-gray-700 mb-2"
+                >
+                  Category
+                </label>
+                <select
+                  id="category"
+                  name="category"
+                  onChange={handleFilterChange}
+                  className="rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm w-full h-12 px-4"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((category, index) => (
+                    <option key={index} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Dropdown for Status */}
+              <div className="w-1/3 pr-2">
+                <label
+                  htmlFor="status"
+                  className="block text-md font-poppins font-medium text-gray-700 mb-2"
+                >
+                  Status
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  value={filters.status}
+                  onChange={handleFilterChange}
+                  className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
+                >
+                  <option value="">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="deactivated">Deactivated</option>
+                </select>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      <div className="flex justify-between items-center mt-12">
+        <p className="text-gray-500">
+          <span className="font-semibold text-secondary">
+            {enhancedData.length} FAQs
+          </span>{" "}
+          found
+        </p>
+        <div className="flex justify-end items-center">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="ml-auto flex items-center font-medium hover:text-primary pr-1"
           >
-            <FaExchangeAlt className="mr-2 text-white text-base" />
-            Change to User View
-          </Link>
+            <IoIosAddCircleOutline size={16} />
+            <p className="mx-1"> Add Questions</p>
+          </button>
+
+          <span className="text-gray-400 mx-2">|</span>
+
+          <button
+            onClick={() => navigate("/faq")}
+            className="ml-auto flex items-center font-medium hover:text-primary pr-1"
+          >
+            <FaExchangeAlt size={16} />
+            <p className="mx-1"> Change to User View</p>
+          </button>
+
+          <span className="text-gray-400 mx-2">|</span>
+
+          <button
+            className="ml-auto flex items-center font-medium hover:text-primary pr-1"
+            onClick={() => setIsFilterShow((prev) => !prev)}
+          >
+            <IoFilter size={16} />
+            <p className="mx-1">Filters</p>
+          </button>
         </div>
       </div>
 
