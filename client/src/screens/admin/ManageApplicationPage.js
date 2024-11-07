@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Table from "../../components/common/Table";
-import { MdCancel } from "react-icons/md";
-import { IoEye } from "react-icons/io5";
-import { TiTick } from "react-icons/ti";
 import { FaRegEye } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { SiTicktick } from "react-icons/si";
@@ -145,7 +142,6 @@ const ManageApplicationPage = () => {
           {/* filter input */}
           {showFilters && (
             <Card>
-              {/* First Row: Company Name, Company Email, and Contact Number */}
               <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/2">
                   <label
@@ -181,7 +177,6 @@ const ManageApplicationPage = () => {
                 </div>
               </div>
 
-              {/* Second Row: Address and Status */}
               <div className="flex justify-between gap-4">
                 <div className="w-1/3">
                   <label
