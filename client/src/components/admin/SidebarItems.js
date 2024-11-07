@@ -42,7 +42,7 @@ const SidebarItems = () => {
     {
       key: 6,
       name: "Manage Contents",
-      href: "/admin-dashboard",
+      href: "/manage-contents",
       icon: "ModalsIcon",
     },
   ];

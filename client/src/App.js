@@ -3,8 +3,11 @@ import "./App.css";
 import AdminDashboard from "./screens/admin/AdminDashboard";
 import ManageApplicationPage from "./screens/admin/ManageApplicationPage";
 import ManageTransactionsPage from "./screens/admin/ManageTransactionsPage";
+import FaqUserView from "./components/admin/FaqUserView";
+import PolicyUserView from "./components/admin/PolicyUserView";
 import ManageBusRoutes from "./screens/admin/ManageBusRoutes";
 import ManageUserPage from "./screens/admin/ManageUserPage";
+import ManageContents from "./screens/admin/ManageContents";
 import ManageBus from "./screens/busOperator/busManagement/ManageBus";
 import UserProfile from "./screens/busOperator/profile/UserProfile";
 import NotFound from "./screens/NotFound";
@@ -44,6 +47,9 @@ function App() {
           path="/manage-transactions"
           element={<ManageTransactionsPage />}
         />
+        <Route path="/manage-contents" element={<ManageContents />} />
+        <Route path="/faq" element={<FaqUserView />} />
+        <Route path="/policies" element={<PolicyUserView />} />
 
         {/* Bus Operator */}
         <Route path="/bo/dashboard" element={<BODashboard />} />

@@ -3,6 +3,7 @@ import React from "react";
 const Status = ({ status }) => {
   const statusStyles = {
     Active: "text-green-700 bg-green-100",
+    Inactive: "text-red-600 bg-red-100",
     Deactivated: "text-red-600 bg-red-100",
     Completed: "text-green-700 bg-green-100",
     "Request for Refund": "text-yellow-700 bg-yellow-100",

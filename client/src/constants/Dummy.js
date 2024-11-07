@@ -133,127 +133,127 @@ export const reviews = [
 export const OneStarReviews = [
   {
     id: 1,
-    name: 'Mary Jones',
-    date: '15/01/2024',
+    name: "Mary Jones",
+    date: "15/01/2024",
     rating: 1,
     comment:
-      'Terrible experience. The driver never showed up, and I had to wait for over 2 hours.',
+      "Terrible experience. The driver never showed up, and I had to wait for over 2 hours.",
   },
   {
     id: 2,
-    name: 'Sam Wilson',
-    date: '10/02/2024',
+    name: "Sam Wilson",
+    date: "10/02/2024",
     rating: 1,
     comment:
-      'The vehicle broke down midway, and the driver was completely unprofessional about it.',
+      "The vehicle broke down midway, and the driver was completely unprofessional about it.",
   },
   {
     id: 3,
-    name: 'Anna Green',
-    date: '05/03/2024',
+    name: "Anna Green",
+    date: "05/03/2024",
     rating: 1,
     comment:
-      'Worst experience ever! The driver didn’t pick me up, and customer service was unhelpful.',
+      "Worst experience ever! The driver didn’t pick me up, and customer service was unhelpful.",
   },
 ];
 
 export const TwoStarsReviews = [
   {
     id: 1,
-    name: 'Tom Lee',
-    date: '17/01/2024',
+    name: "Tom Lee",
+    date: "17/01/2024",
     rating: 2,
     comment:
-      'The driver was rude and the car was not clean. Not happy with the service.',
+      "The driver was rude and the car was not clean. Not happy with the service.",
   },
   {
     id: 2,
-    name: 'Rachel Adams',
-    date: '25/01/2024',
+    name: "Rachel Adams",
+    date: "25/01/2024",
     rating: 2,
     comment:
-      'Driver was late by 30 minutes, and the air conditioning didn’t work properly. Could be better.',
+      "Driver was late by 30 minutes, and the air conditioning didn’t work properly. Could be better.",
   },
   {
     id: 3,
-    name: 'Mark Davis',
-    date: '08/02/2024',
+    name: "Mark Davis",
+    date: "08/02/2024",
     rating: 2,
     comment:
-      'Not the best. The car smelled bad, and the ride was bumpy. Expected better for the price.',
+      "Not the best. The car smelled bad, and the ride was bumpy. Expected better for the price.",
   },
 ];
 
 export const ThreeStarsReviews = [
   {
     id: 1,
-    name: 'Alice Brown',
-    date: '18/01/2024',
+    name: "Alice Brown",
+    date: "18/01/2024",
     rating: 3,
     comment:
-      'The delay was over an hour, but the rest of the service was decent. Could be improved.',
+      "The delay was over an hour, but the rest of the service was decent. Could be improved.",
   },
   {
     id: 2,
-    name: 'Peter Clarkson',
-    date: '02/02/2024',
+    name: "Peter Clarkson",
+    date: "02/02/2024",
     rating: 3,
     comment:
-      'Average experience. Driver was polite, but the car wasn’t in great shape.',
+      "Average experience. Driver was polite, but the car wasn’t in great shape.",
   },
   {
     id: 3,
-    name: 'Lisa Grey',
-    date: '14/02/2024',
+    name: "Lisa Grey",
+    date: "14/02/2024",
     rating: 3,
     comment:
-      'Nothing special. It was a decent ride, but the driver didn’t follow the shortest route.',
+      "Nothing special. It was a decent ride, but the driver didn’t follow the shortest route.",
   },
 ];
 
 export const FourStarsReviews = [
   {
     id: 1,
-    name: 'John Doe',
-    date: '20/01/2024',
+    name: "John Doe",
+    date: "20/01/2024",
     rating: 4,
     comment:
-      'The delay was over an hour, which I thought they had pushed us to the next timing slot. The driver was rude, smoked while driving, and the smell disrupted passengers on board.',
+      "The delay was over an hour, which I thought they had pushed us to the next timing slot. The driver was rude, smoked while driving, and the smell disrupted passengers on board.",
   },
   {
     id: 2,
-    name: 'Michael Scott',
-    date: '28/01/2024',
+    name: "Michael Scott",
+    date: "28/01/2024",
     rating: 4,
     comment:
-      'Good overall. A bit of a delay, but the driver was very courteous and the car was comfortable.',
-  }
+      "Good overall. A bit of a delay, but the driver was very courteous and the car was comfortable.",
+  },
 ];
 
 export const FiveStarsReviews = [
   {
     id: 1,
-    name: 'Jane Smith',
-    date: '22/01/2024',
+    name: "Jane Smith",
+    date: "22/01/2024",
     rating: 5,
     comment:
-      'Excellent service! The driver was punctual and the car was very clean. Highly recommend this service!',
+      "Excellent service! The driver was punctual and the car was very clean. Highly recommend this service!",
   },
   {
     id: 2,
-    name: 'David Lee',
-    date: '01/02/2024',
+    name: "David Lee",
+    date: "01/02/2024",
     rating: 5,
     comment:
-      'Fantastic! The driver was very friendly, and the car was spotless. Highly recommend.',
+      "Fantastic! The driver was very friendly, and the car was spotless. Highly recommend.",
   },
   {
     id: 3,
-    name: 'Emily White',
-    date: '10/02/2024',
+    name: "Emily White",
+    date: "10/02/2024",
     rating: 5,
     comment:
-      'Best ride I’ve had! Driver was early, car was very clean, and the entire trip was smooth. Will definitely use again!',
+      "Best ride I’ve had! Driver was early, car was very clean, and the entire trip was smooth. Will definitely use again!",
   },
 ];
 
@@ -695,5 +695,180 @@ export const busRoutes = [
     etd: "09:00",
     eta: "11:00",
     status: "Pending",
+  },
+];
+
+export const faqData = [
+  {
+    id: 1,
+    category: "General",
+    question: "Do I need to register to make booking in RideNGo?",
+    answer: "Yes, it is required to register to make a booking.",
+    status: "Active",
+  },
+  {
+    id: 2,
+    category: "General",
+    question:
+      "I do not have a printer. Is it a must to take the printout of the ticket?",
+    answer:
+      "Yes. It is compulsory to print out the e-confirmation of the booking. However, for some bus company, printed e-confirmation is optional as long as you could provide the booking reference number (BOT No./BOT Reference No.). Kindly refer to the notes during your booking and the notes inside the e-confirmation email. You also need to present your ID or the booking reference number to get the boarding pass.Please note that payment receipt CANNOT be used for boarding. Please get the RideNGo Booking Confirmation Email via the email you used to make the booking.",
+    status: "Active",
+  },
+  {
+    id: 3,
+    category: "Manage Booking",
+    question: "Can I reschedule my trip?",
+    answer:
+      "Reschedule Policy may differ for each operator. If applicable, you can reschedule your bus trip via RideNGo Member Panel. Just log in to your member account and Manage your booking. You will see an option to Reschedule Booking if the booking is reschedulable.",
+    status: "Active",
+  },
+  {
+    id: 4,
+    category: "Manage Booking",
+    question: "Can I cancel my booking?",
+    answer:
+      "Cancellation and Refund Policy may differ for each operator. If applicable, cancellation and refund request can be done via RideNGo Member Panel or via Check My Booking. Just log in to your member account and Manage your booking. You will see an option to Cancel Booking if the booking is cancellable.",
+    status: "Active",
+  },
+  {
+    id: 5,
+    category: "Payment & Refund",
+    question:
+      "How long would it take to receive my booking confirmation after I made the payment? What should I do if I don’t receive it?",
+    answer:
+      "It depends on the payment method that you choose. Usually, you will get the booking confirmation almost instantly. However, sometimes payment is delayed by the bank/credit card company and this could take up to 24 hours for the payment to be confirmed. If you did not receive the booking confirmation email by then, please call our customer service hotline for assistance.",
+    status: "Active",
+  },
+  {
+    id: 6,
+    category: "Payment & Refund",
+    question:
+      "Does the owner of the credit card, with which the ticket is purchased, need to be one of the passengers?",
+    answer:
+      "No. A passenger can use any card to pay for the ticket, not necessarily his own. However, please note that the passenger in whose name the ticket(s) is/are booked should carry a proof of his identity (along with the ticket) at the time of boarding the bus and the card holder deemed to agree to pay for the booking for this passenger.",
+    status: "Active",
+  },
+  {
+    id: 7,
+    category: "Technical",
+    question: "Is there any mobile friendly website or Apps?",
+    answer:
+      "Yes. There are mobile friendly website for you to make the booking. Just visit our website from your smart phone, it will redirect you to the mobile site. Alternatively, you may download the apps if you are using Apple or Android platform phone",
+    status: "Active",
+  },
+  {
+    id: 8,
+    category: "Journey & Visa",
+    question: "Will there be any toilet break along the journey?",
+    answer:
+      "The express bus will normally stop for 10 minutes for toilet break. If you have urgent matters, kindly inform the bus driver.",
+    status: "Active",
+  },
+  {
+    id: 9,
+    category: "Journey & Visa",
+    question: "Can I bring pets on-board?",
+    answer:
+      "No. Pets are not allowed on-board for bus, train and ferry even if they are in a carrier, crates or cage.",
+    status: "Active",
+  },
+  {
+    id: 10,
+    category: "Journey & Visa",
+    question: "Do I need to have my passport with me to board the express bus?",
+    answer:
+      "As per Malaysian Authorities rule, foreign traveller must have a recognized and valid passport or international travel document before boarding any express bus even for domestic destination. The bus company reserves the right to reject any copy of passport or copy of international document and passenger may be denied from boarding if the passenger fail to comply with the government rule.",
+    status: "Active",
+  },
+];
+
+export const policyData = [
+  {
+    id: 1,
+    policy_title: "Refund Policy",
+    terms: [
+      "Refunds are available within 24 hours of booking if departure is more than 48 hours away.",
+      "A 50% refund is available within 24-48 hours before departure.",
+      "No refund is available within 24 hours of departure.",
+      "A processing fee of 10% applies to all refunds.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 2,
+    policy_title: "Reschedule Policy",
+    terms: [
+      "Rescheduling is allowed up to 48 hours before departure.",
+      "Only one reschedule is allowed per ticket.",
+      "A rescheduling fee of 10% of the ticket price applies.",
+      "Rescheduled tickets are non-refundable.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 3,
+    policy_title: "Cancellation Policy",
+    terms: [
+      "Cancellations are allowed up to 24 hours before departure.",
+      "A 50% cancellation fee applies.",
+      "No cancellations are allowed within 24 hours of departure.",
+      "Refunds may take 5-10 business days to process.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 4,
+    policy_title: "Passenger Conduct",
+    terms: [
+      "Passengers must carry a valid ID for verification.",
+      "No smoking, alcohol, or prohibited substances allowed onboard.",
+      "Passengers causing disturbances may be removed without a refund.",
+      "Children under 12 must be accompanied by an adult.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 5,
+    policy_title: "Baggage Policy",
+    terms: [
+      "Each passenger is allowed one carry-on and one checked bag.",
+      "Additional bags are charged extra.",
+      "No dangerous or restricted items are allowed.",
+      "The company is not liable for loss of valuable items.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 6,
+    policy_title: "No-Show Policy",
+    terms: [
+      "Tickets are forfeited if passengers do not arrive 15 minutes before departure.",
+      "No refunds or rescheduling are allowed for no-shows.",
+      "Passengers are advised to check in 30 minutes before departure.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 7,
+    policy_title: "Safety and Emergency Policy",
+    terms: [
+      "Follow all crew instructions during emergencies.",
+      "Life vests and first aid kits are available onboard.",
+      "Emergency exits are located at marked points.",
+      "Passengers should familiarize themselves with safety procedures.",
+    ],
+    status: "Active",
+  },
+  {
+    id: 8,
+    policy_title: "Lost & Found Policy",
+    terms: [
+      "Lost items are held for 30 days.",
+      "Passengers can contact customer support to claim lost items.",
+      "The company is not responsible for items left onboard after disembarking.",
+      "Valuable items should not be left unattended.",
+    ],
+    status: "Active",
   },
 ];
