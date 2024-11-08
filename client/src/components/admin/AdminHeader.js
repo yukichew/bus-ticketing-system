@@ -47,6 +47,12 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
     setbusRoutesApplicationCount(totalBusRoutesApplicationCount);
   }, []);
 
+  // Calculate total notifications
+  const totalNotifications =
+    refundRequestCount +
+    busOperatorApplicationCount +
+    busRoutesApplicationCount;
+
   const handleNotificationsClick = () => {
     setIsNotificationsMenuOpen((prev) => !prev);
     setIsProfileMenuOpen(false);
@@ -117,6 +123,11 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                   aria-hidden="true"
                 />
               </button>
+              {totalNotifications > 0 && (
+                <span className="absolute top-[-8px] right-[-8px] h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                  {totalNotifications}
+                </span>
+              )}
               {isNotificationsMenuOpen && (
                 <div className="absolute right-0 z-10 mt-2 w-auto bg-white border border-gray-300 rounded shadow-lg">
                   <div className="p-2 text-gray-700 w-max">
