@@ -201,13 +201,6 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                       <CgProfile className="w-4 h-4 mr-3" aria-hidden="true" />
                       <span>Profile</span>
                     </DropdownItem>
-                    <DropdownItem tag="a" href="#">
-                      <HiOutlineCog
-                        className="w-4 h-4 mr-3"
-                        aria-hidden="true"
-                      />
-                      <span>Settings</span>
-                    </DropdownItem>
                     <DropdownItem onClick={() => alert("Log out!")}>
                       <MdOutlineLogout
                         className="w-4 h-4 mr-3"

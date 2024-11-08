@@ -15,10 +15,8 @@ const ManageUserPage = () => {
   };
 
   useEffect(() => {
-    if (location.state?.section === "Passengers") {
-      setActiveSection("Passengers");
-    } else {
-      setActiveSection("Bus Operators");
+    if (location.state?.section) {
+      setActiveSection(location.state.section); // Set the section based on location state if it exists
     }
   }, [location.state]);
 
