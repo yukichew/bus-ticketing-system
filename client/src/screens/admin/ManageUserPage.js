@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import ManageUser from "../../components/admin/ManageUser";
 import ManageBusOperators from "../../components/admin/ManageBusOperators";
+import { useLocation } from "react-router-dom";
 
 const ManageUserPage = () => {
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState("Main");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (location.state?.section === "Passengers") {
+      setActiveSection("Passengers");
+    } else {
+      setActiveSection("Bus Operators");
+    }
+  }, [location.state]);
 
   const renderContent = () => {
     switch (activeSection) {

@@ -43,6 +43,7 @@ const AdminDashboard = () => {
             gradientColors={["#0A21C0", "#B3B4BD"]}
             icon={<FiUser />}
             link="/manage-user"
+            sectionState="Passengers"
           />
           <DashboardCard
             title="Total Ticket Sales"
@@ -57,6 +58,7 @@ const AdminDashboard = () => {
             gradientColors={["#050A44", "#0A21C0"]}
             icon={<IoIosBus />}
             link="/manage-user"
+            sectionState="Bus Operators"
           />
           <DashboardCard
             title="Total Applications"

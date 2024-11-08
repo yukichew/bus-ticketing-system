@@ -1,8 +1,15 @@
 import React from "react";
 import { MdViewCompact } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const DashboardCard = ({ title, value, gradientColors, icon, link }) => {
+const DashboardCard = ({
+  title,
+  value,
+  gradientColors,
+  icon,
+  link,
+  sectionState, // Prop to accept state for rendering specific content
+}) => {
   return (
     <div
       className="flex items-center p-4 rounded-lg w-full font-poppins"
@@ -31,9 +38,9 @@ const DashboardCard = ({ title, value, gradientColors, icon, link }) => {
 
         {/* Link Button */}
         <div className="ml-2">
-          {/* If link is provided, wrap the button with an anchor tag */}
+          {/* If link is provided, wrap the button with Link */}
           {link ? (
-            <Link to={link}>
+            <Link to={link} state={{ section: sectionState }}>
               <button className="p-1 rounded-full text-white focus:outline-none">
                 <MdViewCompact className="text-3xl" />
               </button>
