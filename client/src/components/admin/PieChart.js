@@ -69,7 +69,7 @@ const PieChart = () => {
   };
 
   return (
-    <div className="w-80 h-80 mx-auto mt-10">
+    <div className="w-80 h-80 mx-auto mt-10 h-[26rem]">
       <Pie data={data} options={options} />
     </div>
   );

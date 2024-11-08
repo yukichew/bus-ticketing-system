@@ -1,4 +1,6 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { transactions, busRoutes, applications } from "../../constants/Dummy";
 import { IoMenu } from "react-icons/io5";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
@@ -13,8 +15,37 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
   const { mode } = useContext(WindmillContext);
   const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [refundRequestCount, setRefundRequestCount] = useState(0);
+  const [busOperatorApplicationCount, setbusOperatorApplicationCount] =
+    useState(0);
+  const [busRoutesApplicationCount, setbusRoutesApplicationCount] = useState(0);
   const notificationsRef = useRef(null);
   const profileRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Calculate total refund requests (both "Request for Refund" and "Processing Refund")
+    const totalRefundRequests = transactions.filter(
+      (transaction) =>
+        transaction.status === "Request for Refund" ||
+        transaction.status === "Processing Refund"
+    ).length;
+    setRefundRequestCount(totalRefundRequests);
+  }, []);
+
+  useEffect(() => {
+    const totalBusOperatorApplication = applications.filter(
+      (applications) => applications.status === "Pending"
+    ).length;
+    setbusOperatorApplicationCount(totalBusOperatorApplication);
+  }, []);
+
+  useEffect(() => {
+    const totalBusRoutesApplicationCount = busRoutes.filter(
+      (busRoutes) => busRoutes.status === "Pending"
+    ).length;
+    setbusRoutesApplicationCount(totalBusRoutesApplicationCount);
+  }, []);
 
   const handleNotificationsClick = () => {
     setIsNotificationsMenuOpen((prev) => !prev);
@@ -87,19 +118,50 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                 />
               </button>
               {isNotificationsMenuOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                  <div className="p-2 text-gray-700">
-                    <h5 className="font-bold">Notifications</h5>
-                    <DropdownItem className="justify-between">
-                      <span>Messages</span>
-                      <Badge type="danger">13</Badge>
+                <div className="absolute right-0 z-10 mt-2 w-auto bg-white border border-gray-300 rounded shadow-lg">
+                  <div className="p-2 text-gray-700 w-max">
+                    <h5 className="font-bold pl-[1rem] pb-[0.4rem]">
+                      Notifications
+                    </h5>
+
+                    {/* Refunds Request */}
+                    <DropdownItem
+                      onClick={() =>
+                        navigate("/manage-transactions", {
+                          state: { section: "Refunds" },
+                        })
+                      }
+                      className="justify-between"
+                    >
+                      <span>Refunds Request</span>
+                      <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                        {refundRequestCount}{" "}
+                        {/* Display total refunds request */}
+                      </span>
                     </DropdownItem>
-                    <DropdownItem className="justify-between">
-                      <span>Sales</span>
-                      <Badge type="danger">2</Badge>
+
+                    {/* Bus Operator Applications */}
+                    <DropdownItem
+                      onClick={() => navigate("/manage-applications")}
+                      className="justify-between"
+                    >
+                      <span>Bus Operator Applications</span>
+                      <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                        {busOperatorApplicationCount}{" "}
+                        {/* Display total bus operator applications */}
+                      </span>
                     </DropdownItem>
-                    <DropdownItem onClick={() => alert("Alerts!")}>
-                      <span>Alerts</span>
+
+                    {/* Bus Routes Applications */}
+                    <DropdownItem
+                      onClick={() => navigate("/manage-bus-routes")}
+                      className="justify-between"
+                    >
+                      <span>Bus Routes Application</span>
+                      <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                        {busRoutesApplicationCount}{" "}
+                        {/* Display total bus routes applications */}
+                      </span>
                     </DropdownItem>
                   </div>
                 </div>

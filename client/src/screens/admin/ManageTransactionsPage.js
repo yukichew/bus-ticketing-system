@@ -4,8 +4,10 @@ import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import ManageTransactions from "../../components/admin/ManageTransactions";
 import ManageRefunds from "../../components/admin/ManageRefunds";
+import { useLocation } from "react-router-dom";
 
 const ManageTransactionsPage = () => {
+  const location = useLocation();
   const [activeSection, setActiveSection] = useState("Main");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [refundRequestCount, setRefundRequestCount] = useState(0);
@@ -19,6 +21,14 @@ const ManageTransactionsPage = () => {
     ).length;
     setRefundRequestCount(totalRefundRequests);
   }, []);
+
+  useEffect(() => {
+    if (location.state?.section === "Refunds") {
+      setActiveSection("Refunds");
+    } else {
+      setActiveSection("Transactions"); 
+    }
+  }, [location.state]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
