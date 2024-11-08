@@ -3,6 +3,7 @@ import "./App.css";
 import AdminDashboard from "./screens/admin/AdminDashboard";
 import ManageApplicationPage from "./screens/admin/ManageApplicationPage";
 import ManageTransactionsPage from "./screens/admin/ManageTransactionsPage";
+import AdminProfile from "./screens/admin/AdminProfile";
 import FaqUserView from "./components/admin/FaqUserView";
 import PolicyUserView from "./components/admin/PolicyUserView";
 import ManageBusRoutes from "./screens/admin/ManageBusRoutes";
@@ -50,6 +51,7 @@ function App() {
         <Route path="/manage-contents" element={<ManageContents />} />
         <Route path="/faq" element={<FaqUserView />} />
         <Route path="/policies" element={<PolicyUserView />} />
+        <Route path="/admin-profile" element={<AdminProfile />} />
 
         {/* Bus Operator */}
         <Route path="/bo/dashboard" element={<BODashboard />} />

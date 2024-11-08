@@ -6,7 +6,6 @@ import { RiMenuUnfoldFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { FaBusAlt } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
-import { HiOutlineCog } from "react-icons/hi";
 import { MdOutlineLogout } from "react-icons/md";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { Avatar, Badge, WindmillContext } from "@windmill/react-ui";
@@ -197,10 +196,15 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
               {isProfileMenuOpen && (
                 <div className="absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg">
                   <div className="p-2 text-gray-700">
-                    <DropdownItem tag="a" href="#">
-                      <CgProfile className="w-4 h-4 mr-3" aria-hidden="true" />
-                      <span>Profile</span>
-                    </DropdownItem>
+                    <Link to="/admin-profile">
+                      <DropdownItem>
+                        <CgProfile
+                          className="w-4 h-4 mr-3"
+                          aria-hidden="true"
+                        />
+                        <span>Profile</span>
+                      </DropdownItem>
+                    </Link>
                     <DropdownItem onClick={() => alert("Log out!")}>
                       <MdOutlineLogout
                         className="w-4 h-4 mr-3"
