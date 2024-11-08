@@ -72,11 +72,10 @@ const AdminProfile = () => {
               <div className="flex flex-col items-center space-y-2">
                 <div className="relative w-32 h-32 mb-4 group">
                   {" "}
-                  {/* Add the `group` class here */}
                   <img
                     src={profileImage}
                     alt="Profile"
-                    className="w-full h-full object-cover rounded-full group-hover:bg-gray-500 group-hover:opacity-70 transition duration-300" // This will now apply on hover
+                    className="w-full h-full object-cover rounded-full group-hover:bg-gray-500 group-hover:opacity-80 transition duration-300"
                   />
                   <button
                     onClick={() => setIsModalOpen(true)}
