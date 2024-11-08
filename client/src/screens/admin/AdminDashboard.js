@@ -71,13 +71,15 @@ const AdminDashboard = () => {
 
         <div className="mt-8 flex space-x-4">
           <div className="flex-1 p-4 bg-white rounded-lg shadow-lg drop-shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
-            <div className="font-poppins">Analytics Report</div>
+            <div className="font-poppins font-medium">Analytics Report</div>
             <LineChart />
           </div>
 
           <div className="flex-[0.5] p-4 bg-white rounded-lg shadow-lg drop-shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
             {" "}
-            <div className="font-poppins">Ticket Sales by Bus Type</div>
+            <div className="font-poppins font-medium">
+              Ticket Sales by Bus Type
+            </div>
             <PieChart />
           </div>
         </div>
