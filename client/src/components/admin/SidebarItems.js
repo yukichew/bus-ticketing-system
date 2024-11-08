@@ -36,13 +36,13 @@ const SidebarItems = () => {
     {
       key: 5,
       name: "Manage Transactions",
-      href: "/admin-dashboard",
+      href: "/manage-transactions",
       icon: "MoneyIcon",
     },
     {
       key: 6,
       name: "Manage Contents",
-      href: "/admin-dashboard",
+      href: "/manage-contents",
       icon: "ModalsIcon",
     },
   ];

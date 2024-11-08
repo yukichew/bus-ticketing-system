@@ -1,33 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
-import ManageUser from "../../components/admin/ManageUser";
-import ManageBusOperators from "../../components/admin/ManageBusOperators";
-import { useLocation } from "react-router-dom";
+import ManageFaq from "../../components/admin/ManageFaq";
+import ManagePolicy from "../../components/admin/ManagePolicy";
 
-const ManageUserPage = () => {
-  const location = useLocation();
-  const [activeSection, setActiveSection] = useState("Main");
+const ManageContents = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("Main");
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  useEffect(() => {
-    if (location.state?.section) {
-      setActiveSection(location.state.section); // Set the section based on location state if it exists
-    }
-  }, [location.state]);
-
   const renderContent = () => {
     switch (activeSection) {
-      case "Passengers":
-        return <ManageUser />;
-      case "Bus Operators":
-        return <ManageBusOperators />;
+      case "FAQs":
+        return <ManageFaq />;
+      case "Terms and Conditions":
+        return <ManagePolicy />;
       default:
-        return <ManageUser />;
+        return <ManageFaq />;
     }
   };
 
@@ -47,31 +39,31 @@ const ManageUserPage = () => {
         <div className="w-4/5 mt-8 mx-auto">
           <div className="flex items-center">
             <h2 className="font-poppins font-bold text-2xl">
-              Users Management
+              Contents Management
             </h2>
           </div>
 
           <div className="flex items-center space-x-8 mt-5 border-b">
             <div
-              onClick={() => setActiveSection("Passengers")}
+              onClick={() => setActiveSection("FAQs")}
               className={`cursor-pointer pb-2 border-b-2 ${
-                activeSection === "Passengers"
+                activeSection === "FAQs"
                   ? "border-primary text-primary font-medium"
                   : "border-transparent text-gray-400 hover:text-primary"
               } transition duration-300 flex items-center`}
             >
-              <span>Passengers</span>
+              <span>FAQs</span>
             </div>
 
             <div
-              onClick={() => setActiveSection("Bus Operators")}
+              onClick={() => setActiveSection("Terms and Conditions")}
               className={`cursor-pointer pb-2 border-b-2 ${
-                activeSection === "Bus Operators"
+                activeSection === "Terms and Conditions"
                   ? "border-primary text-primary font-medium"
                   : "border-transparent text-gray-400 hover:text-primary"
               } transition duration-300 flex items-center`}
             >
-              <span>Bus Operators</span>
+              <span>Terms & Conditions</span>
             </div>
           </div>
 
@@ -82,4 +74,4 @@ const ManageUserPage = () => {
   );
 };
 
-export default ManageUserPage;
+export default ManageContents;

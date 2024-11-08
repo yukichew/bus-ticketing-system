@@ -4,6 +4,10 @@ import AdminHeader from "../../components/admin/AdminHeader";
 import DashboardCard from "../../components/admin/DashboardCard";
 import LineChart from "../../components/admin/LineChart";
 import PieChart from "../../components/admin/PieChart";
+import { MdAttachMoney } from "react-icons/md";
+import { FiUser } from "react-icons/fi";
+import { IoIosBus } from "react-icons/io";
+import { RiFilePaper2Line } from "react-icons/ri";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -34,40 +38,48 @@ const AdminDashboard = () => {
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <DashboardCard
-            title="Total Users"
+            title="Total Passengers"
             value="277"
             gradientColors={["#0A21C0", "#B3B4BD"]}
-            iconType="up"
+            icon={<FiUser />}
+            link="/manage-user"
+            sectionState="Passengers"
           />
           <DashboardCard
             title="Total Ticket Sales"
             value="1200"
             gradientColors={["#141619", "#2c2E3A"]}
-            iconType="down"
+            icon={<MdAttachMoney />}
+            link="/manage-transactions"
           />
           <DashboardCard
             title="Total Bus Operators"
             value="50"
             gradientColors={["#050A44", "#0A21C0"]}
-            iconType="down"
+            icon={<IoIosBus />}
+            link="/manage-user"
+            sectionState="Bus Operators"
           />
           <DashboardCard
             title="Total Applications"
             value="45"
             gradientColors={["#141619", "#B3B4BD"]}
-            iconType="up"
+            icon={<RiFilePaper2Line />}
+            link="/manage-applications"
           />
         </div>
 
         <div className="mt-8 flex space-x-4">
           <div className="flex-1 p-4 bg-white rounded-lg shadow-lg drop-shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
-            <div className="font-poppins">Analytics Report</div>
+            <div className="font-poppins font-medium">Analytics Report</div>
             <LineChart />
           </div>
 
           <div className="flex-[0.5] p-4 bg-white rounded-lg shadow-lg drop-shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
             {" "}
-            <div className="font-poppins">Ticket Sales by Bus Type</div>
+            <div className="font-poppins font-medium">
+              Ticket Sales by Bus Type
+            </div>
             <PieChart />
           </div>
         </div>

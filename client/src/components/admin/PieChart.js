@@ -32,17 +32,17 @@ const PieChart = () => {
         left: 10,
         right: 10,
         top: 10,
-        bottom: 30, // Adjust padding to make space for title and legend
+        bottom: 30,
       },
     },
     plugins: {
       legend: {
-        display: true, // Ensure the legend is displayed
-        position: "bottom", // Position the legend below the chart
+        display: true,
+        position: "bottom",
         labels: {
-          padding: 20, // Space between legend items
+          padding: 20,
           font: {
-            size: 12, // Adjust font size for better visibility
+            size: 12,
           },
         },
       },
@@ -55,21 +55,11 @@ const PieChart = () => {
           },
         },
       },
-      title: {
-        display: true,
-        text: "Ticket Sales by Bus Type",
-        font: {
-          size: 12, // Increase font size for the title
-        },
-        padding: {
-          bottom: 10, // Add space below the title
-        },
-      },
     },
   };
 
   return (
-    <div className="w-80 h-80 mx-auto mt-10">
+    <div className="w-80 h-80 mx-auto mt-10 h-[26rem]">
       <Pie data={data} options={options} />
     </div>
   );
