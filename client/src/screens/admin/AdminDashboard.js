@@ -4,6 +4,10 @@ import AdminHeader from "../../components/admin/AdminHeader";
 import DashboardCard from "../../components/admin/DashboardCard";
 import LineChart from "../../components/admin/LineChart";
 import PieChart from "../../components/admin/PieChart";
+import { MdAttachMoney } from "react-icons/md";
+import { FiUser } from "react-icons/fi";
+import { IoIosBus } from "react-icons/io";
+import { RiFilePaper2Line } from "react-icons/ri";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -37,25 +41,29 @@ const AdminDashboard = () => {
             title="Total Passengers"
             value="277"
             gradientColors={["#0A21C0", "#B3B4BD"]}
-            iconType="up"
+            icon={<FiUser />}
+            link="/manage-user"
           />
           <DashboardCard
             title="Total Ticket Sales"
             value="1200"
             gradientColors={["#141619", "#2c2E3A"]}
-            iconType="down"
+            icon={<MdAttachMoney />}
+            link="/manage-transactions"
           />
           <DashboardCard
             title="Total Bus Operators"
             value="50"
             gradientColors={["#050A44", "#0A21C0"]}
-            iconType="down"
+            icon={<IoIosBus />}
+            link="/manage-user"
           />
           <DashboardCard
             title="Total Applications"
             value="45"
             gradientColors={["#141619", "#B3B4BD"]}
-            iconType="up"
+            icon={<RiFilePaper2Line />}
+            link="/manage-applications"
           />
         </div>
 

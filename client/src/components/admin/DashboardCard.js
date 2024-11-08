@@ -1,7 +1,8 @@
 import React from "react";
-import { IoMdTrendingUp, IoMdTrendingDown } from "react-icons/io";
+import { MdViewCompact } from "react-icons/md";
+import { Link } from "react-router-dom";
 
-const DashboardCard = ({ title, value, gradientColors, iconType }) => {
+const DashboardCard = ({ title, value, gradientColors, icon, link }) => {
   return (
     <div
       className="flex items-center p-4 rounded-lg w-full font-poppins"
@@ -10,13 +11,16 @@ const DashboardCard = ({ title, value, gradientColors, iconType }) => {
       }}
     >
       {/* Icon Section */}
-      <span className="chart mr-4">
-        {iconType === "up" ? (
-          <IoMdTrendingUp className="text-white" />
-        ) : (
-          <IoMdTrendingDown className="text-white" />
-        )}
-      </span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="w-16 h-16 flex items-center justify-center mr-4">
+            {icon &&
+              React.cloneElement(icon, {
+                className: "text-white text-4xl",
+              })}
+          </div>
+        </div>
+      </div>
 
       {/* Content Section */}
       <div className="flex w-full items-center justify-between">
@@ -25,18 +29,20 @@ const DashboardCard = ({ title, value, gradientColors, iconType }) => {
           <span className="text-white">{value}</span>
         </div>
 
-        {/* Three Dots Button */}
+        {/* Link Button */}
         <div className="ml-2">
-          <button className="p-1 rounded-full text-white focus:outline-none">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="1em"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-            </svg>
-          </button>
+          {/* If link is provided, wrap the button with an anchor tag */}
+          {link ? (
+            <Link to={link}>
+              <button className="p-1 rounded-full text-white focus:outline-none">
+                <MdViewCompact className="text-3xl" />
+              </button>
+            </Link>
+          ) : (
+            <button className="p-1 rounded-full text-white focus:outline-none">
+              <MdViewCompact className="text-3xl" />
+            </button>
+          )}
         </div>
       </div>
     </div>
