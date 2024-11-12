@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { Line } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
-} from "chart.js";
+} from 'chart.js';
+import React, { useState } from 'react';
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -23,7 +23,7 @@ ChartJS.register(
 
 const LineChart = () => {
   // Set initial state for year only
-  const [selectedYear, setSelectedYear] = useState("2023");
+  const [selectedYear, setSelectedYear] = useState('2023');
 
   // Function to generate sample data based on the selected year
   const getYearlyData = (year) => {
@@ -38,39 +38,39 @@ const LineChart = () => {
   // Sample data for each bus type based on the selected year
   const data = {
     labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ],
     datasets: [
       {
-        label: "Executive (24 Seats)",
+        label: 'Executive (24 Seats)',
         data: getYearlyData(selectedYear),
-        borderColor: "#0A21C0",
-        backgroundColor: "rgba(10, 33, 192, 0.2)",
+        borderColor: '#0A21C0',
+        backgroundColor: 'rgba(10, 33, 192, 0.2)',
         tension: 0.3,
       },
       {
-        label: "Executive (40 Seats)",
+        label: 'Executive (40 Seats)',
         data: getYearlyData(selectedYear).map((val) => val + 20),
-        borderColor: "#2c2E3A",
-        backgroundColor: "rgba(44, 46, 58, 0.2)",
+        borderColor: '#2c2E3A',
+        backgroundColor: 'rgba(44, 46, 58, 0.2)',
         tension: 0.3,
       },
       {
-        label: "Double Deck (Upper Deck)",
+        label: 'Double Deck (Upper Deck)',
         data: getYearlyData(selectedYear).map((val) => val - 10),
-        borderColor: "#050A44",
-        backgroundColor: "rgba(5, 10, 68, 0.2)",
+        borderColor: '#050A44',
+        backgroundColor: 'rgba(5, 10, 68, 0.2)',
         tension: 0.3,
       },
     ],
@@ -81,7 +81,7 @@ const LineChart = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: "top",
+        position: 'top',
       },
       title: {
         display: true,
@@ -92,28 +92,28 @@ const LineChart = () => {
       x: {
         title: {
           display: true,
-          text: "Months",
+          text: 'Months',
         },
       },
       y: {
         title: {
           display: true,
-          text: "Tickets Sold",
+          text: 'Tickets Sold',
         },
       },
     },
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-10 relative font-poppins">
-      <div className="absolute top-0 right-0 mt-4 mr-4">
+    <div className='w-full max-w-4xl mx-auto mt-10 relative font-poppins'>
+      <div className='absolute top-0 right-0 mt-4 mr-4'>
         {/* Year Selector */}
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
-          className="p-2 border rounded"
+          className='p-2 border rounded'
         >
-          {["2023", "2024", "2025"].map((year) => (
+          {['2023', '2024', '2025'].map((year) => (
             <option key={year} value={year}>
               {year}
             </option>
