@@ -7,6 +7,8 @@ import ManageBusOperator from "../components/admin/ManageBusOperators";
 import ManageUser from "../components/admin/ManageUser";
 import ManageTransactions from "../components/admin/ManageTransactions";
 import ManageRefunds from "../components/admin/ManageRefunds";
+import ManagePolicy from "../components/admin/ManagePolicy";
+import ManageFaq from "../components/admin/ManageFaq";
 import { bus } from "./Dummy";
 
 export const busInfoTabs = [
@@ -31,4 +33,9 @@ export const manageUserTabs = [
 export const manageTransactionsTabs = [
   { label: "Transactions", content: <ManageTransactions /> },
   { label: "Refunds Request", content: <ManageRefunds /> },
+];
+
+export const manageContentTabs = [
+  { label: "FAQs", content: <ManageFaq /> },
+  { label: "Terms and Conditions", content: <ManagePolicy /> },
 ];
