@@ -20,6 +20,7 @@ const ManageTransactionsPage = () => {
     setRefundRequestCount(totalRefundRequests);
   }, []);
 
+  // Update tab labels dynamically
   const manageTransactionsTabs = useMemo(() => {
     return initialTabs.map((tab) => {
       if (tab.label === "Refunds Request") {

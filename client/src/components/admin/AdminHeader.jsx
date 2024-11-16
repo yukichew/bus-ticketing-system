@@ -135,19 +135,18 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                     </h5>
 
                     {/* Refunds Request */}
-                    <DropdownItem
-                      onClick={() =>
-                        navigate("/manage-transactions", {
-                          state: { section: "Refunds Request" },
-                        })
-                      }
-                      className="justify-between"
-                    >
-                      <span>Refunds Request</span>
-                      <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
-                        {refundRequestCount}{" "}
-                        {/* Display total refunds request */}
-                      </span>
+                    <DropdownItem className="justify-between">
+                      <Link
+                        to="/manage-transactions"
+                        state={{ section: "Refunds Request" }}
+                        className="flex justify-between w-full"
+                      >
+                        <span>Refunds Request</span>
+                        <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                          {refundRequestCount}{" "}
+                          {/* Display total refunds request */}
+                        </span>
+                      </Link>
                     </DropdownItem>
 
                     {/* Bus Operator Applications */}
