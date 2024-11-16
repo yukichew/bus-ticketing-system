@@ -138,7 +138,7 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                     <DropdownItem
                       onClick={() =>
                         navigate("/manage-transactions", {
-                          state: { section: "Refunds" },
+                          state: { section: "Refunds Request" },
                         })
                       }
                       className="justify-between"

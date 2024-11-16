@@ -240,7 +240,7 @@ const ManageRefunds = () => {
       <div className="flex justify-between items-center mt-12 mb-4">
         <p className="text-gray-500">
           <span className="font-semibold text-secondary">
-            {filteredData.length} transactions
+            {filteredData.length} refund requests
           </span>{" "}
           found
         </p>
