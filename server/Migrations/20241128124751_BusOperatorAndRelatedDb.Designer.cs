@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using server.Data;
 
@@ -11,9 +12,11 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241128124751_BusOperatorAndRelatedDb")]
+    partial class BusOperatorAndRelatedDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,52 +189,6 @@ namespace server.Migrations
                     b.ToTable("AspNetBusInfo");
                 });
 
-            modelBuilder.Entity("server.Models.BusSchedule", b =>
-                {
-                    b.Property<int>("BusScheduleID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusScheduleID"));
-
-                    b.Property<int>("BusID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DriverID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsRecurring")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("RecurringOptionID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RouteID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ScheduleStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("BusScheduleID");
-
-                    b.HasIndex("BusID");
-
-                    b.HasIndex("DriverID");
-
-                    b.HasIndex("RecurringOptionID");
-
-                    b.HasIndex("RouteID");
-
-                    b.ToTable("AspNetBusSchedule");
-                });
-
             modelBuilder.Entity("server.Models.BusType", b =>
                 {
                     b.Property<int>("BusTypeID")
@@ -256,42 +213,6 @@ namespace server.Migrations
                     b.HasKey("BusTypeID");
 
                     b.ToTable("AspNetBusType");
-                });
-
-            modelBuilder.Entity("server.Models.Driver", b =>
-                {
-                    b.Property<int>("DriverID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DriverID"));
-
-                    b.Property<string>("ContactNo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("DrivingLicense")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Fullname")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("IcNo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("DriverID");
-
-                    b.ToTable("AspNetDriver");
                 });
 
             modelBuilder.Entity("server.Models.Locations", b =>
@@ -328,87 +249,6 @@ namespace server.Migrations
                         .IsUnique();
 
                     b.ToTable("AspNetLocations");
-                });
-
-            modelBuilder.Entity("server.Models.RecurringOption", b =>
-                {
-                    b.Property<int>("RecurringOptionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecurringOptionID"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime?>("FromDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Options")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("SelectDays")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime?>("ToDate")
-                        .HasColumnType("date");
-
-                    b.HasKey("RecurringOptionID");
-
-                    b.ToTable("AspNetRecurringOption");
-                });
-
-            modelBuilder.Entity("server.Models.Routes", b =>
-                {
-                    b.Property<int>("RouteID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RouteID"));
-
-                    b.Property<int>("ArrivalLocationID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BoardingLocationID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Destination")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<TimeSpan>("ETA")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan>("ETD")
-                        .HasColumnType("time");
-
-                    b.Property<string>("Origin")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("RouteID");
-
-                    b.HasIndex("ArrivalLocationID");
-
-                    b.HasIndex("BoardingLocationID");
-
-                    b.ToTable("AspNetRoute");
                 });
 
             modelBuilder.Entity("server.Models.User", b =>
@@ -536,54 +376,6 @@ namespace server.Migrations
                         .IsRequired();
 
                     b.Navigation("BusType");
-                });
-
-            modelBuilder.Entity("server.Models.BusSchedule", b =>
-                {
-                    b.HasOne("server.Models.BusInfo", "BusInfo")
-                        .WithMany()
-                        .HasForeignKey("BusID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("server.Models.Driver", "Drivers")
-                        .WithMany()
-                        .HasForeignKey("DriverID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("server.Models.RecurringOption", "RecurringOptions")
-                        .WithMany()
-                        .HasForeignKey("RecurringOptionID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("server.Models.Routes", "Routes")
-                        .WithMany()
-                        .HasForeignKey("RouteID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("BusInfo");
-
-                    b.Navigation("Drivers");
-
-                    b.Navigation("RecurringOptions");
-
-                    b.Navigation("Routes");
-                });
-
-            modelBuilder.Entity("server.Models.Routes", b =>
-                {
-                    b.HasOne("server.Models.Locations", "ArrivalLocation")
-                        .WithMany()
-                        .HasForeignKey("ArrivalLocationID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("server.Models.Locations", "BoardingLocation")
-                        .WithMany()
-                        .HasForeignKey("BoardingLocationID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ArrivalLocation");
-
-                    b.Navigation("BoardingLocation");
                 });
 #pragma warning restore 612, 618
         }
