@@ -21,7 +21,6 @@ namespace server.Models
         [Required]
         public int DriverID { get; set; }
 
-        //[Required]
         public int RouteID { get; set; }
 
         [Required]
@@ -33,15 +32,15 @@ namespace server.Models
         public string Status { get; set; }
 
         [ForeignKey("BusID")]
-        public virtual BusInfo? BusInfo { get; }
+        public virtual BusInfo? BusInfo { get; set; }
 
         [ForeignKey("RecurringOptionID")]
-        public virtual RecurringOption? RecurringOptions { get; }
+        public virtual RecurringOption? RecurringOptions { get; set; }
 
         [ForeignKey("DriverID")]
-        public virtual Driver? Drivers { get; }
+        public virtual Driver? Drivers { get; set; }
 
         [ForeignKey("RouteID")]
-        public virtual Routes? Routes { get; }
+        public virtual Routes? Routes { get; set; }
     }
 }

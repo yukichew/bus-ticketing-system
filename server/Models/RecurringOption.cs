@@ -14,7 +14,6 @@ namespace server.Models
         [StringLength(20)]
         public string Options { get; set; }
 
-        [Required]
         [Column(TypeName = "date")]
         public DateTime Date { get; set; }
 
