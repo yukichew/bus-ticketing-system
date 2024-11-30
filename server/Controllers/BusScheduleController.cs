@@ -54,41 +54,44 @@ namespace server.Controllers
             return Ok(busSchedule);
         }
 
-        // POST: api/BusSchedule
         [HttpPost]
-        public async Task<ActionResult<BusSchedule>> PostBusSchedule([FromBody] BusScheduleDTO busScheduleDTO)
+        public async Task<ActionResult<List<BusSchedule>>> PostBusSchedule([FromBody] BusScheduleDTO busScheduleDTO)
         {
             if (busScheduleDTO.Routes == null)
             {
                 return BadRequest("Routes information is required.");
             }
 
+            if (!TimeSpan.TryParse(busScheduleDTO.ETD, out var etd))
+            {
+                return BadRequest("Invalid ETD format.");
+            }
+
+            if (!TimeSpan.TryParse(busScheduleDTO.ETA, out var eta))
+            {
+                return BadRequest("Invalid ETA format.");
+            }
+
             var route = new Routes
             {
                 Origin = busScheduleDTO.Routes.Origin,
                 BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID,
-                ETD = TimeSpan.Parse(busScheduleDTO.Routes.ETD),
+                ETD = etd,
                 Destination = busScheduleDTO.Routes.Destination,
                 ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID,
-                ETA = TimeSpan.Parse(busScheduleDTO.Routes.ETA),
+                ETA = eta,
                 Status = busScheduleDTO.Routes.Status,
             };
 
             _context.Routes.Add(route);
             await _context.SaveChangesAsync();
 
-            int? recurringOptionID = null;
-
+            RecurringOption recurringOption = null;
             if (busScheduleDTO.RecurringOptions != null)
             {
                 var recurringOptions = busScheduleDTO.RecurringOptions;
 
-                if (string.IsNullOrEmpty(recurringOptions.Options))
-                {
-                    return BadRequest("RecurringOptions: Options is required.");
-                }
-
-                RecurringOption recurringOption = new RecurringOption
+                recurringOption = new RecurringOption
                 {
                     Options = recurringOptions.Options,
                     Date = recurringOptions.Date ?? DateTime.MinValue,
@@ -98,59 +101,88 @@ namespace server.Controllers
                     Status = "Active"
                 };
 
-                if (recurringOptions.Options == "None" && recurringOptions.Date == null)
-                {
-                    return BadRequest("Date is required when Options is 'None'.");
-                }
-
-                if (recurringOptions.Options == "Daily" && (recurringOptions.FromDate == null || recurringOptions.ToDate == null))
-                {
-                    return BadRequest("FromDate and ToDate are required when Options is 'Daily'.");
-                }
-
-                if (recurringOptions.Options == "Monthly")
-                {
-                    if (recurringOptions.FromDate == null || recurringOptions.ToDate == null || recurringOptions.SelectDays == null || !recurringOptions.SelectDays.Any())
-                    {
-                        return BadRequest("FromDate, ToDate, and SelectDays are required when Options is 'Monthly'.");
-                    }
-
-                    if (recurringOptions.SelectDays.Count > 6)
-                    {
-                        return BadRequest("You can only select a maximum of 6 days for SelectDays.");
-                    }
-                }
-
                 _context.RecurringOptions.Add(recurringOption);
                 await _context.SaveChangesAsync();
-                recurringOptionID = recurringOption.RecurringOptionID;
             }
 
-            var busSchedule = new BusSchedule
-            {
-                IsRecurring = busScheduleDTO.IsRecurring,
-                RecurringOptionID = recurringOptionID,
-                BusID = busScheduleDTO.BusID,
-                DriverID = busScheduleDTO.DriverID,
-                RouteID = route.RouteID,
-                ScheduleStatus = busScheduleDTO.ScheduleStatus,
-                Status = busScheduleDTO.Status
-            };
+            var busSchedules = new List<BusSchedule>();
 
-            _context.BusSchedules.Add(busSchedule);
+            if (busScheduleDTO.RecurringOptions != null)
+            {
+                var recurringOptions = busScheduleDTO.RecurringOptions;
+
+                if (recurringOptions.Options == "None")
+                {
+                    if (recurringOptions.Date == null)
+                        return BadRequest("Date is required when RecurringOptions is 'None'.");
+
+                    var busSchedule = CreateBusSchedule(busScheduleDTO, recurringOptions.Date.Value, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
+                    busSchedules.Add(busSchedule);
+                }
+                else if (recurringOptions.Options == "Daily")
+                {
+                    if (recurringOptions.FromDate == null || recurringOptions.ToDate == null)
+                        return BadRequest("FromDate and ToDate are required when RecurringOptions is 'Daily'.");
+
+                    for (var date = recurringOptions.FromDate.Value; date <= recurringOptions.ToDate.Value; date = date.AddDays(1))
+                    {
+                        var busSchedule = CreateBusSchedule(busScheduleDTO, date, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
+                        busSchedules.Add(busSchedule);
+                    }
+                }
+                else if (recurringOptions.Options == "Monthly")
+                {
+                    if (recurringOptions.FromDate == null || recurringOptions.ToDate == null || recurringOptions.SelectDays == null || !recurringOptions.SelectDays.Any())
+                        return BadRequest("FromDate, ToDate, and SelectDays are required when RecurringOptions is 'Monthly'.");
+
+                    var daysOfWeek = recurringOptions.SelectDays.Select(day => Enum.Parse<DayOfWeek>(day, true)).ToList();
+
+                    for (var date = recurringOptions.FromDate.Value; date <= recurringOptions.ToDate.Value; date = date.AddDays(1))
+                    {
+                        if (daysOfWeek.Contains(date.DayOfWeek))
+                        {
+                            var busSchedule = CreateBusSchedule(busScheduleDTO, date, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
+                            busSchedules.Add(busSchedule);
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Invalid RecurringOptions value.");
+                }
+            }
+            else
+            {
+                return BadRequest("RecurringOptions information is required.");
+            }
+
+            _context.BusSchedules.AddRange(busSchedules);
             await _context.SaveChangesAsync();
 
-            var createdBusSchedule = await _context.BusSchedules
-                .Include(bs => bs.Routes)
-                .Include(bs => bs.RecurringOptions)
-                .FirstOrDefaultAsync(bs => bs.BusScheduleID == busSchedule.BusScheduleID);
+            return Created("GetBusSchedules", busSchedules);
+        }
 
-            if (createdBusSchedule == null)
+        private BusSchedule CreateBusSchedule(
+            BusScheduleDTO dto,
+            DateTime travelDate,
+            TimeSpan etd,
+            TimeSpan eta,
+            int routeID,
+            int? recurringOptionID)
+        {
+            return new BusSchedule
             {
-                return NotFound("BusSchedule not found.");
-            }
-
-            return CreatedAtAction("GetBusSchedule", new { id = createdBusSchedule.BusScheduleID }, createdBusSchedule);
+                TravelDate = travelDate,
+                ETD = etd,
+                ETA = eta,
+                IsRecurring = dto.IsRecurring,
+                RecurringOptionID = recurringOptionID,
+                BusID = dto.BusID,
+                DriverID = dto.DriverID,
+                RouteID = routeID,
+                ScheduleStatus = dto.ScheduleStatus,
+                Status = dto.Status
+            };
         }
 
         // PUT: api/BusSchedule/{id}
@@ -272,6 +304,34 @@ namespace server.Controllers
 
             return Ok("The selected bus schedule is successfully deleted.");
         }
+
+        //// PUT: api/BusSchedule/UpdateOnTimeStatus
+        //[HttpPut("UpdateOnTimeStatus")]
+        //public async Task<IActionResult> UpdateOnTimeStatus()
+        //{
+        //    var currentDate = DateTime.Now.Date;
+        //    var targetDate = currentDate.AddDays(7);
+
+        //    var busSchedules = await _context.BusSchedules
+        //        .Include(bs => bs.RecurringOptions)
+        //        .Where(bs => bs.ScheduleStatus == "Scheduled"
+        //                     && bs.RecurringOptions.Date == targetDate)
+        //        .ToListAsync();
+
+        //    if (!busSchedules.Any())
+        //    {
+        //        return Ok("No schedules to update.");
+        //    }
+
+        //    foreach (var schedule in busSchedules)
+        //    {
+        //        schedule.ScheduleStatus = "On Time";
+        //    }
+
+        //    await _context.SaveChangesAsync();
+
+        //    return Ok($"Updated {busSchedules.Count} schedules to 'On Time'.");
+        //}
 
         private bool BusScheduleExists(int id)
         {

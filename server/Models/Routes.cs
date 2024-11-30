@@ -35,11 +35,5 @@ namespace server.Models
         [Required]
         [StringLength(20)]
         public string Status { get; set; }
-
-        [ForeignKey("BoardingLocationID")]
-        public virtual Locations? BoardingLocation { get; }
-
-        [ForeignKey("ArrivalLocationID")]
-        public virtual Locations? ArrivalLocation { get; }
     }
 }
