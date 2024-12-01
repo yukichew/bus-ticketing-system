@@ -37,6 +37,41 @@ namespace server.Controllers
             return Ok(busType);
         }
 
+        // GET: api/BusType/FilterBusType
+        [HttpGet("FilterBusType")]
+        public async Task<ActionResult> GetFilteredBusType(
+            int? noOfSeats = null,
+            string types = null,
+            string status = null)
+        {
+            var query = _context.BusTypes.AsQueryable();
+
+            if (noOfSeats.HasValue)
+            {
+                query = query.Where(b => b.NoOfSeats == noOfSeats.Value);
+            }
+
+            if (!string.IsNullOrEmpty(types))
+            {
+                query = query.Where(b => b.Types == types);
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(b => b.Status == status);
+            }
+
+            var busType = await query
+                                .ToListAsync();
+
+            if (busType.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busType);
+        }
+
         // POST: api/BusType
         [HttpPost]
         public async Task<ActionResult<BusType>> CreateBusType([FromBody] BusType busType)
@@ -80,6 +115,30 @@ namespace server.Controllers
             }
 
             return Ok("The selected bus type is successfully updated.");
+        }
+
+        // PUT: api/BusType/ChangeStatus/{id}
+        [HttpPut("ChangeStatus/{id}")]
+        public async Task<ActionResult> ChangeBusTypeStatus(int id, [FromBody] string newStatus)
+        {
+            var busType = await _context.BusTypes.FindAsync(id);
+
+            if (busType == null)
+            {
+                return NotFound($"Bus type with ID {id} not found.");
+            }
+
+            busType.Status = newStatus;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok($"Bus type status updated to '{newStatus}' for BusType ID {id}.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // DELETE: api/BusType/{id}

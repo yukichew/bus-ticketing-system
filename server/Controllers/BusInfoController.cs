@@ -21,9 +21,18 @@ namespace server.Controllers
         public async Task<ActionResult> GetAllBus()
         {
             var busInfo = await _context.Set<BusInfo>()
-                                .Include(b => b.BusType)
-                                .ToListAsync();
-            return Ok(busInfo);
+                        .Include(b => b.BusType)
+                        .ToListAsync();
+
+            var totalBuses = busInfo.Count;
+
+            var response = new
+            {
+                totalBuses,
+                busInfo
+            };
+
+            return Ok(response);
         }
 
         // GET: api/BusInfo/{id}
@@ -37,6 +46,48 @@ namespace server.Controllers
             if (busInfo == null)
             {
                 return NotFound();
+            }
+
+            return Ok(busInfo);
+        }
+
+        // GET: api/BusInfo/FilterBusInfo
+        [HttpGet("FilterBusInfo")]
+        public async Task<ActionResult> GetFilteredBusInfo(
+            string busPlate = null,
+            string busType = null,
+            int? noOfSeats = null,
+            string status = null)
+        {
+            var query = _context.BusInfo.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(b => EF.Functions.Like(b.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(busType))
+            {
+                query = query.Where(b => b.BusType.Types == busType);
+            }
+
+            if (noOfSeats.HasValue)
+            {
+                query = query.Where(b => b.BusType.NoOfSeats == noOfSeats.Value);
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(b => b.Status == status);
+            }
+
+            var busInfo = await query
+                                .Include(b => b.BusType)
+                                .ToListAsync();
+
+            if (busInfo.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
             }
 
             return Ok(busInfo);
@@ -97,6 +148,30 @@ namespace server.Controllers
             }
 
             return Ok("The selected bus is successfully updated.");
+        }
+
+        // PUT: api/BusInfo/ChangeStatus/{id}
+        [HttpPut("ChangeStatus/{id}")]
+        public async Task<ActionResult> ChangeBusStatus(int id, [FromBody] string newStatus)
+        {
+            var busInfo = await _context.BusInfo.FindAsync(id);
+
+            if (busInfo == null)
+            {
+                return NotFound($"Bus with ID {id} not found.");
+            }
+
+            busInfo.Status = newStatus;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok($"Bus status updated to '{newStatus}' for BusID {id}.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         // DELETE: api/BusInfo/{id}

@@ -51,5 +51,13 @@ namespace server.Models
 
         [ForeignKey("RouteID")]
         public virtual Routes? Routes { get; set; }
+
+        public string? Reasons { get; set; }
+
+        [Required]
+        public DateTime CreatedAt { get; set; }
+
+        [Required]
+        public DateTime UpdatedAt { get; set; }
     }
 }

@@ -34,5 +34,56 @@ namespace server.Data
                 .HasForeignKey(b => b.BusTypeID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
+
+        // For handling UpdatedAt in AspNetBusSchedule
+        public override int SaveChanges()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is BusSchedule &&
+                            (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+            foreach (var entry in entries)
+            {
+                if (entry.Entity is BusSchedule busSchedule)
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        busSchedule.CreatedAt = DateTime.Now;
+                        busSchedule.UpdatedAt = busSchedule.CreatedAt; // Initialize UpdatedAt with CreatedAt value
+                    }
+                    else if (entry.State == EntityState.Modified)
+                    {
+                        busSchedule.UpdatedAt = DateTime.Now; // Update UpdatedAt on modifications
+                    }
+                }
+            }
+
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is BusSchedule &&
+                            (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+            foreach (var entry in entries)
+            {
+                if (entry.Entity is BusSchedule busSchedule)
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        busSchedule.CreatedAt = DateTime.Now;
+                        busSchedule.UpdatedAt = busSchedule.CreatedAt;
+                    }
+                    else if (entry.State == EntityState.Modified)
+                    {
+                        busSchedule.UpdatedAt = DateTime.Now;
+                    }
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
     }
 }
