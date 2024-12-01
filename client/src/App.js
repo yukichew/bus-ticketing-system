@@ -5,6 +5,10 @@ import BusOperatorRoutes from './routes/BusOperatorRoutes';
 import UserRoutes from './routes/UserRoutes';
 
 function App() {
+  useEffect(() => {
+    document.title = "RideNGo";
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
