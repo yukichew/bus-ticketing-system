@@ -16,16 +16,28 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region GetAllBus
         // GET: api/BusInfo
         [HttpGet]
         public async Task<ActionResult> GetAllBus()
         {
             var busInfo = await _context.Set<BusInfo>()
-                                .Include(b => b.BusType)
-                                .ToListAsync();
-            return Ok(busInfo);
-        }
+                        .Include(b => b.BusType)
+                        .ToListAsync();
 
+            var totalBuses = busInfo.Count;
+
+            var response = new
+            {
+                totalBuses,
+                busInfo
+            };
+
+            return Ok(response);
+        }
+        #endregion
+
+        #region GetBus
         // GET: api/BusInfo/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<BusInfo>> GetBus(int id)
@@ -41,7 +53,53 @@ namespace server.Controllers
 
             return Ok(busInfo);
         }
+        #endregion
 
+        #region GetFilteredBusInfo
+        // GET: api/BusInfo/FilterBusInfo
+        [HttpGet("FilterBusInfo")]
+        public async Task<ActionResult> GetFilteredBusInfo(
+            string busPlate = null,
+            string busType = null,
+            int? noOfSeats = null,
+            string status = null)
+        {
+            var query = _context.BusInfo.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(b => EF.Functions.Like(b.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(busType))
+            {
+                query = query.Where(b => b.BusType.Types == busType);
+            }
+
+            if (noOfSeats.HasValue)
+            {
+                query = query.Where(b => b.BusType.NoOfSeats == noOfSeats.Value);
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(b => b.Status == status);
+            }
+
+            var busInfo = await query
+                                .Include(b => b.BusType)
+                                .ToListAsync();
+
+            if (busInfo.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busInfo);
+        }
+        #endregion
+
+        #region CreateBus
         // POST: api/BusInfo
         [HttpPost]
         public async Task<ActionResult<BusInfo>> CreateBus([FromBody] BusInfo busInfo)
@@ -68,7 +126,9 @@ namespace server.Controllers
 
             return CreatedAtAction(nameof(GetBus), new { id = busInfo.BusID }, busInfo);
         }
+        #endregion
 
+        #region UpdateBus
         // PUT: api/BusInfo/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBus(int id, [FromBody] BusInfo busInfo)
@@ -98,7 +158,35 @@ namespace server.Controllers
 
             return Ok("The selected bus is successfully updated.");
         }
+        #endregion
 
+        #region ChangeBusStatus
+        // PUT: api/BusInfo/ChangeStatus/{id}
+        [HttpPut("ChangeStatus/{id}")]
+        public async Task<ActionResult> ChangeBusStatus(int id, [FromBody] string newStatus)
+        {
+            var busInfo = await _context.BusInfo.FindAsync(id);
+
+            if (busInfo == null)
+            {
+                return NotFound($"Bus with ID {id} not found.");
+            }
+
+            busInfo.Status = newStatus;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok($"Bus status updated to '{newStatus}' for BusID {id}.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region DeleteBus
         // DELETE: api/BusInfo/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBus(int id)
@@ -114,6 +202,7 @@ namespace server.Controllers
 
             return Ok("The selected bus is successfully deleted.");
         }
+        #endregion
 
         private bool BusInfoExists(int id)
         {

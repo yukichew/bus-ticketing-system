@@ -21,20 +21,51 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region GetAllBusSchedules
         // GET: api/BusSchedule
         [HttpGet]
         public async Task<ActionResult> GetAllBusSchedules()
         {
             var busSchedules = await _context.Set<BusSchedule>()
-                                .Include(b => b.BusInfo)
-                                .Include(b => b.RecurringOptions)
-                                .Include(b => b.Drivers)
-                                .Include(b => b.Routes)
-                                .ToListAsync();
+                        .Include(b => b.BusInfo)
+                        .Include(b => b.RecurringOptions)
+                        .Include(b => b.Drivers)
+                        .Include(b => b.Routes)
+                            .ThenInclude(r => r.BoardingLocation)
+                        .Include(b => b.Routes)
+                            .ThenInclude(r => r.ArrivalLocation)
+                        .OrderBy(bs => bs.TravelDate)
+                        .ThenBy(bs => bs.ETD)
+                        .ToListAsync();
 
             return Ok(busSchedules);
         }
+        #endregion
 
+        #region GetBusSchedulesForToday
+        // GET: api/BusSchedule/Today
+        [HttpGet("Today")]
+        public async Task<ActionResult> GetBusSchedulesForToday()
+        {
+            var today = DateTime.Today;
+
+            var busSchedulesForToday = await _context.Set<BusSchedule>()
+                .Include(b => b.BusInfo)
+                .Include(b => b.RecurringOptions)
+                .Include(b => b.Drivers)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .Where(bs => bs.TravelDate == today)
+                .OrderBy(bs => bs.ETD)
+                .ToListAsync();
+
+            return Ok(busSchedulesForToday);
+        }
+        #endregion
+
+        #region GetBusSchedule
         // GET: api/BusSchedule/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<BusSchedule>> GetBusSchedule(int id)
@@ -44,6 +75,9 @@ namespace server.Controllers
                                 .Include(b => b.RecurringOptions)
                                 .Include(b => b.Drivers)
                                 .Include(b => b.Routes)
+                                    .ThenInclude(r => r.BoardingLocation)
+                                .Include(b => b.Routes)
+                                    .ThenInclude(r => r.ArrivalLocation)
                                 .FirstOrDefaultAsync(b => b.BusScheduleID == id);
 
             if (busSchedule == null)
@@ -53,7 +87,143 @@ namespace server.Controllers
 
             return Ok(busSchedule);
         }
+        #endregion
 
+        #region FilterBusSchedule
+        // GET: api/BusScheduke/FilterBusSchedule
+        [HttpGet("FilterBusSchedule")]
+        public async Task<ActionResult> FilterBusSchedule(
+            string busPlate = null,
+            string busType = null,
+            int? noOfSeats = null,
+            string originState = null,
+            string destinationState = null,
+            string driverFullname = null,
+            string scheduleStatus = null,
+            DateTime? travelDate = null)
+        {
+            var query = _context.BusSchedules.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.BusInfo.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(busType))
+            {
+                query = query.Where(bs => bs.BusInfo.BusType.Types == busType);
+            }
+
+            if (noOfSeats.HasValue)
+            {
+                query = query.Where(bs => bs.BusInfo.BusType.NoOfSeats == noOfSeats.Value);
+            }
+
+            if (!string.IsNullOrEmpty(originState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.BoardingLocation.State, $"%{originState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(destinationState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(driverFullname))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Drivers.Fullname, $"%{driverFullname}%"));
+            }
+
+            if (!string.IsNullOrEmpty(scheduleStatus))
+            {
+                query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
+            }
+
+            if (travelDate.HasValue)
+            {
+                query = query.Where(bs => bs.TravelDate.Date == travelDate.Value.Date);
+            }
+
+            var busSchedules = await query
+                .Include(b => b.BusInfo)
+                .Include(b => b.Drivers)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .OrderBy(bs => bs.TravelDate)
+                .ThenBy(bs => bs.ETD)
+                .ToListAsync();
+
+            if (busSchedules.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busSchedules);
+        }
+        #endregion
+
+        #region FilterBusScheduleForToday
+        // GET: api/BusScheduke/FilterBusScheduleForToday
+        [HttpGet("FilterBusScheduleForToday")]
+        public async Task<ActionResult> FilterBusScheduleForToday(
+            string originState = null,
+            string destinationState = null,
+            string busPlate = null,
+            string driverFullname = null,
+            string scheduleStatus = null)
+        {
+            var today = DateTime.Today;
+            var query = _context.BusSchedules.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.BusInfo.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(originState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.BoardingLocation.State, $"%{originState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(destinationState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(driverFullname))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Drivers.Fullname, $"%{driverFullname}%"));
+            }
+
+            if (!string.IsNullOrEmpty(scheduleStatus))
+            {
+                query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
+            }
+
+            var busSchedules = await query
+                .Include(b => b.BusInfo)
+                .Include(b => b.Drivers)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .Where(bs => bs.TravelDate == today)
+                .OrderBy(bs => bs.ETD)
+                .ToListAsync();
+
+            if (busSchedules.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busSchedules);
+        }
+        #endregion
+
+        #region PostBusSchedule
+        // POST: api/BusSchedule
         [HttpPost]
         public async Task<ActionResult<List<BusSchedule>>> PostBusSchedule([FromBody] BusScheduleDTO busScheduleDTO)
         {
@@ -62,22 +232,76 @@ namespace server.Controllers
                 return BadRequest("Routes information is required.");
             }
 
-            if (!TimeSpan.TryParse(busScheduleDTO.ETD, out var etd))
+            TimeSpan etd = ParseTimeSpan(busScheduleDTO.ETD);
+            TimeSpan eta = ParseTimeSpan(busScheduleDTO.ETA);
+
+            // To ensure the bus schedule create between operating hours (6:00 AM to 9:00 PM)
+            if (etd < TimeSpan.FromHours(6) || etd > TimeSpan.FromHours(21))
             {
-                return BadRequest("Invalid ETD format.");
+                return BadRequest("Bus can only be scheduled during operation hours (6:00 AM to 9:00 PM).");
             }
 
-            if (!TimeSpan.TryParse(busScheduleDTO.ETA, out var eta))
+            // To ensure the ETD is earlier than ETA
+            if (etd >= eta)
             {
-                return BadRequest("Invalid ETA format.");
+                return BadRequest("Departure time (ETD) must be earlier than arrival time (ETA).");
+            }
+
+            // Get the current time for comparison
+            DateTime currentTime = DateTime.Now;
+
+            if (busScheduleDTO.RecurringOptions == null)
+            {
+                return BadRequest("RecurringOptions information is required.");
+            }
+
+            // For 'None' RecurringOption
+            if (busScheduleDTO.RecurringOptions.Options == "None" && busScheduleDTO.RecurringOptions.Date != null)
+            {
+                DateTime scheduleDateTime = busScheduleDTO.RecurringOptions.Date.Value.Add(etd);
+                var validationResult = await ValidateScheduleForConflicts(busScheduleDTO.BusID, scheduleDateTime, etd);
+                if (validationResult != null) return validationResult;
+            }
+
+            // For 'Daily' RecurringOption
+            if (busScheduleDTO.RecurringOptions.Options == "Daily" &&
+                busScheduleDTO.RecurringOptions.FromDate != null &&
+                busScheduleDTO.RecurringOptions.ToDate != null)
+            {
+                for (var date = busScheduleDTO.RecurringOptions.FromDate.Value; date <= busScheduleDTO.RecurringOptions.ToDate.Value; date = date.AddDays(1))
+                {
+                    DateTime scheduleDateTime = date.Add(etd);
+                    var validationResult = await ValidateScheduleForConflicts(busScheduleDTO.BusID, scheduleDateTime, etd);
+                    if (validationResult != null) return validationResult;
+                }
+            }
+
+            // For 'Monthly' RecurringOption
+            if (busScheduleDTO.RecurringOptions.Options == "Monthly" &&
+                busScheduleDTO.RecurringOptions.FromDate != null &&
+                busScheduleDTO.RecurringOptions.ToDate != null &&
+                busScheduleDTO.RecurringOptions.SelectDays != null &&
+                busScheduleDTO.RecurringOptions.SelectDays.Any())
+            {
+                var daysOfWeek = busScheduleDTO.RecurringOptions.SelectDays
+                    .Select(day => Enum.Parse<DayOfWeek>(day, true))
+                    .ToList();
+
+                for (var date = busScheduleDTO.RecurringOptions.FromDate.Value; date <= busScheduleDTO.RecurringOptions.ToDate.Value; date = date.AddDays(1))
+                {
+                    if (daysOfWeek.Contains(date.DayOfWeek))
+                    {
+                        DateTime scheduleDateTime = date.Add(etd);
+                        var validationResult = await ValidateScheduleForConflicts(busScheduleDTO.BusID, scheduleDateTime, etd);
+                        if (validationResult != null) return validationResult;
+                    }
+                }
             }
 
             var route = new Routes
             {
-                Origin = busScheduleDTO.Routes.Origin,
                 BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID,
                 ETD = etd,
-                Destination = busScheduleDTO.Routes.Destination,
                 ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID,
                 ETA = eta,
                 Status = busScheduleDTO.Routes.Status,
@@ -98,7 +322,7 @@ namespace server.Controllers
                     FromDate = recurringOptions.FromDate,
                     ToDate = recurringOptions.ToDate,
                     SelectDays = recurringOptions.SelectDays != null ? string.Join(",", recurringOptions.SelectDays) : null,
-                    Status = "Active"
+                    Status = recurringOptions.Status,
                 };
 
                 _context.RecurringOptions.Add(recurringOption);
@@ -124,6 +348,13 @@ namespace server.Controllers
                     if (recurringOptions.FromDate == null || recurringOptions.ToDate == null)
                         return BadRequest("FromDate and ToDate are required when RecurringOptions is 'Daily'.");
 
+                    // Check if the date range exceeds 3 months
+                    var dateDifference = recurringOptions.ToDate.Value - recurringOptions.FromDate.Value;
+                    if (dateDifference.TotalDays > 90)
+                    {
+                        return BadRequest("The date range cannot exceed 3 months.");
+                    }
+
                     for (var date = recurringOptions.FromDate.Value; date <= recurringOptions.ToDate.Value; date = date.AddDays(1))
                     {
                         var busSchedule = CreateBusSchedule(busScheduleDTO, date, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
@@ -134,6 +365,12 @@ namespace server.Controllers
                 {
                     if (recurringOptions.FromDate == null || recurringOptions.ToDate == null || recurringOptions.SelectDays == null || !recurringOptions.SelectDays.Any())
                         return BadRequest("FromDate, ToDate, and SelectDays are required when RecurringOptions is 'Monthly'.");
+
+                    var dateDifference = recurringOptions.ToDate.Value - recurringOptions.FromDate.Value;
+                    if (dateDifference.TotalDays > 90)
+                    {
+                        return BadRequest("The date range cannot exceed 3 months.");
+                    }
 
                     var daysOfWeek = recurringOptions.SelectDays.Select(day => Enum.Parse<DayOfWeek>(day, true)).ToList();
 
@@ -185,9 +422,40 @@ namespace server.Controllers
             };
         }
 
+        private async Task<ActionResult> ValidateScheduleForConflicts(int busID, DateTime travelDate, TimeSpan etd)
+        {
+            var existingSchedules = await _context.BusSchedules
+                .Where(bs => bs.BusID == busID && bs.ScheduleStatus != "Cancelled" && bs.ScheduleStatus != "Completed")
+                .ToListAsync();
+
+            foreach (var schedule in existingSchedules)
+            {
+                DateTime existingScheduleDateTime = schedule.TravelDate.Date.Add(schedule.ETD);
+
+                if (travelDate.Add(etd) <= DateTime.Now.AddHours(12))
+                {
+                    return BadRequest("A new schedule cannot be created within 12 hours of the current time.");
+                }
+
+                DateTime newScheduleDateTime = travelDate.Add(etd);
+
+                if (newScheduleDateTime.Date == existingScheduleDateTime.Date &&
+                    (newScheduleDateTime.TimeOfDay == existingScheduleDateTime.TimeOfDay ||
+                     newScheduleDateTime.TimeOfDay.Add(TimeSpan.FromMinutes(30)) > existingScheduleDateTime.TimeOfDay))
+                {
+                    return BadRequest($"There is already a schedule for bus {busID} on {newScheduleDateTime.Date:yyyy-MM-dd} at {newScheduleDateTime:HH:mm}. " +
+                                       $"No schedule can be created within 30 minutes of another schedule.");
+                }
+            }
+
+            return null;
+        }
+        #endregion
+
+        #region UpdateBusSchedule
         // PUT: api/BusSchedule/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBusSchedule(int id, BusScheduleDTO busScheduleDTO)
+        public async Task<IActionResult> UpdateBusSchedule(int id, BusScheduleDTO busScheduleDTO)
         {
             var existingBusSchedule = await _context.BusSchedules
                 .Include(bs => bs.Routes)
@@ -196,79 +464,66 @@ namespace server.Controllers
 
             if (existingBusSchedule == null)
             {
-                return NotFound();
+                return NotFound($"Bus Schedule with ID {id} not found.");
             }
 
-            if (busScheduleDTO.Routes != null)
+            TimeSpan etd = TimeSpan.Parse(busScheduleDTO.ETD);
+            TimeSpan eta = TimeSpan.Parse(busScheduleDTO.ETA);
+
+            // To avoid the new ETD and ETA is outside the operation hours.
+            if (etd < TimeSpan.FromHours(6) || etd > TimeSpan.FromHours(21))
             {
-                if (existingBusSchedule.Routes != null)
-                {
-                    existingBusSchedule.Routes.Origin = busScheduleDTO.Routes.Origin;
-                    existingBusSchedule.Routes.BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID;
-                    existingBusSchedule.Routes.ETD = TimeSpan.Parse(busScheduleDTO.Routes.ETD);
-                    existingBusSchedule.Routes.Destination = busScheduleDTO.Routes.Destination;
-                    existingBusSchedule.Routes.ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID;
-                    existingBusSchedule.Routes.ETA = TimeSpan.Parse(busScheduleDTO.Routes.ETA);
-                    existingBusSchedule.Routes.Status = busScheduleDTO.Routes.Status;
-                }
-                else
-                {
-                    var route = new Routes
-                    {
-                        Origin = busScheduleDTO.Routes.Origin,
-                        BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID,
-                        ETD = TimeSpan.Parse(busScheduleDTO.Routes.ETD),
-                        Destination = busScheduleDTO.Routes.Destination,
-                        ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID,
-                        ETA = TimeSpan.Parse(busScheduleDTO.Routes.ETA),
-                        Status = busScheduleDTO.Routes.Status
-                    };
-                    _context.Routes.Add(route);
-                    await _context.SaveChangesAsync();
-
-                    existingBusSchedule.RouteID = route.RouteID;
-                }
+                return BadRequest("Bus can only be scheduled during operation hours (6:00 AM to 9:00 PM).");
             }
 
-            if (busScheduleDTO.RecurringOptions != null)
+            if (etd >= eta)
             {
-                if (existingBusSchedule.RecurringOptions == null)
-                {
-                    var recurringOption = new RecurringOption
-                    {
-                        Options = busScheduleDTO.RecurringOptions.Options,
-                        Date = busScheduleDTO.RecurringOptions.Date ?? DateTime.MinValue,
-                        FromDate = busScheduleDTO.RecurringOptions.FromDate,
-                        ToDate = busScheduleDTO.RecurringOptions.ToDate,
-                        SelectDays = busScheduleDTO.RecurringOptions.SelectDays != null ? string.Join(",", busScheduleDTO.RecurringOptions.SelectDays) : null,
-                        Status = busScheduleDTO.RecurringOptions.Status
-                    };
-
-                    _context.RecurringOptions.Add(recurringOption);
-                    await _context.SaveChangesAsync();
-
-                    existingBusSchedule.RecurringOptionID = recurringOption.RecurringOptionID;
-                }
-                else
-                {
-                    var existingRecurringOption = existingBusSchedule.RecurringOptions;
-
-                    existingRecurringOption.Options = busScheduleDTO.RecurringOptions.Options;
-                    existingRecurringOption.Date = busScheduleDTO.RecurringOptions.Date ?? DateTime.MinValue;
-                    existingRecurringOption.FromDate = busScheduleDTO.RecurringOptions.FromDate;
-                    existingRecurringOption.ToDate = busScheduleDTO.RecurringOptions.ToDate;
-                    existingRecurringOption.SelectDays = busScheduleDTO.RecurringOptions.SelectDays != null
-                        ? string.Join(",", busScheduleDTO.RecurringOptions.SelectDays)
-                        : null;
-                    existingRecurringOption.Status = busScheduleDTO.RecurringOptions.Status;
-                }
+                return BadRequest("Departure time (ETD) must be earlier than arrival time (ETA).");
             }
 
+            // A new schedule must be created 12 hours before the ETD.
+            DateTime scheduleDateTime = busScheduleDTO.TravelDate.Add(etd);
+            DateTime currentTime = DateTime.Now;
+
+            if (scheduleDateTime <= currentTime.AddHours(12))
+            {
+                return BadRequest("A new schedule cannot be created within 12 hours of the current time.");
+            }
+
+            if (existingBusSchedule.Routes == null)
+            {
+                return BadRequest("The schedule must have an associated route.");
+            }
+
+            var existingRoutes = existingBusSchedule.Routes;
+            existingRoutes.BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID;
+            existingRoutes.ETD = etd;
+            existingRoutes.ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID;
+            existingRoutes.ETA = eta;
+            existingRoutes.Status = busScheduleDTO.Routes.Status;
+
+            existingBusSchedule.TravelDate = busScheduleDTO.TravelDate;
+            existingBusSchedule.ETD = etd;
+            existingBusSchedule.ETA = eta;
             existingBusSchedule.BusID = busScheduleDTO.BusID;
             existingBusSchedule.DriverID = busScheduleDTO.DriverID;
             existingBusSchedule.IsRecurring = busScheduleDTO.IsRecurring;
             existingBusSchedule.ScheduleStatus = busScheduleDTO.ScheduleStatus;
             existingBusSchedule.Status = busScheduleDTO.Status;
+
+            // To ensure 30 minutes gap exist
+            var lastSchedule = await _context.BusSchedules
+                .Where(bs => bs.BusID == busScheduleDTO.BusID &&
+                             bs.BusScheduleID != id &&
+                             bs.ScheduleStatus != "Cancelled" &&
+                             bs.ScheduleStatus != "Completed")
+                .OrderByDescending(bs => bs.ETD)
+                .FirstOrDefaultAsync();
+
+            if (lastSchedule != null && lastSchedule.ETA.Add(TimeSpan.FromMinutes(30)) > etd)
+            {
+                return BadRequest($"The next trip for bus {busScheduleDTO.BusID} cannot be scheduled within 30 minutes of the previous trip.");
+            }
 
             try
             {
@@ -278,7 +533,7 @@ namespace server.Controllers
             {
                 if (!BusScheduleExists(id))
                 {
-                    return NotFound();
+                    return NotFound($"Bus schedule with ID {id} not found after update attempt.");
                 }
                 else
                 {
@@ -288,7 +543,9 @@ namespace server.Controllers
 
             return Ok("The bus schedule was successfully updated.");
         }
+        #endregion
 
+        #region DeleteBusSchedule
         // DELETE: api/BusSchedule/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusSchedule(int id)
@@ -304,38 +561,217 @@ namespace server.Controllers
 
             return Ok("The selected bus schedule is successfully deleted.");
         }
+        #endregion
 
-        //// PUT: api/BusSchedule/UpdateOnTimeStatus
-        //[HttpPut("UpdateOnTimeStatus")]
-        //public async Task<IActionResult> UpdateOnTimeStatus()
-        //{
-        //    var currentDate = DateTime.Now.Date;
-        //    var targetDate = currentDate.AddDays(7);
+        #region UpdateOnTimeStatus
+        // PUT: api/BusSchedule/UpdateOnTimeStatus
+        [HttpPut("UpdateOnTimeStatus")]
+        public async Task<IActionResult> UpdateOnTimeStatus()
+        {
+            var currentDate = DateTime.Now.Date;
+            var targetDate = currentDate.AddDays(7);
 
-        //    var busSchedules = await _context.BusSchedules
-        //        .Include(bs => bs.RecurringOptions)
-        //        .Where(bs => bs.ScheduleStatus == "Scheduled"
-        //                     && bs.RecurringOptions.Date == targetDate)
-        //        .ToListAsync();
+            var busSchedules = await _context.BusSchedules
+                .Where(bs => bs.ScheduleStatus == "Scheduled"
+                             && bs.TravelDate.Date == targetDate)
+                .ToListAsync();
 
-        //    if (!busSchedules.Any())
-        //    {
-        //        return Ok("No schedules to update.");
-        //    }
+            if (!busSchedules.Any())
+            {
+                return Ok("No schedules to update.");
+            }
 
-        //    foreach (var schedule in busSchedules)
-        //    {
-        //        schedule.ScheduleStatus = "On Time";
-        //    }
+            foreach (var schedule in busSchedules)
+            {
+                schedule.ScheduleStatus = "On Time";
+            }
 
-        //    await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-        //    return Ok($"Updated {busSchedules.Count} schedules to 'On Time'.");
-        //}
+            return Ok($"Updated {busSchedules.Count} schedules to 'On Time'.");
+        }
+        #endregion
+
+        #region UpdateEnRouteStatus
+        // PUT: api/BusSchedule/UpdateEnRouteStatus
+        [HttpPut("UpdateEnRouteStatus")]
+        public async Task<IActionResult> UpdateEnRouteStatus()
+        {
+            var currentTime = DateTime.Now.TimeOfDay;
+            var currentDate = DateTime.Now.Date;
+
+            var fiveMinutesBefore = currentTime.Add(TimeSpan.FromMinutes(-5));
+            var fiveMinutesAfter = currentTime.Add(TimeSpan.FromMinutes(5));
+
+            var busSchedules = await _context.BusSchedules
+                .Where(bs => bs.ScheduleStatus == "On Time"
+                     && bs.TravelDate.Date == currentDate
+                     && (bs.ETD >= fiveMinutesBefore || bs.ETD <= fiveMinutesAfter))
+                .ToListAsync();
+
+            if (!busSchedules.Any())
+            {
+                return Ok("No schedules to update.");
+            }
+
+            foreach (var schedule in busSchedules)
+            {
+                schedule.ScheduleStatus = "En Route";
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok($"Updated {busSchedules.Count} schedules to 'En Route'.");
+        }
+        #endregion
+
+        #region UpdateDelayedStatus
+        // PUT: api/BusSchedule/UpdateDelayedStatus/{id}
+        [HttpPut("UpdateDelayedStatus/{id}")]
+        public async Task<IActionResult> UpdateDelayedStatus(int id, BusScheduleDTO busScheduleDTO)
+        {
+            var busSchedules = await _context.BusSchedules
+                .Where(bs => bs.BusScheduleID == id)
+                .ToListAsync();
+
+            if (!busSchedules.Any())
+            {
+                return Ok("No schedules to update.");
+            }
+
+            var passengers = new List<dynamic>
+            {
+                new { fullname = "yuki", email = "yuki@gmail.com" },
+                new { fullname = "jezlyn", email = "jezlyn@gmail.com" }
+            };
+
+            foreach (var busSchedule in busSchedules)
+            {
+                busSchedule.ScheduleStatus = "Delayed";
+                busSchedule.ETD = ParseTimeSpan(busScheduleDTO.ETD);
+                busSchedule.ETA = ParseTimeSpan(busScheduleDTO.ETA);
+                busSchedule.Reasons = busScheduleDTO.Reasons;
+
+                string emailMessage = $"Dear {{PassengerName}},\n\n" +
+                    $"We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been delayed.\n\n" +
+                    $"The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.\n\n" +
+                    $"Thank you for your understanding.";
+
+                foreach (var passenger in passengers)
+                {
+                    string personalizedEmailMessage = emailMessage.Replace("{{PassengerName}}", passenger.fullname);
+                    // await SendEmail(passenger.email, personalizedEmailMessage);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok($"Updated {busSchedules.Count} schedules to 'Delayed'.");
+        }
+        #endregion
+
+        #region UpdateCanceledStatus
+        // PUT: api/BusSchedule/UpdateCanceledStatus/{id}
+        [HttpPut("UpdateCanceledStatus/{id}")]
+        public async Task<IActionResult> UpdateCanceledStatus(int id, BusScheduleDTO busScheduleDTO)
+        {
+            var busSchedules = await _context.BusSchedules
+                .Where(bs => bs.BusScheduleID == id)
+                .ToListAsync();
+
+            if (!busSchedules.Any())
+            {
+                return Ok("No schedules to update.");
+            }
+
+            // No cancellation is allowed on the travel date.
+            foreach (var busSchedule in busSchedules)
+            {
+                if (busSchedule.TravelDate.Date == DateTime.Now.Date)
+                {
+                    return BadRequest("Cancellation is not allowed on the travel date.");
+                }
+            }
+
+            var passengers = new List<dynamic>
+            {
+                new { fullname = "yuki", email = "yuki@gmail.com" },
+                new { fullname = "jezlyn", email = "jezlyn@gmail.com" }
+            };
+
+            foreach (var busSchedule in busSchedules)
+            {
+                busSchedule.ScheduleStatus = "Canceled";
+                busSchedule.ETD = ParseTimeSpan(busScheduleDTO.ETD);
+                busSchedule.ETA = ParseTimeSpan(busScheduleDTO.ETA);
+                busSchedule.Reasons = busScheduleDTO.Reasons;
+
+                string emailMessage = $"Dear {{PassengerName}},\n\n" +
+                    $"We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been canceled.\n\n" +
+                    $"The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.\n\n" +
+                    $"Thank you for your understanding.";
+
+                foreach (var passenger in passengers)
+                {
+                    string personalizedEmailMessage = emailMessage.Replace("{{PassengerName}}", passenger.fullname);
+                    // await SendEmail(passenger.email, personalizedEmailMessage);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok($"Updated {busSchedules.Count} schedules to 'Delayed'.");
+        }
+        #endregion
+
+        #region UpdateCompletedStatus
+        // PUT: api/BusSchedule/UpdateCompletedStatus
+        [HttpPut("UpdateCompletedStatus")]
+        public async Task<IActionResult> UpdateCompletedStatus()
+        {
+            var currentTime = DateTime.Now.TimeOfDay;
+            var currentDate = DateTime.Now.Date;
+
+            var busSchedules = await _context.BusSchedules
+                .Where(bs => bs.ScheduleStatus == "En Route"
+                     && bs.TravelDate.Date == currentDate
+                     && (bs.ETD == currentTime))
+                .ToListAsync();
+
+            if (!busSchedules.Any())
+            {
+                return Ok("No schedules to update.");
+            }
+
+            foreach (var schedule in busSchedules)
+            {
+                schedule.ScheduleStatus = "Completed";
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok($"Updated {busSchedules.Count} schedules to 'Completed'.");
+        }
+        #endregion
 
         private bool BusScheduleExists(int id)
         {
             return _context.BusSchedules.Any(e => e.BusScheduleID == id);
+        }
+
+        private TimeSpan ParseTimeSpan(string timeString)
+        {
+            if (TimeSpan.TryParse(timeString, out var parsedTime))
+            {
+                return parsedTime;
+            }
+
+            throw new ArgumentException("Invalid time format.");
+        }
+
+        private async Task SendEmail(string email, string message)
+        {
+            // Logic for send email
         }
     }
 }

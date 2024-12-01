@@ -11,22 +11,18 @@ namespace server.Models
         public int RouteID { get; set; }
 
         [Required]
-        [StringLength(256)]
-        public string Origin { get; set; }
-
-        [Required]
         public int BoardingLocationID { get; set; }
+        
+        public Locations BoardingLocation { get; set; }
 
         [Required]
         [Column(TypeName = "time")]
         public TimeSpan ETD { get; set; }
 
         [Required]
-        [StringLength(256)]
-        public string Destination { get; set; }
-
-        [Required]
         public int ArrivalLocationID { get; set; }
+
+        public Locations ArrivalLocation { get; set; }
 
         [Required]
         [Column(TypeName = "time")]

@@ -12,6 +12,7 @@
         public RecurringOptionsDTO? RecurringOptions { get; set; }
         public string ScheduleStatus { get; set; }
         public string Status { get; set; }
+        public string? Reasons { get; set; }
     }
 
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using server.Data;
 
@@ -11,9 +12,11 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241201070033_AddColumnsAspNetBusSchedule")]
+    partial class AddColumnsAspNetBusSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,9 +200,6 @@ namespace server.Migrations
                     b.Property<int>("BusID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("DriverID")
                         .HasColumnType("int");
 
@@ -211,9 +211,6 @@ namespace server.Migrations
 
                     b.Property<bool>("IsRecurring")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Reasons")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RecurringOptionID")
                         .HasColumnType("int");
@@ -233,9 +230,6 @@ namespace server.Migrations
 
                     b.Property<DateTime>("TravelDate")
                         .HasColumnType("date");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("BusScheduleID");
 
