@@ -61,7 +61,7 @@ namespace server.Controllers
 
             await SendOtpEmail(newUser.UserName, newUser.Email, otp);
 
-            return Ok("User registered successfully");
+            return Ok("OTP email sent to user succesfully.");
         }
         #endregion
 
