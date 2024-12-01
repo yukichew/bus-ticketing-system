@@ -16,6 +16,7 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region GetAllDrivers
         // GET: api/Driver
         [HttpGet]
         public async Task<ActionResult> GetAllDrivers()
@@ -23,7 +24,9 @@ namespace server.Controllers
             var drivers = await _context.Set<Driver>().ToListAsync();
             return Ok(drivers);
         }
+        #endregion
 
+        #region GetDriver
         // GET: api/Driver/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Driver>> GetDriver(int id)
@@ -36,7 +39,9 @@ namespace server.Controllers
 
             return Ok(driver);
         }
+        #endregion
 
+        #region CreateDriver
         // POST: api/Driver
         [HttpPost]
         public async Task<ActionResult<Driver>> CreateDriver([FromBody] Driver driver)
@@ -51,7 +56,9 @@ namespace server.Controllers
 
             return CreatedAtAction(nameof(GetDriver), new { id = driver.DriverID }, driver);
         }
+        #endregion
 
+        #region UpdateDriver
         // PUT: api/Driver/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDriver(int id, [FromBody] Driver driver)
@@ -81,7 +88,9 @@ namespace server.Controllers
 
             return Ok("The selected driver is successfully updated.");
         }
+        #endregion
 
+        #region DeleteDriver
         // DELETE: api/Driver/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDriver(int id)
@@ -97,6 +106,7 @@ namespace server.Controllers
 
             return Ok("The selected driver is successfully deleted.");
         }
+        #endregion
 
         private bool DriverExists(int id)
         {

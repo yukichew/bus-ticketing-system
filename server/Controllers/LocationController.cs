@@ -16,6 +16,7 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region GetAllLocation
         // GET: api/Location
         [HttpGet]
         public async Task<ActionResult> GetAllLocation()
@@ -23,7 +24,9 @@ namespace server.Controllers
             var location = await _context.Set<Locations>().ToListAsync();
             return Ok(location);
         }
+        #endregion
 
+        #region GetLocation
         // GET: api/Location/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Locations>> GetLocation(int id)
@@ -36,7 +39,9 @@ namespace server.Controllers
 
             return Ok(location);
         }
+        #endregion
 
+        #region CreateLocation
         // POST: api/Location
         [HttpPost]
         public async Task<ActionResult<Locations>> CreateLocation([FromBody] Locations location)
@@ -51,7 +56,9 @@ namespace server.Controllers
 
             return CreatedAtAction(nameof(GetLocation), new { id = location.LocationID }, location);
         }
+        #endregion
 
+        #region UpdateLocation
         // PUT: api/Location/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLocation(int id, [FromBody] Locations location)
@@ -81,7 +88,9 @@ namespace server.Controllers
 
             return Ok("The selected location is successfully updated.");
         }
+        #endregion
 
+        #region DeleteLocation
         // DELETE: api/Location/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocation(int id)
@@ -97,6 +106,7 @@ namespace server.Controllers
 
             return Ok("The selected location is successfully deleted.");
         }
+        #endregion
 
         private bool LocationExists(int id)
         {

@@ -16,6 +16,7 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region GetAllBus
         // GET: api/BusInfo
         [HttpGet]
         public async Task<ActionResult> GetAllBus()
@@ -34,7 +35,9 @@ namespace server.Controllers
 
             return Ok(response);
         }
+        #endregion
 
+        #region GetBus
         // GET: api/BusInfo/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<BusInfo>> GetBus(int id)
@@ -50,7 +53,9 @@ namespace server.Controllers
 
             return Ok(busInfo);
         }
+        #endregion
 
+        #region GetFilteredBusInfo
         // GET: api/BusInfo/FilterBusInfo
         [HttpGet("FilterBusInfo")]
         public async Task<ActionResult> GetFilteredBusInfo(
@@ -92,7 +97,9 @@ namespace server.Controllers
 
             return Ok(busInfo);
         }
+        #endregion
 
+        #region CreateBus
         // POST: api/BusInfo
         [HttpPost]
         public async Task<ActionResult<BusInfo>> CreateBus([FromBody] BusInfo busInfo)
@@ -119,7 +126,9 @@ namespace server.Controllers
 
             return CreatedAtAction(nameof(GetBus), new { id = busInfo.BusID }, busInfo);
         }
+        #endregion
 
+        #region UpdateBus
         // PUT: api/BusInfo/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBus(int id, [FromBody] BusInfo busInfo)
@@ -149,7 +158,9 @@ namespace server.Controllers
 
             return Ok("The selected bus is successfully updated.");
         }
+        #endregion
 
+        #region ChangeBusStatus
         // PUT: api/BusInfo/ChangeStatus/{id}
         [HttpPut("ChangeStatus/{id}")]
         public async Task<ActionResult> ChangeBusStatus(int id, [FromBody] string newStatus)
@@ -173,7 +184,9 @@ namespace server.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        #endregion
 
+        #region DeleteBus
         // DELETE: api/BusInfo/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBus(int id)
@@ -189,6 +202,7 @@ namespace server.Controllers
 
             return Ok("The selected bus is successfully deleted.");
         }
+        #endregion
 
         private bool BusInfoExists(int id)
         {

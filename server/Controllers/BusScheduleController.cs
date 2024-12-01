@@ -27,11 +27,16 @@ namespace server.Controllers
         public async Task<ActionResult> GetAllBusSchedules()
         {
             var busSchedules = await _context.Set<BusSchedule>()
-                                .Include(b => b.BusInfo)
-                                .Include(b => b.RecurringOptions)
-                                .Include(b => b.Drivers)
-                                .Include(b => b.Routes)
-                                .ToListAsync();
+                        .Include(b => b.BusInfo)
+                        .Include(b => b.RecurringOptions)
+                        .Include(b => b.Drivers)
+                        .Include(b => b.Routes)
+                            .ThenInclude(r => r.BoardingLocation)
+                        .Include(b => b.Routes)
+                            .ThenInclude(r => r.ArrivalLocation)
+                        .OrderBy(bs => bs.TravelDate)
+                        .ThenBy(bs => bs.ETD)
+                        .ToListAsync();
 
             return Ok(busSchedules);
         }
@@ -49,7 +54,11 @@ namespace server.Controllers
                 .Include(b => b.RecurringOptions)
                 .Include(b => b.Drivers)
                 .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
                 .Where(bs => bs.TravelDate == today)
+                .OrderBy(bs => bs.ETD)
                 .ToListAsync();
 
             return Ok(busSchedulesForToday);
@@ -66,6 +75,9 @@ namespace server.Controllers
                                 .Include(b => b.RecurringOptions)
                                 .Include(b => b.Drivers)
                                 .Include(b => b.Routes)
+                                    .ThenInclude(r => r.BoardingLocation)
+                                .Include(b => b.Routes)
+                                    .ThenInclude(r => r.ArrivalLocation)
                                 .FirstOrDefaultAsync(b => b.BusScheduleID == id);
 
             if (busSchedule == null)
@@ -84,73 +96,121 @@ namespace server.Controllers
             string busPlate = null,
             string busType = null,
             int? noOfSeats = null,
-            string status = null,
-            string origin = null,
-            string destination = null,
+            string originState = null,
+            string destinationState = null,
             string driverFullname = null,
             string scheduleStatus = null,
             DateTime? travelDate = null)
         {
             var query = _context.BusSchedules.AsQueryable();
 
-            // Filter by Bus Plate
             if (!string.IsNullOrEmpty(busPlate))
             {
                 query = query.Where(bs => EF.Functions.Like(bs.BusInfo.BusPlate, $"%{busPlate}%"));
             }
 
-            // Filter by Bus Type
             if (!string.IsNullOrEmpty(busType))
             {
                 query = query.Where(bs => bs.BusInfo.BusType.Types == busType);
             }
 
-            // Filter by Number of Seats
             if (noOfSeats.HasValue)
             {
                 query = query.Where(bs => bs.BusInfo.BusType.NoOfSeats == noOfSeats.Value);
             }
 
-            // Filter by Bus Status
-            if (!string.IsNullOrEmpty(status))
+            if (!string.IsNullOrEmpty(originState))
             {
-                query = query.Where(bs => bs.BusInfo.Status == status);
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.BoardingLocation.State, $"%{originState}%"));
             }
 
-            // Filter by Origin
-            if (!string.IsNullOrEmpty(origin))
+            if (!string.IsNullOrEmpty(destinationState))
             {
-                query = query.Where(bs => EF.Functions.Like(bs.Routes.Origin, $"%{origin}%"));
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
             }
 
-            // Filter by Destination
-            if (!string.IsNullOrEmpty(destination))
-            {
-                query = query.Where(bs => EF.Functions.Like(bs.Routes.Destination, $"%{destination}%"));
-            }
-
-            // Filter by Driver Fullname
             if (!string.IsNullOrEmpty(driverFullname))
             {
                 query = query.Where(bs => EF.Functions.Like(bs.Drivers.Fullname, $"%{driverFullname}%"));
             }
 
-            // Filter by Schedule Status
             if (!string.IsNullOrEmpty(scheduleStatus))
             {
                 query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
             }
 
-            // Filter by Travel Date
             if (travelDate.HasValue)
             {
                 query = query.Where(bs => bs.TravelDate.Date == travelDate.Value.Date);
             }
 
             var busSchedules = await query
-                .Include(bs => bs.BusInfo)
-                .Include(bs => bs.Drivers)
-                .Include(bs => bs.Routes)
+                .Include(b => b.BusInfo)
+                .Include(b => b.Drivers)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .OrderBy(bs => bs.TravelDate)
+                .ThenBy(bs => bs.ETD)
+                .ToListAsync();
+
+            if (busSchedules.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busSchedules);
+        }
+        #endregion
+
+        #region FilterBusScheduleForToday
+        // GET: api/BusScheduke/FilterBusScheduleForToday
+        [HttpGet("FilterBusScheduleForToday")]
+        public async Task<ActionResult> FilterBusScheduleForToday(
+            string originState = null,
+            string destinationState = null,
+            string busPlate = null,
+            string driverFullname = null,
+            string scheduleStatus = null)
+        {
+            var today = DateTime.Today;
+            var query = _context.BusSchedules.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.BusInfo.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(originState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.BoardingLocation.State, $"%{originState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(destinationState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(driverFullname))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Drivers.Fullname, $"%{driverFullname}%"));
+            }
+
+            if (!string.IsNullOrEmpty(scheduleStatus))
+            {
+                query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
+            }
+
+            var busSchedules = await query
+                .Include(b => b.BusInfo)
+                .Include(b => b.Drivers)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .Where(bs => bs.TravelDate == today)
+                .OrderBy(bs => bs.ETD)
                 .ToListAsync();
 
             if (busSchedules.Count == 0)
@@ -240,10 +300,8 @@ namespace server.Controllers
 
             var route = new Routes
             {
-                Origin = busScheduleDTO.Routes.Origin,
                 BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID,
                 ETD = etd,
-                Destination = busScheduleDTO.Routes.Destination,
                 ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID,
                 ETA = eta,
                 Status = busScheduleDTO.Routes.Status,
@@ -438,10 +496,8 @@ namespace server.Controllers
             }
 
             var existingRoutes = existingBusSchedule.Routes;
-            existingRoutes.Origin = busScheduleDTO.Routes.Origin;
             existingRoutes.BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID;
             existingRoutes.ETD = etd;
-            existingRoutes.Destination = busScheduleDTO.Routes.Destination;
             existingRoutes.ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID;
             existingRoutes.ETA = eta;
             existingRoutes.Status = busScheduleDTO.Routes.Status;

@@ -16,6 +16,7 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region GetAllBusTypes
         // GET: api/BusType
         [HttpGet]
         public async Task<ActionResult> GetAllBusTypes()
@@ -23,7 +24,9 @@ namespace server.Controllers
             var busTypes = await _context.Set<BusType>().ToListAsync();
             return Ok(busTypes);
         }
+        #endregion
 
+        #region GetBusType
         // GET: api/BusType/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<BusType>> GetBusType(int id)
@@ -36,7 +39,9 @@ namespace server.Controllers
 
             return Ok(busType);
         }
+        #endregion
 
+        #region GetFilteredBusType
         // GET: api/BusType/FilterBusType
         [HttpGet("FilterBusType")]
         public async Task<ActionResult> GetFilteredBusType(
@@ -71,7 +76,9 @@ namespace server.Controllers
 
             return Ok(busType);
         }
+        #endregion
 
+        #region CreateBusType
         // POST: api/BusType
         [HttpPost]
         public async Task<ActionResult<BusType>> CreateBusType([FromBody] BusType busType)
@@ -86,7 +93,9 @@ namespace server.Controllers
 
             return CreatedAtAction(nameof(GetBusType), new { id = busType.BusTypeID }, busType);
         }
+        #endregion
 
+        #region UpdateBusType
         // PUT: api/BusType/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBusType(int id, [FromBody] BusType busType)
@@ -116,7 +125,9 @@ namespace server.Controllers
 
             return Ok("The selected bus type is successfully updated.");
         }
+        #endregion
 
+        #region ChangeBusTypeStatus
         // PUT: api/BusType/ChangeStatus/{id}
         [HttpPut("ChangeStatus/{id}")]
         public async Task<ActionResult> ChangeBusTypeStatus(int id, [FromBody] string newStatus)
@@ -140,7 +151,9 @@ namespace server.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        #endregion
 
+        #region DeleteBusType
         // DELETE: api/BusType/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusType(int id)
@@ -156,7 +169,7 @@ namespace server.Controllers
 
             return Ok("The selected bus type is successfully deleted.");
         }
-
+        #endregion
         private bool BusTypeExists(int id)
         {
             return _context.Set<BusType>().Any(e => e.BusTypeID == id);
