@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaChevronRight } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BusTicketForm from './user/BusTicketForm';
+import { searchSchedule } from '../api/schedule';
 
 const Hero = () => {
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+
+    const filters = {
+      travelDate: departureDate?.toISOString(),
+      returnDate: returnDate?.toISOString(),
+      origin,
+      destination,
+    };
+
+    navigate('/bus-tickets', { filters });
+  };
 
   return (
     <section className='relative'>
@@ -43,11 +58,14 @@ const Hero = () => {
                 </h3>
                 <BusTicketForm
                   origin={origin}
+                  setOrigin={setOrigin}
                   destination={destination}
+                  setDestination={setDestination}
                   departureDate={departureDate}
                   setDepartureDate={setDepartureDate}
                   returnDate={returnDate}
                   setReturnDate={setReturnDate}
+                  onSubmit={handleSearch}
                 />
               </div>
             </div>

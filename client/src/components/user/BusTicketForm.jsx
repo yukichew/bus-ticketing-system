@@ -7,6 +7,8 @@ import DatePickerField from '../common/DatePickerField';
 const BusTicketForm = ({
   origin,
   destination,
+  setOrigin,
+  setDestination,
   departureDate,
   setDepartureDate,
   returnDate,
@@ -25,6 +27,7 @@ const BusTicketForm = ({
         icon={IoLocationOutline}
         required
         value={origin}
+        onChange={(e) => setOrigin(e.target.value)}
       />
       <CustomInput
         id={'destination'}
@@ -34,6 +37,7 @@ const BusTicketForm = ({
         icon={IoLocationOutline}
         required
         value={destination}
+        onChange={(e) => setDestination(e.target.value)}
       />
       <DatePickerField
         id={'departureDate'}
@@ -47,7 +51,6 @@ const BusTicketForm = ({
         id={'returnDate'}
         name={'returnDate'}
         placeholder={'Return Date'}
-        required
         selectedDate={returnDate}
         setSelectedDate={setReturnDate}
       />

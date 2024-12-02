@@ -36,10 +36,10 @@ const BusCard = ({ schedule }) => {
         <div className='grid grid-cols-3 items-center col-span-3 text-center mt-4 mb-4 md:mt-0 md:mb-0'>
           <div>
             <p className='font-semibold text-lg md:text-xl'>
-              {schedule.departureTime}
+              {schedule.etd}
             </p>
             <p className='text-gray-600 text-xs md:text-sm'>
-              {schedule.departureLocation}
+              {schedule.routes.boardingLocation.name}
             </p>
           </div>
 
@@ -56,10 +56,10 @@ const BusCard = ({ schedule }) => {
 
           <div>
             <p className='font-semibold text-lg md:text-xl'>
-              {schedule.arrivalTime}
+              {schedule.eta}
             </p>
             <p className='text-gray-600 text-xs md:text-sm'>
-              {schedule.arrivalLocation}
+              {schedule.routes.arrivalLocation.name}
             </p>
           </div>
         </div>
