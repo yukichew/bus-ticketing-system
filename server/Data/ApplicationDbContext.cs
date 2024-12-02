@@ -32,6 +32,7 @@ namespace server.Data
             modelBuilder.Entity<IdentityUserLogin<string>>(entity => entity.ToTable("UserLogins"));
             modelBuilder.Entity<IdentityRoleClaim<string>>(entity => entity.ToTable("RoleClaims"));
             modelBuilder.Entity<IdentityUserToken<string>>(entity => entity.ToTable("UserTokens"));
+            modelBuilder.Entity<BusOperator>().ToTable("BusOperators");
 
             modelBuilder.Entity<BusInfo>()
                 .HasOne(b => b.BusType)

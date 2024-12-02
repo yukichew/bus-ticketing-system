@@ -12,7 +12,7 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241202105700_InitialDbSetup")]
+    [Migration("20241202180235_InitialDbSetup")]
     partial class InitialDbSetup
     {
         /// <inheritdoc />
@@ -437,23 +437,12 @@ namespace server.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("EmailOTP")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastOTPSent")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -468,9 +457,6 @@ namespace server.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime?>("OTPExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -503,9 +489,7 @@ namespace server.Migrations
 
                     b.ToTable("Users", (string)null);
 
-                    b.HasDiscriminator().HasValue("User");
-
-                    b.UseTphMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("server.Models.BusOperator", b =>
@@ -545,11 +529,6 @@ namespace server.Migrations
                     b.Property<bool?>("IsRefundable")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.Property<int?>("RatesAndReviewID")
                         .HasColumnType("int");
 
@@ -563,7 +542,7 @@ namespace server.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasDiscriminator().HasValue("BusOperator");
+                    b.ToTable("BusOperators", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -678,6 +657,15 @@ namespace server.Migrations
                     b.Navigation("ArrivalLocation");
 
                     b.Navigation("BoardingLocation");
+                });
+
+            modelBuilder.Entity("server.Models.BusOperator", b =>
+                {
+                    b.HasOne("server.Models.User", null)
+                        .WithOne()
+                        .HasForeignKey("server.Models.BusOperator", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

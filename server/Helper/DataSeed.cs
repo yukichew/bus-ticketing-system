@@ -24,22 +24,22 @@ namespace server.Helper
         public static async Task SeedAdminDataSync(UserManager<User> userManager)
         {
             var adminEmail = "admin@admin.com";
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            var admin = await userManager.FindByEmailAsync(adminEmail);
 
-            if (adminUser == null)
+            if (admin == null)
             {
-                adminUser = new User
+                admin = new User
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
                     EmailConfirmed = true
                 };
 
-                var result = await userManager.CreateAsync(adminUser, "Admin@1234");
+                var result = await userManager.CreateAsync(admin, "Admin@1234");
 
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                    await userManager.AddToRoleAsync(admin, "Admin");
                 }
             }
         }

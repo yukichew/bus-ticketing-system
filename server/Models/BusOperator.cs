@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace server.Models
 {
@@ -30,10 +31,6 @@ namespace server.Models
         public bool? IsRefundable { get; set; }
 
         public string? ServiceAndReputations { get; set; }
-
-        [Required]
-        [MaxLength(256)]
-        public string Name { get; set; }
 
         public int? RatesAndReviewID { get; set; }
         public int? SalesAndRevenueID { get; set; }

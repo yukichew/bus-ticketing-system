@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace server.Dto
+namespace server.Dto.Auth
 {
-    public class RegisterDto : AuthDto
+    public class RegisterDto : LoginDto
     {
+        [Required(ErrorMessage = "Full name is required")]
+        public string? Fullname { get; set; }
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string? ConfirmPassword { get; set; }
-        [Required(ErrorMessage = "Role is required")]
-        public string Role { get; set; }
     }
 }

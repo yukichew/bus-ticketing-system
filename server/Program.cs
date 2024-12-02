@@ -58,6 +58,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddSingleton<OTPService>();
 
 var jwtSettings = builder.Configuration.GetSection("JWTSettings");
 
@@ -94,7 +95,7 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:3000")
               .AllowAnyMethod()
-              .AllowAnyHeader() 
+              .AllowAnyHeader()
               .AllowCredentials();
     });
 });
