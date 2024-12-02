@@ -6,6 +6,8 @@ using server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MimeKit;
+using server.Helper;
 
 namespace server.Controllers
 {
@@ -17,13 +19,15 @@ namespace server.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<User> _signInManager;
+        private readonly EmailService _emailHelper;
 
-        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager)
+        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager, EmailService emailHelper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _signInManager = signInManager;
+            _emailHelper = emailHelper;
         }
 
         #region Register
@@ -39,7 +43,8 @@ namespace server.Controllers
             var newUser = new User
             {
                 Email = registerDto.Email,
-                UserName = registerDto.Email
+                UserName = registerDto.Email,
+                EmailConfirmed = false
             };
 
             var result = await _userManager.CreateAsync(newUser, registerDto.Password);
@@ -48,17 +53,26 @@ namespace server.Controllers
                 return BadRequest(result.Errors);
             }
 
+            var otp = GenerateOtp();
+            newUser.EmailOTP = otp;
+            newUser.OTPExpiry = DateTime.UtcNow.AddMinutes(10);
+            newUser.LastOTPSent = DateTime.UtcNow;
             await _userManager.AddToRoleAsync(newUser, "User");
-            return Ok("User registered successfully");
+
+            await SendOtpEmail(newUser.UserName, newUser.Email, otp);
+
+            return Ok("OTP email sent to user succesfully.");
         }
         #endregion
 
+        #region Generate OTP
         private string GenerateOtp()
         {
             Random random = new Random();
             string otp = random.Next(100000, 999999).ToString();
             return otp;
         }
+        #endregion
 
         #region Login
         [HttpPost("login")]
@@ -68,6 +82,11 @@ namespace server.Controllers
             if (user == null)
             {
                 return Unauthorized("Invalid credentials.");
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                return Unauthorized("Email is not verified.");
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, authDto.Password, false, false);
@@ -105,7 +124,72 @@ namespace server.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         #endregion
+
+        #region Send OTP Email
+        private async Task SendOtpEmail(string name, string email, string otp)
+        {
+            var subject = "Your Email Verification OTP";
+            var message = $"Your OTP for email verification is: {otp}";
+            await _emailHelper.SendEmailAsync(name, email, subject, message);
+        }
+        #endregion
+
+        #region Verify Email
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailDto verifyEmailDto)
+        {
+            var user = await _userManager.FindByEmailAsync(verifyEmailDto.Email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            if (user.EmailOTP != verifyEmailDto.OTP || user.OTPExpiry < DateTime.UtcNow)
+            {
+                return BadRequest("Invalid or expired OTP.");
+            }
+
+            user.EmailConfirmed = true;
+            user.EmailOTP = null;
+            user.OTPExpiry = null;
+            await _userManager.UpdateAsync(user);
+
+            return Ok("Email verified successfully.");
+        }
+        #endregion
+
+        #region Resend OTP
+        [HttpPost("resend-otp")]
+        public async Task<IActionResult> ResendOtp([FromBody] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            if (user.EmailConfirmed)
+            {
+                return BadRequest("Email is already verified.");
+            }
+
+            if (user.LastOTPSent != null && DateTime.UtcNow < user.LastOTPSent.Value.AddMinutes(1))
+            {
+                return BadRequest("Please wait for 60 seconds before requesting a new OTP.");
+            }
+
+            var newOtp = GenerateOtp();
+            user.EmailOTP = newOtp;
+            user.OTPExpiry = DateTime.UtcNow.AddMinutes(10);
+            user.LastOTPSent = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
+
+            await SendOtpEmail(user.UserName, user.Email, newOtp);
+
+            return Ok("A new OTP has been sent to your email.");
+        }
+        #endregion
+
+
     }
-
-
 }

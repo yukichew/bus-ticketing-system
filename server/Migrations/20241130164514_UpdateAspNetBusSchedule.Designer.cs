@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using server.Data;
 
@@ -11,9 +12,11 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241130164514_UpdateAspNetBusSchedule")]
+    partial class UpdateAspNetBusSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,23 +200,11 @@ namespace server.Migrations
                     b.Property<int>("BusID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("DriverID")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan>("ETA")
-                        .HasColumnType("time");
-
-                    b.Property<TimeSpan>("ETD")
-                        .HasColumnType("time");
-
                     b.Property<bool>("IsRecurring")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Reasons")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RecurringOptionID")
                         .HasColumnType("int");
@@ -230,12 +221,6 @@ namespace server.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("TravelDate")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("BusScheduleID");
 
@@ -399,11 +384,21 @@ namespace server.Migrations
                     b.Property<int>("BoardingLocationID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<TimeSpan>("ETA")
                         .HasColumnType("time");
 
                     b.Property<TimeSpan>("ETD")
                         .HasColumnType("time");
+
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -411,10 +406,6 @@ namespace server.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("RouteID");
-
-                    b.HasIndex("ArrivalLocationID");
-
-                    b.HasIndex("BoardingLocationID");
 
                     b.ToTable("AspNetRoute");
                 });
@@ -438,12 +429,6 @@ namespace server.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("EmailOTP")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastOTPSent")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -457,9 +442,6 @@ namespace server.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime?>("OTPExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -586,25 +568,6 @@ namespace server.Migrations
                     b.Navigation("RecurringOptions");
 
                     b.Navigation("Routes");
-                });
-
-            modelBuilder.Entity("server.Models.Routes", b =>
-                {
-                    b.HasOne("server.Models.Locations", "ArrivalLocation")
-                        .WithMany()
-                        .HasForeignKey("ArrivalLocationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("server.Models.Locations", "BoardingLocation")
-                        .WithMany()
-                        .HasForeignKey("BoardingLocationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ArrivalLocation");
-
-                    b.Navigation("BoardingLocation");
                 });
 #pragma warning restore 612, 618
         }
