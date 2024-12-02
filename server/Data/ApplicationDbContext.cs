@@ -71,11 +71,11 @@ namespace server.Data
                     if (entry.State == EntityState.Added)
                     {
                         busSchedule.CreatedAt = DateTime.Now;
-                        busSchedule.UpdatedAt = busSchedule.CreatedAt; // Initialize UpdatedAt with CreatedAt value
+                        busSchedule.UpdatedAt = busSchedule.CreatedAt;
                     }
                     else if (entry.State == EntityState.Modified)
                     {
-                        busSchedule.UpdatedAt = DateTime.Now; // Update UpdatedAt on modifications
+                        busSchedule.UpdatedAt = DateTime.Now;
                     }
                 }
             }

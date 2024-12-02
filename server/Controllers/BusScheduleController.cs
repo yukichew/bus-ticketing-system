@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using server.Data;
 using server.Dto;
+using server.Helper;
 using server.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,12 @@ namespace server.Controllers
     public class BusScheduleController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailHelper;
 
-        public BusScheduleController(ApplicationDbContext context)
+        public BusScheduleController(ApplicationDbContext context, EmailService emailHelper)
         {
             _context = context;
+            _emailHelper = emailHelper;
         }
 
         #region GetAllBusSchedules
@@ -641,8 +644,8 @@ namespace server.Controllers
 
             var passengers = new List<dynamic>
             {
-                new { fullname = "yuki", email = "yuki@gmail.com" },
-                new { fullname = "jezlyn", email = "jezlyn@gmail.com" }
+                new { fullname = "Yuki", email = "yuki@gmail.com" },
+                new { fullname = "Jezlyn", email = "jezlyn@gmail.com" }
             };
 
             foreach (var busSchedule in busSchedules)
@@ -652,21 +655,34 @@ namespace server.Controllers
                 busSchedule.ETA = ParseTimeSpan(busScheduleDTO.ETA);
                 busSchedule.Reasons = busScheduleDTO.Reasons;
 
-                string emailMessage = $"Dear {{PassengerName}},\n\n" +
-                    $"We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been delayed.\n\n" +
-                    $"The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.\n\n" +
-                    $"Thank you for your understanding.";
-
                 foreach (var passenger in passengers)
                 {
-                    string personalizedEmailMessage = emailMessage.Replace("{{PassengerName}}", passenger.fullname);
-                    // await SendEmail(passenger.email, personalizedEmailMessage);
-                }
+                    string emailMessage = $@"Dear {passenger.fullname},
 
-                await _context.SaveChangesAsync();
+We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been delayed.
+
+The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.
+
+Reason for delay: {busSchedule.Reasons}
+
+Thank you for your understanding.
+
+Best regards,
+RideNGo";
+
+                    try
+                    {
+                        await _emailHelper.SendEmailAsync(passenger.fullname, passenger.email, "Bus Schedule Delay Notice", emailMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest($"Failed to send email to {passenger.email}: {ex.Message}");
+                    }
+                }
             }
 
-            return Ok($"Updated {busSchedules.Count} schedules to 'Delayed'.");
+            await _context.SaveChangesAsync();
+            return Ok($"Updated {busSchedules.Count} schedules to 'Delayed' and notified passengers.");
         }
         #endregion
 
@@ -691,35 +707,48 @@ namespace server.Controllers
                 {
                     return BadRequest("Cancellation is not allowed on the travel date.");
                 }
-            }
 
-            var passengers = new List<dynamic>
-            {
-                new { fullname = "yuki", email = "yuki@gmail.com" },
-                new { fullname = "jezlyn", email = "jezlyn@gmail.com" }
-            };
-
-            foreach (var busSchedule in busSchedules)
-            {
                 busSchedule.ScheduleStatus = "Canceled";
                 busSchedule.ETD = ParseTimeSpan(busScheduleDTO.ETD);
                 busSchedule.ETA = ParseTimeSpan(busScheduleDTO.ETA);
                 busSchedule.Reasons = busScheduleDTO.Reasons;
-
-                string emailMessage = $"Dear {{PassengerName}},\n\n" +
-                    $"We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been canceled.\n\n" +
-                    $"The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.\n\n" +
-                    $"Thank you for your understanding.";
-
-                foreach (var passenger in passengers)
-                {
-                    string personalizedEmailMessage = emailMessage.Replace("{{PassengerName}}", passenger.fullname);
-                    // await SendEmail(passenger.email, personalizedEmailMessage);
-                }
-
-                await _context.SaveChangesAsync();
             }
 
+            var passengers = new List<dynamic>
+            {
+                new { fullname = "yuki", email = "yingying.nly@gmail.com" },
+                new { fullname = "jezlyn", email = "tp068103@mail.apu.edu.my" }
+            };
+
+            foreach (var passenger in passengers)
+            {
+                foreach (var busSchedule in busSchedules)
+                {
+                    string emailMessage = $@"Dear {passenger.fullname},
+
+We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been canceled.
+
+The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.
+
+Reason for cancellation: {busSchedule.Reasons}
+
+Thank you for your understanding.
+
+Best regards,
+RideNGo";
+
+                    try
+                    {
+                        await _emailHelper.SendEmailAsync(passenger.fullname, passenger.email, "Bus Schedule Cancellation Notice", emailMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest($"Failed to send email to {passenger.email}: {ex.Message}");
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
             return Ok($"Updated {busSchedules.Count} schedules to 'Delayed'.");
         }
         #endregion
@@ -767,11 +796,6 @@ namespace server.Controllers
             }
 
             throw new ArgumentException("Invalid time format.");
-        }
-
-        private async Task SendEmail(string email, string message)
-        {
-            // Logic for send email
         }
     }
 }

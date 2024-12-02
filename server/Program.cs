@@ -87,6 +87,18 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("BusOperatorOnly", policy => policy.RequireRole("BusOperator"));
 });
 
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader() 
+              .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -104,6 +116,9 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     await DataSeed.SeedAdminDataSync(userManager);
 }
+
+// Use CORS
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 

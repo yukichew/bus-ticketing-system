@@ -1,7 +1,8 @@
 import Carousel from "../components/common/Carousel";
 import Notes from "../screens/user/modal/Notes";
 import Ratings from "../screens/user/modal/Ratings";
-import BusTypes from "../components/busOperator/BusTypes";
+import BusInfo from "../components/busOperator/BusInfo";
+import BusType from "../components/busOperator/BusType";
 import BusScheduling from "../components/busOperator/BusScheduling";
 import ManageBusOperator from "../components/admin/ManageBusOperators";
 import ManageUser from "../components/admin/ManageUser";
@@ -21,7 +22,8 @@ export const busInfoTabs = [
 ];
 
 export const busManagementTabs = [
-  { label: "Bus Types", content: <BusTypes /> },
+  { label: "All", content: <BusInfo /> },
+  { label: "Bus Type", content: <BusType /> },
   { label: "Bus Scheduling", content: <BusScheduling /> },
 ];
 
