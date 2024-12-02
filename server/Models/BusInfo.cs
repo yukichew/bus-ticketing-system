@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 namespace server.Models
 {
-    [Table("AspNetBusInfo")]
     [Index(nameof(BusPlate), IsUnique = true)]
     public class BusInfo
     {
@@ -21,6 +20,6 @@ namespace server.Models
         [StringLength(20)]
         public string Status { get; set; }
 
-        public BusType? BusType { get; }
+        public virtual BusType? BusType { get; }
     }
 }

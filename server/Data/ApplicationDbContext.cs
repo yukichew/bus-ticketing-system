@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using server.Models;
@@ -11,14 +12,10 @@ namespace server.Data
         {
         }
 
+        public DbSet<BusOperator> BusOperators { get; set; }
         public DbSet<BusType> BusTypes { get; set; }
         public DbSet<BusInfo> BusInfo { get; set; }
         public DbSet<Locations> Locations { get; set; }
-        //public DbSet<Passengers> Passengers { get; set; }
-        //public DbSet<BusOperator> BusOperators { get; set; }
-        //public DbSet<RatesAndReviews> RatesAndReviews { get; set; }
-        //public DbSet<SalesAndRevenue> SalesAndRevenue { get; set; }
-
         public DbSet<RecurringOption> RecurringOptions { get; set; }
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<Routes> Routes { get; set; }
@@ -28,14 +25,39 @@ namespace server.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<User>(entity => entity.ToTable("Users"));
+            modelBuilder.Entity<IdentityRole>(entity => entity.ToTable("Roles"));
+            modelBuilder.Entity<IdentityUserRole<string>>(entity => entity.ToTable("UserRoles"));
+            modelBuilder.Entity<IdentityUserClaim<string>>(entity => entity.ToTable("UserClaims"));
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity => entity.ToTable("UserLogins"));
+            modelBuilder.Entity<IdentityRoleClaim<string>>(entity => entity.ToTable("RoleClaims"));
+            modelBuilder.Entity<IdentityUserToken<string>>(entity => entity.ToTable("UserTokens"));
+
             modelBuilder.Entity<BusInfo>()
                 .HasOne(b => b.BusType)
                 .WithMany()
                 .HasForeignKey(b => b.BusTypeID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Routes>()
+                .HasOne(r => r.BoardingLocation)
+                .WithMany()
+                .HasForeignKey(r => r.BoardingLocationID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Routes>()
+                .HasOne(r => r.ArrivalLocation)
+                .WithMany()
+                .HasForeignKey(r => r.ArrivalLocationID)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
-        // For handling UpdatedAt in AspNetBusSchedule
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLazyLoadingProxies();
+        }
+
+        #region Handling UpdatedAt in AspNetBusSchedule
         public override int SaveChanges()
         {
             var entries = ChangeTracker.Entries()
@@ -85,5 +107,6 @@ namespace server.Data
 
             return await base.SaveChangesAsync(cancellationToken);
         }
+        #endregion
     }
 }

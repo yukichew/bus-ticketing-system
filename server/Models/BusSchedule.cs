@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models
 {
-    [Table("AspNetBusSchedule")]
     public class BusSchedule
     {
         [Key]

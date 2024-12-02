@@ -18,6 +18,9 @@ namespace server.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -46,7 +49,7 @@ namespace server.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -71,7 +74,7 @@ namespace server.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -96,7 +99,7 @@ namespace server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -118,7 +121,7 @@ namespace server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -133,7 +136,7 @@ namespace server.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -152,7 +155,7 @@ namespace server.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.BusInfo", b =>
@@ -183,7 +186,7 @@ namespace server.Migrations
 
                     b.HasIndex("BusTypeID");
 
-                    b.ToTable("AspNetBusInfo");
+                    b.ToTable("BusInfo");
                 });
 
             modelBuilder.Entity("server.Models.BusSchedule", b =>
@@ -247,7 +250,7 @@ namespace server.Migrations
 
                     b.HasIndex("RouteID");
 
-                    b.ToTable("AspNetBusSchedule");
+                    b.ToTable("BusSchedules");
                 });
 
             modelBuilder.Entity("server.Models.BusType", b =>
@@ -273,7 +276,7 @@ namespace server.Migrations
 
                     b.HasKey("BusTypeID");
 
-                    b.ToTable("AspNetBusType");
+                    b.ToTable("BusTypes");
                 });
 
             modelBuilder.Entity("server.Models.Driver", b =>
@@ -309,7 +312,7 @@ namespace server.Migrations
 
                     b.HasKey("DriverID");
 
-                    b.ToTable("AspNetDriver");
+                    b.ToTable("Drivers");
                 });
 
             modelBuilder.Entity("server.Models.Locations", b =>
@@ -345,7 +348,7 @@ namespace server.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("AspNetLocations");
+                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("server.Models.RecurringOption", b =>
@@ -382,7 +385,7 @@ namespace server.Migrations
 
                     b.HasKey("RecurringOptionID");
 
-                    b.ToTable("AspNetRecurringOption");
+                    b.ToTable("RecurringOptions");
                 });
 
             modelBuilder.Entity("server.Models.Routes", b =>
@@ -416,7 +419,7 @@ namespace server.Migrations
 
                     b.HasIndex("BoardingLocationID");
 
-                    b.ToTable("AspNetRoute");
+                    b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("server.Models.User", b =>
@@ -430,6 +433,11 @@ namespace server.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -490,7 +498,69 @@ namespace server.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Users", (string)null);
+
+                    b.HasDiscriminator().HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("server.Models.BusOperator", b =>
+                {
+                    b.HasBaseType("server.Models.User");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BusImages")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyContact")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("CompanyEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("CompanyLogo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool?>("IsRefundable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int?>("RatesAndReviewID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SalesAndRevenueID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ServiceAndReputations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasDiscriminator().HasValue("BusOperator");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -593,13 +663,13 @@ namespace server.Migrations
                     b.HasOne("server.Models.Locations", "ArrivalLocation")
                         .WithMany()
                         .HasForeignKey("ArrivalLocationID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("server.Models.Locations", "BoardingLocation")
                         .WithMany()
                         .HasForeignKey("BoardingLocationID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ArrivalLocation");
