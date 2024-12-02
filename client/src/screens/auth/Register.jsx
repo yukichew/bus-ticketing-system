@@ -74,7 +74,7 @@ const Register = ({ switchToLogin, switchToOTPVerification, source }) => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted form data:', formData); // For testing
   };

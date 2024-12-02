@@ -96,23 +96,6 @@ namespace server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EmailOTP = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OTPExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastOTPSent = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Discriminator = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
-                    CompanyName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    CompanyEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    CompanyContact = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CompanyLogo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BusImages = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsRefundable = table.Column<bool>(type: "bit", nullable: true),
-                    ServiceAndReputations = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    RatesAndReviewID = table.Column<int>(type: "int", nullable: true),
-                    SalesAndRevenueID = table.Column<int>(type: "int", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -200,6 +183,35 @@ namespace server.Migrations
                         name: "FK_RoleClaims_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusOperators",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CompanyName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CompanyEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CompanyContact = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    CompanyLogo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusImages = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRefundable = table.Column<bool>(type: "bit", nullable: true),
+                    ServiceAndReputations = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RatesAndReviewID = table.Column<int>(type: "int", nullable: true),
+                    SalesAndRevenueID = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusOperators", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BusOperators_Users_Id",
+                        column: x => x.Id,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -427,6 +439,9 @@ namespace server.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BusOperators");
+
             migrationBuilder.DropTable(
                 name: "BusSchedules");
 

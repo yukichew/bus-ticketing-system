@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace server.Dto
+namespace server.Dto.Auth
 {
     public class BusOperatorRegisterDto : RegisterDto
     {

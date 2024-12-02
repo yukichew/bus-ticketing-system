@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using server.Dto;
 using server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using server.Helper;
+using server.Dto.Auth;
 
 namespace server.Controllers
 {
@@ -18,82 +18,43 @@ namespace server.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<User> _signInManager;
-        private readonly EmailService _emailHelper;
+        private readonly EmailService _emailService;
+        private readonly OTPService _otpService;
 
-        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager, EmailService emailHelper)
+        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager, EmailService emailService, OTPService otpService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _signInManager = signInManager;
-            _emailHelper = emailHelper;
+            _emailService = emailService;
+            _otpService = otpService;
         }
 
         #region Register
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
-            if (existingUser != null)
+            var user = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (!user.EmailConfirmed)
             {
-                return BadRequest("User already exists");
+                return BadRequest("Email verification is required before registration.");
             }
 
-            User newUser;
-
-            if (registerDto.Role == "User")
-            {
-                newUser = new User
-                {
-                    Email = registerDto.Email,
-                    UserName = registerDto.Email,
-                    EmailConfirmed = false
-                };
-            }
-            else if (registerDto.Role == "BusOperator")
-            {
-                var busOperatorDto = registerDto as BusOperatorRegisterDto;
-                if (busOperatorDto == null)
-                {
-                    return BadRequest("Invalid data for BusOperator role.");
-                }
-
-                newUser = new BusOperator
-                {
-                    Email = busOperatorDto.Email,
-                    UserName = busOperatorDto.Email,
-                    EmailConfirmed = false,
-                    PhoneNumber = busOperatorDto.PhoneNumber,
-                    CompanyName = busOperatorDto.CompanyName,
-                    CompanyEmail = busOperatorDto.CompanyEmail,
-                    CompanyContact = busOperatorDto.CompanyContact,
-                    Address = busOperatorDto.Address,
-                    BusImages = busOperatorDto.BusImages,
-                    Name = busOperatorDto.Name,
-                    IsRefundable = busOperatorDto.IsRefundable
-                };
-            }
-            else
-            {
-                return BadRequest("Invalid role specified.");
-            }
-
-            var result = await _userManager.CreateAsync(newUser, registerDto.Password);
+            user.UserName = registerDto.Fullname;
+            var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }
 
-            var otp = GenerateOtp();
-            newUser.EmailOTP = otp;
-            newUser.OTPExpiry = DateTime.UtcNow.AddMinutes(10);
-            newUser.LastOTPSent = DateTime.UtcNow;
+            result = await _userManager.AddPasswordAsync(user, registerDto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
 
-            await _userManager.AddToRoleAsync(newUser, registerDto.Role);
-
-            await SendOtpEmail(newUser.UserName, newUser.Email, otp);
-
-            return Ok($"OTP email sent to {registerDto.Email} successfully.");
+            return Ok("Registration successful.");
         }
         #endregion
 
@@ -101,32 +62,49 @@ namespace server.Controllers
         [HttpPost("register/busoperator")]
         public async Task<IActionResult> RegisterBusOperator([FromBody] BusOperatorRegisterDto registerDto)
         {
-            return await Register(registerDto);
-        }
-        #endregion
+            var user = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (!user.EmailConfirmed)
+            {
+                return BadRequest("Email verification is required before registration.");
+            }
 
-        #region Generate OTP Method
-        private string GenerateOtp()
-        {
-            Random random = new Random();
-            string otp = random.Next(100000, 999999).ToString();
-            return otp;
+            var busOperator = new BusOperator
+            {
+                UserName = registerDto.Name,
+                Email = registerDto.Email,
+                PhoneNumber = registerDto.PhoneNumber,
+                CompanyName = registerDto.CompanyName,
+                CompanyEmail = registerDto.CompanyEmail,
+                CompanyContact = registerDto.CompanyContact,
+                Address = registerDto.Address,
+                BusImages = registerDto.BusImages,
+                IsRefundable = registerDto.IsRefundable,
+            };
+
+            var result = await _userManager.CreateAsync(busOperator, registerDto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            var roleResult = await _userManager.AddToRoleAsync(busOperator, "BusOperator");
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest(roleResult.Errors);
+            }
+
+            return Ok("Bus operator registration successful.");
         }
         #endregion
 
         #region Login API
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] AuthDto authDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto authDto)
         {
             var user = await _userManager.FindByEmailAsync(authDto.Email);
             if (user == null)
             {
                 return Unauthorized("Invalid credentials.");
-            }
-
-            if (!user.EmailConfirmed)
-            {
-                return Unauthorized("Email is not verified.");
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, authDto.Password, false, false);
@@ -170,7 +148,7 @@ namespace server.Controllers
         {
             var subject = "Your Email Verification OTP";
             var message = $"Your OTP for email verification is: {otp}";
-            await _emailHelper.SendEmailAsync(name, email, subject, message);
+            await _emailService.SendEmailAsync(email, email, subject, message);
         }
         #endregion
 
@@ -179,54 +157,44 @@ namespace server.Controllers
         public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailDto verifyEmailDto)
         {
             var user = await _userManager.FindByEmailAsync(verifyEmailDto.Email);
-            if (user == null)
+            if (user != null)
             {
-                return BadRequest("User not found.");
+                return BadRequest("User already exists.");
             }
 
-            if (user.EmailOTP != verifyEmailDto.OTP || user.OTPExpiry < DateTime.UtcNow)
+            var otp = await _otpService.GenerateOtpAsync(verifyEmailDto.Email);
+            await _otpService.SaveOTPAsync(verifyEmailDto.Email, otp);
+            await SendOtpEmail(verifyEmailDto.Email, verifyEmailDto.Email, otp);
+            return Ok($"OTP email sent to {verifyEmailDto.Email} with {otp} successfully.");
+        }
+        #endregion
+
+        #region Validate OTP API
+        [HttpPost("validate-otp")]
+        public async Task<IActionResult> ValidateOtp([FromBody] ValidateEmailDto validateEmailDto)
+        {
+            var isValid = await _otpService.ValidateOTPAsync(validateEmailDto.Email, validateEmailDto.OTP);
+            if (!isValid)
             {
                 return BadRequest("Invalid or expired OTP.");
             }
 
-            user.EmailConfirmed = true;
-            user.EmailOTP = null;
-            user.OTPExpiry = null;
-            await _userManager.UpdateAsync(user);
-
-            return Ok("Email verified successfully.");
-        }
-        #endregion
-
-        #region Resend OTP API
-        [HttpPost("resend-otp")]
-        public async Task<IActionResult> ResendOtp([FromBody] string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            var user = new User
             {
-                return BadRequest("User not found.");
+                Email = validateEmailDto.Email,
+                UserName = validateEmailDto.Email,
+                EmailConfirmed = true,
+            };
+
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
             }
 
-            if (user.EmailConfirmed)
-            {
-                return BadRequest("Email is already verified.");
-            }
-
-            if (user.LastOTPSent != null && DateTime.UtcNow < user.LastOTPSent.Value.AddMinutes(1))
-            {
-                return BadRequest("Please wait for 60 seconds before requesting a new OTP.");
-            }
-
-            var newOtp = GenerateOtp();
-            user.EmailOTP = newOtp;
-            user.OTPExpiry = DateTime.UtcNow.AddMinutes(10);
-            user.LastOTPSent = DateTime.UtcNow;
-            await _userManager.UpdateAsync(user);
-
-            await SendOtpEmail(user.UserName, user.Email, newOtp);
-
-            return Ok("A new OTP has been sent to your email.");
+            await _userManager.AddToRoleAsync(user, "User");
+            await _userManager.SetLockoutEnabledAsync(user, false);
+            return Ok("OTP validated successfully.");
         }
         #endregion
 
