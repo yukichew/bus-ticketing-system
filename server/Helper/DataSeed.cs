@@ -31,14 +31,14 @@ namespace server.Helper
                 adminUser = new User
                 {
                     UserName = adminEmail,
-                    Email = adminEmail
+                    Email = adminEmail,
+                    EmailConfirmed = true
                 };
 
                 var result = await userManager.CreateAsync(adminUser, "Admin@1234");
 
                 if (result.Succeeded)
                 {
-                    // Assign the 'Admin' role to the admin user
                     await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
