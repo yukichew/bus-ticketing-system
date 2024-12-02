@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 namespace server.Models
 {
-    [Table("AspNetBusType")]
     public class BusType
     {
         [Key]

@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models
 {
-    [Table("AspNetRoute")]
     public class Routes
     {
         [Key]
@@ -12,8 +11,8 @@ namespace server.Models
 
         [Required]
         public int BoardingLocationID { get; set; }
-        
-        public Locations BoardingLocation { get; set; }
+
+        public virtual Locations BoardingLocation { get; set; }
 
         [Required]
         [Column(TypeName = "time")]
@@ -22,7 +21,7 @@ namespace server.Models
         [Required]
         public int ArrivalLocationID { get; set; }
 
-        public Locations ArrivalLocation { get; set; }
+        public virtual Locations ArrivalLocation { get; set; }
 
         [Required]
         [Column(TypeName = "time")]

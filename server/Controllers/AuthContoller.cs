@@ -6,7 +6,6 @@ using server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using MimeKit;
 using server.Helper;
 
 namespace server.Controllers
@@ -40,12 +39,44 @@ namespace server.Controllers
                 return BadRequest("User already exists");
             }
 
-            var newUser = new User
+            User newUser;
+
+            if (registerDto.Role == "User")
             {
-                Email = registerDto.Email,
-                UserName = registerDto.Email,
-                EmailConfirmed = false
-            };
+                newUser = new User
+                {
+                    Email = registerDto.Email,
+                    UserName = registerDto.Email,
+                    EmailConfirmed = false
+                };
+            }
+            else if (registerDto.Role == "BusOperator")
+            {
+                var busOperatorDto = registerDto as BusOperatorRegisterDto;
+                if (busOperatorDto == null)
+                {
+                    return BadRequest("Invalid data for BusOperator role.");
+                }
+
+                newUser = new BusOperator
+                {
+                    Email = busOperatorDto.Email,
+                    UserName = busOperatorDto.Email,
+                    EmailConfirmed = false,
+                    PhoneNumber = busOperatorDto.PhoneNumber,
+                    CompanyName = busOperatorDto.CompanyName,
+                    CompanyEmail = busOperatorDto.CompanyEmail,
+                    CompanyContact = busOperatorDto.CompanyContact,
+                    Address = busOperatorDto.Address,
+                    BusImages = busOperatorDto.BusImages,
+                    Name = busOperatorDto.Name,
+                    IsRefundable = busOperatorDto.IsRefundable
+                };
+            }
+            else
+            {
+                return BadRequest("Invalid role specified.");
+            }
 
             var result = await _userManager.CreateAsync(newUser, registerDto.Password);
             if (!result.Succeeded)
@@ -57,15 +88,24 @@ namespace server.Controllers
             newUser.EmailOTP = otp;
             newUser.OTPExpiry = DateTime.UtcNow.AddMinutes(10);
             newUser.LastOTPSent = DateTime.UtcNow;
-            await _userManager.AddToRoleAsync(newUser, "User");
+
+            await _userManager.AddToRoleAsync(newUser, registerDto.Role);
 
             await SendOtpEmail(newUser.UserName, newUser.Email, otp);
 
-            return Ok("OTP email sent to user succesfully.");
+            return Ok($"OTP email sent to {registerDto.Email} successfully.");
         }
         #endregion
 
-        #region Generate OTP
+        #region Register as Bus Operator
+        [HttpPost("register/busoperator")]
+        public async Task<IActionResult> RegisterBusOperator([FromBody] BusOperatorRegisterDto registerDto)
+        {
+            return await Register(registerDto);
+        }
+        #endregion
+
+        #region Generate OTP Method
         private string GenerateOtp()
         {
             Random random = new Random();
@@ -74,7 +114,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Login
+        #region Login API
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthDto authDto)
         {
@@ -101,7 +141,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Generate JWT Token
+        #region Generate JWT Token Method
         private string GenerateJwtToken(User user)
         {
             var claims = new[]
@@ -125,7 +165,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Send OTP Email
+        #region Send OTP Email Method
         private async Task SendOtpEmail(string name, string email, string otp)
         {
             var subject = "Your Email Verification OTP";
@@ -134,7 +174,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Verify Email
+        #region Verify Email API
         [HttpPost("verify-email")]
         public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailDto verifyEmailDto)
         {
@@ -158,7 +198,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Resend OTP
+        #region Resend OTP API
         [HttpPost("resend-otp")]
         public async Task<IActionResult> ResendOtp([FromBody] string email)
         {
@@ -189,7 +229,6 @@ namespace server.Controllers
             return Ok("A new OTP has been sent to your email.");
         }
         #endregion
-
 
     }
 }
