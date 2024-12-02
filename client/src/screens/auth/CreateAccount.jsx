@@ -54,16 +54,6 @@ const CreateAccount = ({ switchToLogin }) => {
             icon={TfiEmail}
           />
         </div>
-        <div className='mt-3'>
-          <CustomInput
-            id={'dob'}
-            name={'dob'}
-            placeholder={'Date Of Birth'}
-            type={'text'}
-            required
-            icon={IoCalendarOutline}
-          />
-        </div>
         <div className='relative mt-3'>
           <CustomInput
             id={'password'}

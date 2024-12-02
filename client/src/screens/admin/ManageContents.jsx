@@ -1,26 +1,15 @@
 import React, { useState } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
-import ManageFaq from "../../components/admin/ManageFaq";
-import ManagePolicy from "../../components/admin/ManagePolicy";
+import { manageContentTabs } from "../../constants/TabItems";
+import Tabs from "../../components/common/Tabs";
 
 const ManageContents = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("Main");
+  const [activeTab, setActiveTab] = useState("FAQs"); // Default tab
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
-  };
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case "FAQs":
-        return <ManageFaq />;
-      case "Terms and Conditions":
-        return <ManagePolicy />;
-      default:
-        return <ManageFaq />;
-    }
   };
 
   return (
@@ -43,31 +32,9 @@ const ManageContents = () => {
             </h2>
           </div>
 
-          <div className="flex items-center space-x-8 mt-5 border-b">
-            <div
-              onClick={() => setActiveSection("FAQs")}
-              className={`cursor-pointer pb-2 border-b-2 ${
-                activeSection === "FAQs"
-                  ? "border-primary text-primary font-medium"
-                  : "border-transparent text-gray-400 hover:text-primary"
-              } transition duration-300 flex items-center`}
-            >
-              <span>FAQs</span>
-            </div>
-
-            <div
-              onClick={() => setActiveSection("Terms and Conditions")}
-              className={`cursor-pointer pb-2 border-b-2 ${
-                activeSection === "Terms and Conditions"
-                  ? "border-primary text-primary font-medium"
-                  : "border-transparent text-gray-400 hover:text-primary"
-              } transition duration-300 flex items-center`}
-            >
-              <span>Terms & Conditions</span>
-            </div>
+          <div className="mt-2">
+            <Tabs tabs={manageContentTabs} activeTabProp={activeTab} />
           </div>
-
-          <div className="mt-6 mb-6">{renderContent()}</div>
         </div>
       </main>
     </div>

@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import * as Icons from "../admin/icons";
-
-function Icon({ icon, ...props }) {
-  const Icon = Icons[icon];
-  return <Icon {...props} />;
-}
+import { AiOutlineHome } from "react-icons/ai";
+import { RiMoneyDollarBoxLine } from "react-icons/ri";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { MdContentCopy } from "react-icons/md";
+import { TbMapRoute } from "react-icons/tb";
+import { IoLayersOutline } from "react-icons/io5";
 
 const SidebarItems = () => {
   const links = [
@@ -13,37 +13,37 @@ const SidebarItems = () => {
       key: 1,
       name: "Dashboard",
       href: "/admin-dashboard",
-      icon: "HomeIcon",
+      icon: AiOutlineHome,
     },
     {
       key: 2,
       name: "User Management",
       href: "/manage-user",
-      icon: "PeopleIcon",
+      icon: HiOutlineUserGroup,
     },
     {
       key: 3,
       name: "Manage Applications",
       href: "/manage-applications",
-      icon: "CardsIcon",
+      icon: IoLayersOutline,
     },
     {
       key: 4,
       name: "Manage Bus Routes",
       href: "/manage-bus-routes",
-      icon: "PagesIcon",
+      icon: TbMapRoute,
     },
     {
       key: 5,
       name: "Manage Transactions",
       href: "/manage-transactions",
-      icon: "MoneyIcon",
+      icon: RiMoneyDollarBoxLine,
     },
     {
       key: 6,
       name: "Manage Contents",
       href: "/manage-contents",
-      icon: "ModalsIcon",
+      icon: MdContentCopy,
     },
   ];
 
@@ -57,10 +57,10 @@ const SidebarItems = () => {
               to={link.href}
               className="inline-flex items-center w-full text-xs font-semibold font-poppins transition-colors duration-200 text-gray-500 hover:text-primary rounded-lg p-3 hover:bg-[#f0f5ff]"
             >
-              <Icon
+              {/* Use the icon directly */}
+              <link.icon
                 className="w-5 h-5"
                 aria-hidden="true"
-                icon={link.icon}
                 style={{ width: "20px", height: "20px" }}
               />
               <span className="ml-4">{link.name}</span>

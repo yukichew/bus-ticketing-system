@@ -7,7 +7,7 @@ import Tabs from '../../../components/common/Tabs';
 
 const ManageBus = () => {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState('Bus Types');
+  const [activeTab, setActiveTab] = useState('All');
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
