@@ -1,6 +1,11 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { transactions, busRoutes, applications } from "../../constants/Dummy";
+import {
+  transactions,
+  busRoutes,
+  applications,
+  ratesAndReviews,
+} from "../../constants/Dummy";
 import { IoMenu } from "react-icons/io5";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
@@ -18,6 +23,7 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
   const [busOperatorApplicationCount, setbusOperatorApplicationCount] =
     useState(0);
   const [busRoutesApplicationCount, setbusRoutesApplicationCount] = useState(0);
+  const [reportedReviewsCount, setReportedReviewsCount] = useState(0);
   const notificationsRef = useRef(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
@@ -46,11 +52,19 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
     setbusRoutesApplicationCount(totalBusRoutesApplicationCount);
   }, []);
 
+  useEffect(() => {
+    const totalReportedReviewsCount = ratesAndReviews.filter(
+      (ratesAndReviews) => ratesAndReviews.status === "Pending for Review"
+    ).length;
+    setReportedReviewsCount(totalReportedReviewsCount);
+  }, []);
+
   // Calculate total notifications
   const totalNotifications =
     refundRequestCount +
     busOperatorApplicationCount +
-    busRoutesApplicationCount;
+    busRoutesApplicationCount +
+    reportedReviewsCount;
 
   const handleNotificationsClick = () => {
     setIsNotificationsMenuOpen((prev) => !prev);
@@ -170,6 +184,18 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                       <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
                         {busRoutesApplicationCount}{" "}
                         {/* Display total bus routes applications */}
+                      </span>
+                    </DropdownItem>
+
+                    {/* Reported Reviews */}
+                    <DropdownItem
+                      onClick={() => navigate("/manage-reviews")}
+                      className="justify-between"
+                    >
+                      <span>Reported Reviews</span>
+                      <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
+                        {reportedReviewsCount}{" "}
+                        {/* Display total reported reviews */}
                       </span>
                     </DropdownItem>
                   </div>
