@@ -165,7 +165,7 @@ namespace server.Controllers
             var otp = await _otpService.GenerateOtpAsync(verifyEmailDto.Email);
             await _otpService.SaveOTPAsync(verifyEmailDto.Email, otp);
             await SendOtpEmail(verifyEmailDto.Email, verifyEmailDto.Email, otp);
-            return Ok($"OTP email sent to {verifyEmailDto.Email} with {otp} successfully.");
+            return Ok($"OTP email sent to {verifyEmailDto.Email} successfully.");
         }
         #endregion
 

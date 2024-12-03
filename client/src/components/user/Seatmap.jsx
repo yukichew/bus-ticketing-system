@@ -5,7 +5,8 @@ import CustomButton from "../common/CustomButton";
 import Modal from "../common/Modal";
 import Seat from "./Seat";
 
-const Seatmap = ({ noOfSeats, layout }) => {
+const Seatmap = ({ schedule, layout }) => {
+  const noOfSeats = schedule.busInfo.busType.noOfSeats;
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const seats = Array.from({ length: noOfSeats }, (_, i) => i + 1);
@@ -73,7 +74,7 @@ const Seatmap = ({ noOfSeats, layout }) => {
           title='Proceed to Book'
           type='button'
           onClick={() => {
-            navigate("/booking", { state: { selectedSeats } });
+            navigate("/booking", { state: { selectedSeats, schedule } });
           }}
           className='mt-2'
         />

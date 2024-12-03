@@ -6,7 +6,7 @@ namespace server.Models
     public class Booking
     {
         [Key]
-        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BookingID { get; set; }
 
         [Required]
@@ -14,12 +14,6 @@ namespace server.Models
 
         [ForeignKey("BusScheduleID")]
         public virtual BusSchedule? BusSchedule { get; set; }
-
-        [Required]
-        public int PassengerID { get; set; }
-
-        [ForeignKey("PassengerID")]
-        public virtual Passenger? Passenger { get; set; }
 
         [Required]
         [StringLength(50)]

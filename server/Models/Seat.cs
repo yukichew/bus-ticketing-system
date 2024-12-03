@@ -16,5 +16,6 @@ namespace server.Models
 
         [ForeignKey("BookingID")]
         public virtual Booking? Booking { get; set; }
+        public virtual Passenger? Passenger { get; set; }
     }
 }

@@ -183,17 +183,12 @@ namespace server.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PassengerID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("BookingID");
 
                     b.HasIndex("BusScheduleID");
-
-                    b.HasIndex("PassengerID");
 
                     b.ToTable("Booking");
                 });
@@ -255,6 +250,9 @@ namespace server.Migrations
                     b.Property<bool>("IsRecurring")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PostedById")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Reasons")
                         .HasColumnType("nvarchar(max)");
 
@@ -280,20 +278,17 @@ namespace server.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("postedById")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("BusScheduleID");
 
                     b.HasIndex("BusID");
 
                     b.HasIndex("DriverID");
 
+                    b.HasIndex("PostedById");
+
                     b.HasIndex("RecurringOptionID");
 
                     b.HasIndex("RouteID");
-
-                    b.HasIndex("postedById");
 
                     b.ToTable("BusSchedules");
                 });
@@ -503,12 +498,17 @@ namespace server.Migrations
                     b.Property<int>("BookingID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PassengerID")
+                        .HasColumnType("int");
+
                     b.Property<int>("SeatNumber")
                         .HasColumnType("int");
 
                     b.HasKey("SeatId");
 
                     b.HasIndex("BookingID");
+
+                    b.HasIndex("PassengerID");
 
                     b.ToTable("Seats");
                 });
@@ -692,15 +692,7 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("server.Models.Passenger", "Passenger")
-                        .WithMany()
-                        .HasForeignKey("PassengerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("BusSchedule");
-
-                    b.Navigation("Passenger");
                 });
 
             modelBuilder.Entity("server.Models.BusInfo", b =>
@@ -728,6 +720,10 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("server.Models.BusOperator", "PostedBy")
+                        .WithMany()
+                        .HasForeignKey("PostedById");
+
                     b.HasOne("server.Models.RecurringOption", "RecurringOptions")
                         .WithMany()
                         .HasForeignKey("RecurringOptionID");
@@ -738,19 +734,15 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("server.Models.BusOperator", "postedBy")
-                        .WithMany()
-                        .HasForeignKey("postedById");
-
                     b.Navigation("BusInfo");
 
                     b.Navigation("Drivers");
 
+                    b.Navigation("PostedBy");
+
                     b.Navigation("RecurringOptions");
 
                     b.Navigation("Routes");
-
-                    b.Navigation("postedBy");
                 });
 
             modelBuilder.Entity("server.Models.Routes", b =>
@@ -780,7 +772,13 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("server.Models.Passenger", "Passenger")
+                        .WithMany()
+                        .HasForeignKey("PassengerID");
+
                     b.Navigation("Booking");
+
+                    b.Navigation("Passenger");
                 });
 
             modelBuilder.Entity("server.Models.BusOperator", b =>

@@ -3,7 +3,6 @@ import { FaStar } from "react-icons/fa";
 import { GoPeople } from "react-icons/go";
 import { LiaSquareFullSolid } from "react-icons/lia";
 import { busInfoTabs } from "../../constants/TabItems";
-import CustomButton from "../common/CustomButton";
 import Modal from "../common/Modal";
 import Tabs from "../common/Tabs";
 import Seatmap from "./Seatmap";
@@ -90,12 +89,12 @@ const BusCard = ({ schedule }) => {
         <div className='flex flex-col items-center'>
           <div className='hidden md:block w-3/5'>
             <Seatmap
-              noOfSeats={schedule.busInfo.busType.noOfSeats}
               layout={
                 schedule.busInfo.busType.types.includes("2+1")
                   ? "2+1"
                   : "Executive"
               }
+              schedule={schedule}
             />
           </div>
           <button
