@@ -1,6 +1,15 @@
-exports.catchError = (error) => {
-  if(error.response) {
-    return error.response.data;
+export const catchError = (err) => {
+  if (err.response) {
+    const message = err.response.data?.message || "An error occurred";
+    return { error: true, message };
   }
-  return { message: error.message };
+
+  if (err.request) {
+    return {
+      error: true,
+      message: "Network Error: Please check your connection.",
+    };
+  }
+
+  return { error: true, message: err.message };
 };

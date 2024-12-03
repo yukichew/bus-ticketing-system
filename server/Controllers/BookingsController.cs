@@ -44,41 +44,52 @@ namespace server.Controllers
         {
             if (!_context.BusSchedules.Any(bs => bs.BusScheduleID == bookingDto.BusScheduleID))
             {
-                return BadRequest("Invalid bus schedule id.");
+                return BadRequest(new { message = "Invalid bus schedule id." });
             }
 
-            var alreadyBookedSeats = _context.Seats
-                .Where(s => bookingDto.seatNumbers.Contains(s.SeatNumber) && s.Booking.BusScheduleID == bookingDto.BusScheduleID)
+            var seatNumbers = bookingDto.Seats.Select(seat => seat.SeatNumber).ToList();
+
+            var alreadyBookedSeats = await _context.Seats
+                .Where(s => seatNumbers.Contains(s.SeatNumber) && s.Booking.BusScheduleID == bookingDto.BusScheduleID)
                 .Select(s => s.SeatNumber)
-                .ToList();
+                .ToListAsync(); ;
 
             if (alreadyBookedSeats.Any())
             {
-                return BadRequest($"The following seats are already occupied: {string.Join(", ", alreadyBookedSeats)}");
+                return BadRequest(new { message = $"The following seats are already occupied: {string.Join(", ", alreadyBookedSeats)}" });
             }
 
             var booking = new Booking
             {
                 BusScheduleID = bookingDto.BusScheduleID,
-                PassengerID = bookingDto.PassengerID,
                 BookingStatus = bookingDto.BookingStatus,
                 AmountPaid = bookingDto.AmountPaid,
                 BookingDate = bookingDto.BookingDate,
-                CreatedAt = bookingDto.CreatedAt,
-                UpdatedAt = bookingDto.UpdatedAt
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                BusSchedule = await _context.BusSchedules.FindAsync(bookingDto.BusScheduleID)
             };
 
             _context.Booking.Add(booking);
             await _context.SaveChangesAsync();
 
-            foreach (var seat in bookingDto.seatNumbers)
+            foreach (var seatDto in bookingDto.Seats)
             {
+                var passenger = new Passenger
+                {
+                    Fullname = seatDto.Passenger.Fullname,
+                    Email = seatDto.Passenger.Email,
+                    PhoneNumber = seatDto.Passenger.PhoneNumber
+                };
+                _context.Passenger.Add(passenger);
+                await _context.SaveChangesAsync();
+
                 var bookingSeat = new Seat
                 {
                     BookingID = booking.BookingID,
-                    SeatNumber = seat
+                    SeatNumber = seatDto.SeatNumber,
+                    Passenger = passenger
                 };
-
                 _context.Seats.Add(bookingSeat);
             }
 
