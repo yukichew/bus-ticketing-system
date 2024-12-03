@@ -12,23 +12,34 @@ import PassengerCreateForm from "./modal/PassengerCreateForm";
 import Modal from "../common/Modal";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const ManageUser = () => {
   const [showModal, setShowModal] = useState(false); // state for update modal
   const [showCreateModal, setCreateModal] = useState(false); // state for create modal
   const [showDetailsModal, setShowDetailsModal] = useState(false); // state for details modal
   const [selectedOperator, setSelectedOperator] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
     fullName: "",
     email: "",
-    dob: "",
     phoneNumber: "",
     status: "",
   });
 
-  const columns = ["Full Name", "Email", "DoB", "Phone Number"];
-  const columnKeys = ["fullName", "email", "dob", "phoneNumber"];
+  const initialFilters = {
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    status: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
+
+  const columns = ["Full Name", "Email", "Phone Number"];
+  const columnKeys = ["fullName", "email", "phoneNumber"];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -39,9 +50,11 @@ const ManageUser = () => {
   };
 
   const filteredData = passengers.filter((operator) =>
-    Object.keys(filters).every((key) =>
-      operator[key].toLowerCase().includes(filters[key].toLowerCase())
-    )
+    Object.keys(filters).every((key) => {
+      const filterValue = filters[key]?.toLowerCase() || "";
+      const operatorValue = operator[key]?.toLowerCase() || "";
+      return operatorValue.includes(filterValue);
+    })
   );
 
   const enhancedData = filteredData.map((item) => ({
@@ -105,73 +118,76 @@ const ManageUser = () => {
 
   return (
     <>
+      {/* filter input */}
       {showFilters && (
         <Card>
+          {/* First Row: Company Name and Company Email */}
           <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/2">
               <label
-                htmlFor="fullName"
+                htmlFor="companyName"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                Full Name
+                Company Name
               </label>
               <CustomInput
-                placeholder="Filter by Full Name"
-                id="fullName"
-                name="fullName"
+                placeholder="Filter by Company Name"
+                id="companyName"
+                name="companyName"
                 type="text"
-                value={filters.fullName}
+                value={filters.companyName}
                 onChange={handleFilterChange}
               />
             </div>
             <div className="w-1/2">
               <label
-                htmlFor="email"
+                htmlFor="companyEmail"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                Email
+                Company Email
               </label>
               <CustomInput
-                placeholder="Filter by Email"
-                id="email"
-                name="email"
+                placeholder="Filter by Company Email"
+                id="companyEmail"
+                name="companyEmail"
                 type="text"
-                value={filters.email}
+                value={filters.companyEmail}
                 onChange={handleFilterChange}
               />
             </div>
           </div>
 
-          <div className="flex justify-between gap-4">
+          {/* Second Row: Contact Number, Address, Status */}
+          <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/3">
               <label
-                htmlFor="dob"
+                htmlFor="contactNumber"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                Date of Birth
+                Contact Number
               </label>
               <CustomInput
-                placeholder="Filter by Date of Birth"
-                id="dob"
-                name="dob"
-                type="date"
-                value={filters.dob}
+                placeholder="Filter by Contact Number"
+                id="contactNumber"
+                name="contactNumber"
+                type="text"
+                value={filters.contactNumber}
                 onChange={handleFilterChange}
               />
             </div>
             <div className="w-1/3">
               <label
-                htmlFor="phoneNumber"
+                htmlFor="address"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                Phone Number
+                Address
               </label>
               <CustomInput
-                placeholder="Filter by Phone Number"
-                id="phoneNumber"
-                name="phoneNumber"
+                placeholder="Filter by Address"
+                id="address"
+                name="address"
                 type="text"
-                value={filters.phoneNumber}
+                value={filters.address}
                 onChange={handleFilterChange}
               />
             </div>
@@ -190,10 +206,19 @@ const ManageUser = () => {
                 className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
               >
                 <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="deactivated">Deactivated</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
               </select>
             </div>
+          </div>
+
+          {/* Clear Filter Button */}
+          <div className="mt-4 w-full">
+            <CustomButton
+              title="Clear Filters"
+              onClick={clearFilters}
+              className="w-full h-12 text-white bg-primary rounded-md hover:bg-primary-dark"
+            />
           </div>
         </Card>
       )}

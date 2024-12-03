@@ -8,11 +8,12 @@ import { IoFilter } from "react-icons/io5";
 import { FaRegTrashAlt, FaRegEye } from "react-icons/fa";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const ManageTransactions = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
     transactionNo: "",
     purchaseAt: "",
@@ -21,6 +22,19 @@ const ManageTransactions = () => {
     amountPaid: "",
     status: "",
   });
+
+  const initialFilters = {
+    transactionNo: "",
+    purchaseAt: "",
+    purchaseBy: "",
+    paymentType: "",
+    amountPaid: "",
+    status: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -117,7 +131,7 @@ const ManageTransactions = () => {
                 Transaction No
               </label>
               <CustomInput
-                placeholder="Transaction No"
+                placeholder="Filter by Transaction No"
                 id="transactionNo"
                 name="transactionNo"
                 type="text"
@@ -149,7 +163,7 @@ const ManageTransactions = () => {
                 Purchase By
               </label>
               <CustomInput
-                placeholder="Purchase By"
+                placeholder="Filter by Purchase By"
                 id="purchaseBy"
                 name="purchaseBy"
                 type="text"
@@ -160,7 +174,7 @@ const ManageTransactions = () => {
           </div>
 
           {/* Second Row */}
-          <div className="flex justify-between gap-4">
+          <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/3 pr-2">
               <label
                 htmlFor="Payment Type"
@@ -169,7 +183,7 @@ const ManageTransactions = () => {
                 Payment Type
               </label>
               <CustomInput
-                placeholder="Payment Type"
+                placeholder="Filter by Payment Type"
                 id="paymentType"
                 name="paymentType"
                 type="text"
@@ -185,7 +199,7 @@ const ManageTransactions = () => {
                 Amount Paid (RM)
               </label>
               <CustomInput
-                placeholder="Amount Paid"
+                placeholder="Filter by Amount Paid (RM)"
                 id="amountPaid"
                 name="amountPaid"
                 type="text"
@@ -212,6 +226,15 @@ const ManageTransactions = () => {
                 <option value="refunded">Refunded</option>
               </select>
             </div>
+          </div>
+
+          {/* Third Row: Clear Filter Button */}
+          <div className="flex justify-end">
+            <CustomButton
+              title="Clear Filters"
+              onClick={clearFilters}
+              className="h-12 px-6 text-white bg-primary rounded-md hover:bg-primary-dark"
+            />
           </div>
         </Card>
       )}

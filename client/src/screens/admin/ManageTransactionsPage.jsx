@@ -55,7 +55,7 @@ const ManageTransactionsPage = () => {
       <Sidebar isSidebarOpen={isSidebarOpen} />
 
       <main
-        className={`flex-1 p-4 transition-all duration-300 mt-20 ${
+        className={`flex-1 p-4 transition-all duration-300 mt-16 ${
           isSidebarOpen ? "ml-64" : "ml-0"
         } overflow-y-auto`}
       >

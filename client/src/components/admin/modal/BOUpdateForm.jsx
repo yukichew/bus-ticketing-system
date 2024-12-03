@@ -31,7 +31,10 @@ const BoUpdateForm = ({ operator, onClose, isDeactivated }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-4 w-[400px]">
+    <div className="flex flex-col space-y-4 w-[600px]">
+      <header className="font-poppins font-semibold text-lg text-primary mb-4">
+        Bus Operator Details
+      </header>
       <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="companyname"

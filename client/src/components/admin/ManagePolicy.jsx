@@ -11,6 +11,7 @@ import PolicyCreateForm from "../../components/admin/modal/PolicyCreateForm";
 import PolicyEditForm from "../../components/admin/modal/PolicyEditForm";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const ManagePolicy = () => {
   const navigate = useNavigate();
@@ -19,12 +20,22 @@ const ManagePolicy = () => {
   const [showEditModal, setShowEditModal] = useState(false); // state for edit modal
   const [showCreateModal, setShowCreateModal] = useState(false); // state for create modal
   const [selectedPolicy, setSelectedPolicy] = useState(null);
-  const [isFilterShow, setIsFilterShow] = useState(false);
+  const [isFilterShow, setIsFilterShow] = useState(true);
   const [filters, setFilters] = useState({
     policyTitle: "",
     terms: "",
     status: "",
   });
+
+  const initialFilters = {
+    policyTitle: "",
+    terms: "",
+    status: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -98,9 +109,10 @@ const ManagePolicy = () => {
       {isFilterShow && (
         <div className="mb-8 mt-5">
           <Card>
-            <div className="flex justify-between gap-4">
+            {/* First Row: Filters */}
+            <div className="grid grid-cols-3 gap-4">
               {/* Filter by Policy Title */}
-              <div className="w-1/3 pr-2">
+              <div>
                 <label
                   htmlFor="policyTitle"
                   className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -118,7 +130,7 @@ const ManagePolicy = () => {
               </div>
 
               {/* Filter by Terms */}
-              <div className="w-1/3 pr-2">
+              <div>
                 <label
                   htmlFor="terms"
                   className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -136,7 +148,7 @@ const ManagePolicy = () => {
               </div>
 
               {/* Dropdown for Status */}
-              <div className="w-1/3 pr-2">
+              <div>
                 <label
                   htmlFor="status"
                   className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -155,6 +167,15 @@ const ManagePolicy = () => {
                   <option value="deactivated">Deactivated</option>
                 </select>
               </div>
+            </div>
+
+            {/* Second Row: Clear Filters Button */}
+            <div className="mt-4">
+              <CustomButton
+                title="Clear Filters"
+                onClick={clearFilters}
+                className="w-full h-12 text-white bg-primary rounded-md hover:bg-primary-dark"
+              />
             </div>
           </Card>
         </div>
