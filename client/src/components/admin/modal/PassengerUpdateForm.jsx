@@ -34,6 +34,9 @@ const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
 
   return (
     <div className="flex flex-col space-y-4 w-[400px] mx-auto">
+      <header className="font-poppins font-semibold text-lg text-primary mb-4">
+        Passenger Details
+      </header>
       <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
         <label
           htmlFor="fullName"
@@ -68,24 +71,8 @@ const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
           required
         />
       </div>
-      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
-        <label
-          htmlFor="dob"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Date of Birth
-        </label>
-        <CustomInput
-          placeholder="Enter date of birth"
-          id="dob"
-          name="dob"
-          type="date"
-          value={userInfo.dob}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
+
+      <div className={`${isDeactivated ? "pointer-events-none" : ""} pb-6`}>
         <label
           htmlFor="phoneNumber"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"

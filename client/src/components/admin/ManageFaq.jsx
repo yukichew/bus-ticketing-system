@@ -12,6 +12,7 @@ import FaqEditForm from "./modal/FaqEditForm";
 import FaqCreateForm from "./modal/FaqCreateForm";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const categories = [
   "General",
@@ -28,13 +29,24 @@ const ManageFaq = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
-  const [isFilterShow, setIsFilterShow] = useState(false);
+  const [isFilterShow, setIsFilterShow] = useState(true);
   const [filters, setFilters] = useState({
     question: "",
     answer: "",
     category: "",
     status: "",
   });
+
+  const initialFilters = {
+    question: "",
+    answer: "",
+    category: "",
+    status: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -97,8 +109,8 @@ const ManageFaq = () => {
       {isFilterShow && (
         <div className="mb-8 mt-5">
           <Card>
-            <div className="flex justify-between gap-4">
-              <div className="w-1/3 pr-2">
+            <div className="grid grid-cols-4 gap-4">
+              <div>
                 <label
                   htmlFor="question"
                   className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -114,7 +126,7 @@ const ManageFaq = () => {
                   onChange={handleFilterChange}
                 />
               </div>
-              <div className="w-1/3 pr-2">
+              <div>
                 <label
                   htmlFor="answer"
                   className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -130,7 +142,7 @@ const ManageFaq = () => {
                   onChange={handleFilterChange}
                 />
               </div>
-              <div className="w-1/3 pr-2">
+              <div>
                 <label
                   htmlFor="category"
                   className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -152,8 +164,7 @@ const ManageFaq = () => {
                   ))}
                 </select>
               </div>
-              {/* Dropdown for Status */}
-              <div className="w-1/3 pr-2">
+              <div>
                 <label
                   htmlFor="status"
                   className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -172,6 +183,15 @@ const ManageFaq = () => {
                   <option value="deactivated">Deactivated</option>
                 </select>
               </div>
+            </div>
+
+            {/* Clear filter button */}
+            <div className="mt-4">
+              <CustomButton
+                title="Clear Filters"
+                onClick={clearFilters}
+                className="w-full h-12 text-white bg-primary rounded-md hover:bg-primary-dark"
+              />
             </div>
           </Card>
         </div>

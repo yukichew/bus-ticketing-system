@@ -8,11 +8,12 @@ import { IoFilter } from "react-icons/io5";
 import { FaRegTrashAlt, FaRegEye } from "react-icons/fa";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const ManageRefunds = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
     transactionNo: "",
     purchaseAt: "",
@@ -39,6 +40,19 @@ const ManageRefunds = () => {
     "amountPaid",
     "refundReason",
   ];
+
+  const initialFilters = {
+    transactionNo: "",
+    purchaseAt: "",
+    purchaseBy: "",
+    paymentType: "",
+    amountPaid: "",
+    refundReason: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -120,7 +134,7 @@ const ManageRefunds = () => {
                 Transaction No
               </label>
               <CustomInput
-                placeholder="Transaction No"
+                placeholder="Filter by Transaction No"
                 id="transactionNo"
                 name="transactionNo"
                 type="text"
@@ -152,7 +166,7 @@ const ManageRefunds = () => {
                 Purchase By
               </label>
               <CustomInput
-                placeholder="Purchase By"
+                placeholder="Filter by Purchase By"
                 id="purchaseBy"
                 name="purchaseBy"
                 type="text"
@@ -172,7 +186,7 @@ const ManageRefunds = () => {
                 Payment Type
               </label>
               <CustomInput
-                placeholder="Payment Type"
+                placeholder="Filter by Payment Type"
                 id="paymentType"
                 name="paymentType"
                 type="text"
@@ -188,7 +202,7 @@ const ManageRefunds = () => {
                 Amount Paid (RM)
               </label>
               <CustomInput
-                placeholder="Amount Paid"
+                placeholder="Filter by Amount Paid (RM)"
                 id="amountPaid"
                 name="amountPaid"
                 type="text"
@@ -204,7 +218,7 @@ const ManageRefunds = () => {
                 Refund Reason
               </label>
               <CustomInput
-                placeholder="Refund Reason"
+                placeholder="Filter by Refund Reason"
                 id="refundReason"
                 name="refundReason"
                 type="text"
@@ -214,7 +228,6 @@ const ManageRefunds = () => {
             </div>
           </div>
 
-          {/* Status Dropdown (placed below for improved layout) */}
           <div className="w-full mt-4">
             <label
               htmlFor="Status"
@@ -233,6 +246,15 @@ const ManageRefunds = () => {
               <option value="Request for Refund">Request for Refund</option>
               <option value="Processing Refund">Processing Refund</option>
             </select>
+          </div>
+
+          {/* Clear filter button */}
+          <div className="mt-4">
+            <CustomButton
+              title="Clear Filters"
+              onClick={clearFilters}
+              className="w-full h-12 text-white bg-primary rounded-md hover:bg-primary-dark"
+            />
           </div>
         </Card>
       )}

@@ -6,6 +6,7 @@ import { HiOutlineUserGroup } from "react-icons/hi";
 import { MdContentCopy } from "react-icons/md";
 import { TbMapRoute } from "react-icons/tb";
 import { IoLayersOutline } from "react-icons/io5";
+import { FaRegStar } from "react-icons/fa";
 
 const SidebarItems = () => {
   const links = [
@@ -44,6 +45,12 @@ const SidebarItems = () => {
       name: "Manage Contents",
       href: "/manage-contents",
       icon: MdContentCopy,
+    },
+    {
+      key: 7,
+      name: "Manage Reviews",
+      href: "/manage-reviews",
+      icon: FaRegStar,
     },
   ];
 

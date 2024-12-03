@@ -11,6 +11,7 @@ const Status = ({ status }) => {
     Refunded: "text-blue-700 bg-blue-100",
     Approved: "text-green-700 bg-green-100",
     Pending: "text-yellow-700 bg-yellow-100",
+    "Pending for Review": "text-yellow-700 bg-yellow-100",
   };
 
   const appliedStyles = statusStyles[status] || "text-gray-700 bg-gray-100";

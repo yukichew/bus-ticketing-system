@@ -12,12 +12,13 @@ import BoUpdateForm from "./modal/BOUpdateForm";
 import BoCreateForm from "./modal/BOCreateForm";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const ManageBusOperators = () => {
   const [showModal, setShowModal] = useState(false); // state for update modal
   const [showCreateModal, setCreateModal] = useState(false); // state for create modal
   const [showDetailsModal, setShowDetailsModal] = useState(false); // state for details modal
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [filters, setFilters] = useState({
     companyName: "",
@@ -26,6 +27,18 @@ const ManageBusOperators = () => {
     address: "",
     status: "",
   });
+
+  const initialFilters = {
+    companyName: "",
+    companyEmail: "",
+    contactNumber: "",
+    address: "",
+    status: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
 
   const columns = [
     "Company Name",
@@ -118,6 +131,7 @@ const ManageBusOperators = () => {
     <>
       {showFilters && (
         <Card>
+          {/* First Row: Company Name and Company Email */}
           <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/2">
               <label
@@ -153,7 +167,8 @@ const ManageBusOperators = () => {
             </div>
           </div>
 
-          <div className="flex justify-between gap-4">
+          {/* Second Row: Contact Number, Address, and Status */}
+          <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/3">
               <label
                 htmlFor="contactNumber"
@@ -205,6 +220,15 @@ const ManageBusOperators = () => {
                 <option value="deactivated">Deactivated</option>
               </select>
             </div>
+          </div>
+
+          {/* Third Row: Clear Filters Button */}
+          <div className="mt-4 w-full">
+            <CustomButton
+              title="Clear Filters"
+              onClick={clearFilters}
+              className="w-full h-12 text-white bg-primary rounded-md hover:bg-primary-dark"
+            />
           </div>
         </Card>
       )}

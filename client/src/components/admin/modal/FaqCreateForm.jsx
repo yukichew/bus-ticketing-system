@@ -12,7 +12,7 @@ const categories = [
 
 const FaqCreateForm = ({}) => {
   return (
-    <div className="flex flex-col space-y-4 w-[400px]">
+    <div className="flex flex-col space-y-4 w-[600px]">
       <div className="flex justify-between items-start"></div>
       <div className="font-poppins font-semibold text-lg text-primary mb-4">
         <header className="mb-2">Add New Questions</header>
