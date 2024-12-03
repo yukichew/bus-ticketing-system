@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
-import { FaChevronRight } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import BusTicketForm from './user/BusTicketForm';
+import React, { useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaChevronRight } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import BusTicketForm from "./user/BusTicketForm";
 
 const Hero = () => {
-  const [departureDate, setDepartureDate] = useState(null);
-  const [returnDate, setReturnDate] = useState(null);
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+  const [formState, setFormState] = useState({
+    originState: "",
+    destinationState: "",
+    travelDate: null,
+    returnDate: null,
+  });
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate("/bus-tickets", { state: formState });
+  };
 
   return (
     <section className='relative'>
@@ -42,12 +50,9 @@ const Hero = () => {
                   Buy Bus Tickets Online
                 </h3>
                 <BusTicketForm
-                  origin={origin}
-                  destination={destination}
-                  departureDate={departureDate}
-                  setDepartureDate={setDepartureDate}
-                  returnDate={returnDate}
-                  setReturnDate={setReturnDate}
+                  formState={formState}
+                  setFormState={setFormState}
+                  onSubmit={handleSearch}
                 />
               </div>
             </div>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-const Tabs = ({ tabs, orientation = 'horizontal', activeTabProp }) => {
+const Tabs = ({ tabs, orientation = "horizontal", activeTabProp }) => {
   const [activeTab, setActiveTab] = useState(activeTabProp || tabs[0].label);
 
   useEffect(() => {
@@ -15,12 +15,12 @@ const Tabs = ({ tabs, orientation = 'horizontal', activeTabProp }) => {
   };
 
   return (
-    <div className={`tabs ${orientation === 'vertical' ? 'flex' : ''}`}>
+    <div className={`tabs ${orientation === "vertical" ? "flex" : ""}`}>
       <div
         className={`tab-headers ${
-          orientation === 'vertical'
-            ? 'flex flex-col w-1/6 border-r'
-            : 'flex border-b'
+          orientation === "vertical"
+            ? "flex flex-col w-1/6 border-r"
+            : "flex border-b"
         }`}
       >
         {tabs.map((tab) => (
@@ -28,10 +28,10 @@ const Tabs = ({ tabs, orientation = 'horizontal', activeTabProp }) => {
             key={tab.label}
             className={`p-3 text-right ${
               activeTab === tab.label
-                ? orientation === 'vertical'
-                  ? 'border-r-2 border-primary'
-                  : 'border-b-2 border-primary'
-                : ''
+                ? orientation === "vertical"
+                  ? "border-r-2 border-primary"
+                  : "border-b-2 border-primary"
+                : ""
             }`}
             onClick={() => setActiveTab(tab.label)}
           >
@@ -40,7 +40,9 @@ const Tabs = ({ tabs, orientation = 'horizontal', activeTabProp }) => {
         ))}
       </div>
       <div
-        className={`tab-content p-4 ${orientation === 'vertical' ? 'w-5/6' : ''}`}
+        className={`tab-content p-4 ${
+          orientation === "vertical" ? "w-5/6" : ""
+        }`}
       >
         {renderTabContent()}
       </div>

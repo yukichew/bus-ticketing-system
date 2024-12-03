@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 
 namespace server.Models
 {
@@ -24,7 +23,7 @@ namespace server.Models
         public string? CompanyLogo { get; set; }
 
         [Required]
-        public string BusImages { get; set; }
+        public List<string> BusImages { get; set; } = new List<string>();
 
         public string? Bio { get; set; }
 

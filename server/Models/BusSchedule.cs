@@ -58,5 +58,7 @@ namespace server.Models
 
         [Required]
         public DateTime UpdatedAt { get; set; }
+        
+        public virtual BusOperator postedBy { get; set; }
     }
 }

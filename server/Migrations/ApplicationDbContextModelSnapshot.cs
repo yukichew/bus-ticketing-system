@@ -158,6 +158,46 @@ namespace server.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("server.Models.Booking", b =>
+                {
+                    b.Property<int>("BookingID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingID"));
+
+                    b.Property<double>("AmountPaid")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BookingStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("BusScheduleID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PassengerID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("BookingID");
+
+                    b.HasIndex("BusScheduleID");
+
+                    b.HasIndex("PassengerID");
+
+                    b.ToTable("Booking");
+                });
+
             modelBuilder.Entity("server.Models.BusInfo", b =>
                 {
                     b.Property<int>("BusID")
@@ -240,6 +280,9 @@ namespace server.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("postedById")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("BusScheduleID");
 
                     b.HasIndex("BusID");
@@ -249,6 +292,8 @@ namespace server.Migrations
                     b.HasIndex("RecurringOptionID");
 
                     b.HasIndex("RouteID");
+
+                    b.HasIndex("postedById");
 
                     b.ToTable("BusSchedules");
                 });
@@ -351,6 +396,31 @@ namespace server.Migrations
                     b.ToTable("Locations");
                 });
 
+            modelBuilder.Entity("server.Models.Passenger", b =>
+                {
+                    b.Property<int>("PassengerID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PassengerID"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fullname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PassengerID");
+
+                    b.ToTable("Passenger");
+                });
+
             modelBuilder.Entity("server.Models.RecurringOption", b =>
                 {
                     b.Property<int>("RecurringOptionID")
@@ -371,7 +441,6 @@ namespace server.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("SelectDays")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -408,6 +477,9 @@ namespace server.Migrations
                     b.Property<TimeSpan>("ETD")
                         .HasColumnType("time");
 
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -420,6 +492,25 @@ namespace server.Migrations
                     b.HasIndex("BoardingLocationID");
 
                     b.ToTable("Routes");
+                });
+
+            modelBuilder.Entity("server.Models.Seat", b =>
+                {
+                    b.Property<string>("SeatId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("BookingID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeatNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("SeatId");
+
+                    b.HasIndex("BookingID");
+
+                    b.ToTable("Seats");
                 });
 
             modelBuilder.Entity("server.Models.User", b =>
@@ -501,7 +592,7 @@ namespace server.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BusImages")
+                    b.PrimitiveCollection<string>("BusImages")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -593,6 +684,25 @@ namespace server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("server.Models.Booking", b =>
+                {
+                    b.HasOne("server.Models.BusSchedule", "BusSchedule")
+                        .WithMany()
+                        .HasForeignKey("BusScheduleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("server.Models.Passenger", "Passenger")
+                        .WithMany()
+                        .HasForeignKey("PassengerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusSchedule");
+
+                    b.Navigation("Passenger");
+                });
+
             modelBuilder.Entity("server.Models.BusInfo", b =>
                 {
                     b.HasOne("server.Models.BusType", "BusType")
@@ -628,6 +738,10 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("server.Models.BusOperator", "postedBy")
+                        .WithMany()
+                        .HasForeignKey("postedById");
+
                     b.Navigation("BusInfo");
 
                     b.Navigation("Drivers");
@@ -635,6 +749,8 @@ namespace server.Migrations
                     b.Navigation("RecurringOptions");
 
                     b.Navigation("Routes");
+
+                    b.Navigation("postedBy");
                 });
 
             modelBuilder.Entity("server.Models.Routes", b =>
@@ -654,6 +770,17 @@ namespace server.Migrations
                     b.Navigation("ArrivalLocation");
 
                     b.Navigation("BoardingLocation");
+                });
+
+            modelBuilder.Entity("server.Models.Seat", b =>
+                {
+                    b.HasOne("server.Models.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("server.Models.BusOperator", b =>

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { FaStar } from 'react-icons/fa';
-import { GoPeople } from 'react-icons/go';
-import { LiaSquareFullSolid } from 'react-icons/lia';
-import { busInfoTabs } from '../../constants/TabItems';
-import CustomButton from '../common/CustomButton';
-import Modal from '../common/Modal';
-import Tabs from '../common/Tabs';
+import React, { useState } from "react";
+import { FaStar } from "react-icons/fa";
+import { GoPeople } from "react-icons/go";
+import { LiaSquareFullSolid } from "react-icons/lia";
+import { busInfoTabs } from "../../constants/TabItems";
+import CustomButton from "../common/CustomButton";
+import Modal from "../common/Modal";
+import Tabs from "../common/Tabs";
+import Seatmap from "./Seatmap";
 
 const BusCard = ({ schedule }) => {
   const [showModal, setShowModal] = useState(false);
@@ -16,30 +17,29 @@ const BusCard = ({ schedule }) => {
         {/* bus operator name */}
         <div className='flex flex-row items-center'>
           <img
-            src='https://play-lh.googleusercontent.com/d1cjmKV2dLeDJZEUqv4lBtu9d8gEj28kElEVJC2STrvnkBAWnZierYGzm-p6YiFOJgSv'
-            alt={schedule.name}
+            src={schedule.postedBy.companyLogo}
+            alt={schedule.postedBy.companyName}
             className='rounded-full w-10 h-10 md:w-14 md:h-14'
           />
           <div className='ml-2'>
             <p className='text-sm font-semibold md:text-base'>
+              {schedule.postedBy.companyName}
               {schedule.name}
             </p>
             <p className='font-medium text-gray-600 text-xs md:text-sm'>
-              {schedule.type}
+              {schedule.busInfo.busType.types}
             </p>
           </div>
         </div>
 
-        <p className='font-bold text-lg md:hidden'>{schedule.price}</p>
+        <p className='font-bold text-lg md:hidden'>{schedule.routes.price}</p>
 
         {/* departure and arrival */}
         <div className='grid grid-cols-3 items-center col-span-3 text-center mt-4 mb-4 md:mt-0 md:mb-0'>
           <div>
-            <p className='font-semibold text-lg md:text-xl'>
-              {schedule.departureTime}
-            </p>
+            <p className='font-semibold text-lg md:text-xl'>{schedule.etd}</p>
             <p className='text-gray-600 text-xs md:text-sm'>
-              {schedule.departureLocation}
+              {schedule.routes.boardingLocation.name}
             </p>
           </div>
 
@@ -55,11 +55,9 @@ const BusCard = ({ schedule }) => {
           </div>
 
           <div>
-            <p className='font-semibold text-lg md:text-xl'>
-              {schedule.arrivalTime}
-            </p>
+            <p className='font-semibold text-lg md:text-xl'>{schedule.eta}</p>
             <p className='text-gray-600 text-xs md:text-sm'>
-              {schedule.arrivalLocation}
+              {schedule.routes.arrivalLocation.name}
             </p>
           </div>
         </div>
@@ -67,7 +65,7 @@ const BusCard = ({ schedule }) => {
         {/* price and capacity */}
         <div className='grid grid-cols-2 items-center'>
           <p className='hidden md:block mx-auto font-bold text-xl'>
-            {schedule.price}
+            RM {schedule.routes.price}
           </p>
 
           <div className='flex-row flex md:flex-col md:justify-center md:items-center md:ml-auto'>
@@ -75,7 +73,7 @@ const BusCard = ({ schedule }) => {
               <div className='flex flex-row items-center text-white'>
                 <FaStar className='w-2 md:w-3' />
                 <p className='font-medium text-xs md:text-sm ml-1'>
-                  {schedule.rating}
+                  {schedule.routes.price}
                 </p>
               </div>
             </div>
@@ -91,7 +89,14 @@ const BusCard = ({ schedule }) => {
 
         <div className='flex flex-col items-center'>
           <div className='hidden md:block w-3/5'>
-            <CustomButton title='SELECT' className='font-semibold' />
+            <Seatmap
+              noOfSeats={schedule.busInfo.busType.noOfSeats}
+              layout={
+                schedule.busInfo.busType.types.includes("2+1")
+                  ? "2+1"
+                  : "Executive"
+              }
+            />
           </div>
           <button
             onClick={() => setShowModal(true)}
@@ -108,7 +113,16 @@ const BusCard = ({ schedule }) => {
         onClose={() => setShowModal(false)}
         className='w-11/12 md:w-3/4 lg:w-1/2'
       >
-        <Tabs tabs={busInfoTabs} orientation='vertical' />
+        <Tabs
+          tabs={busInfoTabs.map((tab) => ({
+            ...tab,
+            content:
+              typeof tab.content === "function"
+                ? tab.content({ schedule })
+                : React.cloneElement(tab.content, { schedule }),
+          }))}
+          orientation='vertical'
+        />
       </Modal>
     </div>
   );

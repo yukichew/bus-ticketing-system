@@ -10,11 +10,13 @@ import ManageTransactions from "../components/admin/ManageTransactions";
 import ManageRefunds from "../components/admin/ManageRefunds";
 import ManagePolicy from "../components/admin/ManagePolicy";
 import ManageFaq from "../components/admin/ManageFaq";
-import { bus } from "./Dummy";
 
 export const busInfoTabs = [
   { label: "Notes", content: <Notes /> },
-  { label: "Photos", content: <Carousel images={bus.images} /> },
+  {
+    label: "Photos",
+    content: (props) => <Carousel images={props.schedule.postedBy.busImages} />,
+  },
   {
     label: "Ratings & Reviews",
     content: <Ratings />,
