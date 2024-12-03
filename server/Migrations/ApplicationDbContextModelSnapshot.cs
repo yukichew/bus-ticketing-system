@@ -496,16 +496,17 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Seat", b =>
                 {
-                    b.Property<int>("SeatNumber")
+                    b.Property<string>("SeatId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeatNumber"));
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("BookingID")
                         .HasColumnType("int");
 
-                    b.HasKey("SeatNumber");
+                    b.Property<int>("SeatNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("SeatId");
 
                     b.HasIndex("BookingID");
 

@@ -69,6 +69,7 @@ namespace server.Controllers
             };
 
             _context.Booking.Add(booking);
+            await _context.SaveChangesAsync();
 
             foreach (var seat in bookingDto.seatNumbers)
             {

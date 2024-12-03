@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { RiSteering2Line } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
-import CustomButton from '../common/CustomButton';
-import Modal from '../common/Modal';
-import Seat from './Seat';
+import React, { useState } from "react";
+import { RiSteering2Line } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
+import CustomButton from "../common/CustomButton";
+import Modal from "../common/Modal";
+import Seat from "./Seat";
 
-const Seatmap = () => {
+const Seatmap = ({ noOfSeats, layout }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const seats = Array.from({ length: 40 }, (_, i) => i + 1);
+  const seats = Array.from({ length: noOfSeats }, (_, i) => i + 1);
   const navigate = useNavigate();
 
   const handleSelect = (seatNumber) => {
@@ -23,9 +23,25 @@ const Seatmap = () => {
     setShowModal(!showModal);
   };
 
+  const getGridTemplateColumns = () => {
+    switch (layout) {
+      case "2+1":
+        return "1.5fr 1fr 1fr";
+      case "Executive":
+        return "1fr 2fr 1fr 1fr";
+      default:
+        return "1fr 2fr 1fr 1fr";
+    }
+  };
+
   return (
     <>
-      <CustomButton title='Select Seat' type='button' onClick={toggleModal} />
+      <CustomButton
+        title='SELECT'
+        className='font-semibold'
+        type='button'
+        onClick={toggleModal}
+      />
 
       <Modal isVisible={showModal} onClose={toggleModal} className='w-auto'>
         <h2 className='text-lg lg:text-xl font-semibold font-poppins'>
@@ -37,11 +53,8 @@ const Seatmap = () => {
         </div>
 
         <div
-          className='grid grid-cols-custom mb-4'
-          style={{
-            gridTemplateColumns: '1fr 2fr 1fr 1fr',
-            columnGap: '10px',
-          }}
+          className='grid'
+          style={{ gridTemplateColumns: getGridTemplateColumns(), gap: "4px" }}
         >
           {seats.map((seatNumber) => (
             <div className='flex' key={seatNumber}>
@@ -60,8 +73,9 @@ const Seatmap = () => {
           title='Proceed to Book'
           type='button'
           onClick={() => {
-            navigate('/booking', { state: { selectedSeats } });
+            navigate("/booking", { state: { selectedSeats } });
           }}
+          className='mt-2'
         />
       </Modal>
     </>

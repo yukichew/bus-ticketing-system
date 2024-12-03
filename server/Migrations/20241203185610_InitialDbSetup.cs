@@ -406,13 +406,13 @@ namespace server.Migrations
                 name: "Seats",
                 columns: table => new
                 {
-                    SeatNumber = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SeatId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SeatNumber = table.Column<int>(type: "int", nullable: false),
                     BookingID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Seats", x => x.SeatNumber);
+                    table.PrimaryKey("PK_Seats", x => x.SeatId);
                     table.ForeignKey(
                         name: "FK_Seats_Booking_BookingID",
                         column: x => x.BookingID,

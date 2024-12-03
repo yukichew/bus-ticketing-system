@@ -1,5 +1,5 @@
+import api from ".";
 import { catchError } from "../utils/error";
-import api from "./api";
 
 export const login = async (email, password) => {
   try {
@@ -12,7 +12,12 @@ export const login = async (email, password) => {
 
 export const register = async (email, password, confirmPassword, role) => {
   try {
-    const { data } = await api.post("/Auth/register", { email, password, confirmPassword, role });
+    const { data } = await api.post("/Auth/register", {
+      email,
+      password,
+      confirmPassword,
+      role,
+    });
     return data;
   } catch (err) {
     return catchError(err);

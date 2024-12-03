@@ -6,6 +6,8 @@ namespace server.Models
     public class Seat
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string SeatId { get; set; }
         [Required]
         public int SeatNumber { get; set; }
 

@@ -6,6 +6,7 @@ import { busInfoTabs } from "../../constants/TabItems";
 import CustomButton from "../common/CustomButton";
 import Modal from "../common/Modal";
 import Tabs from "../common/Tabs";
+import Seatmap from "./Seatmap";
 
 const BusCard = ({ schedule }) => {
   const [showModal, setShowModal] = useState(false);
@@ -88,7 +89,14 @@ const BusCard = ({ schedule }) => {
 
         <div className='flex flex-col items-center'>
           <div className='hidden md:block w-3/5'>
-            <CustomButton title='SELECT' className='font-semibold' />
+            <Seatmap
+              noOfSeats={schedule.busInfo.busType.noOfSeats}
+              layout={
+                schedule.busInfo.busType.types.includes("2+1")
+                  ? "2+1"
+                  : "Executive"
+              }
+            />
           </div>
           <button
             onClick={() => setShowModal(true)}

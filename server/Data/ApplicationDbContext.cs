@@ -110,6 +110,7 @@ namespace server.Data
             return await base.SaveChangesAsync(cancellationToken);
         }
         public DbSet<server.Models.Booking> Booking { get; set; } = default!;
+        public DbSet<server.Models.Passenger> Passenger { get; set; } = default!;
         #endregion
     }
 }
