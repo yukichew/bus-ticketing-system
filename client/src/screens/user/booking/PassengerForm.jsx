@@ -30,13 +30,13 @@ const PassengerForm = ({ passengerNumber, seatNumber, onChange }) => {
       </div>
 
       <CustomInput
-        id={`name`}
-        name={`name`}
+        id={`fullname-${seatNumber}`}
+        name={`fullname`}
         placeholder={"Full Name"}
         type={"text"}
         icon={IoPersonOutline}
         required
-        value={details.name}
+        value={details.fullname}
         onChange={handleChange}
       />
 
@@ -52,7 +52,7 @@ const PassengerForm = ({ passengerNumber, seatNumber, onChange }) => {
           onChange={handleChange}
         />
         <CustomInput
-          id={`phoneNumber`}
+          id={`phoneNumber-${seatNumber}`}
           name={`phoneNumber`}
           placeholder={"Contact Number"}
           type={"tel"}

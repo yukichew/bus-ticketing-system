@@ -23,17 +23,22 @@ const Booking = () => {
 
   const handleSubmit = async () => {
     const bookingDetails = {
-      busScheduleID: schedule.id,
-      seatNumbers: selectedSeats,
-      passengers: passengerDetails.map((details, idx) => ({
-        seatNumber: selectedSeats[idx],
-        ...details,
-      })),
-      bookingDate: new Date().toISOString(),
+      busScheduleID: schedule.busScheduleID,
+      bookingStatus: "Confirmed",
       amountPaid: amoundPaid,
+      bookingDate: new Date().toISOString(),
+      seats: selectedSeats.map((seatNumber, idx) => ({
+        seatNumber,
+        passenger: passengerDetails[idx],
+      })),
     };
 
     const response = await buyTicket(bookingDetails);
+    if (response?.error) {
+      alert(response.message);
+      return;
+    }
+    alert("Booking successful!");
   };
 
   return (

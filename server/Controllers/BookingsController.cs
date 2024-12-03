@@ -44,7 +44,7 @@ namespace server.Controllers
         {
             if (!_context.BusSchedules.Any(bs => bs.BusScheduleID == bookingDto.BusScheduleID))
             {
-                return BadRequest("Invalid bus schedule id.");
+                return BadRequest(new { message = "Invalid bus schedule id." });
             }
 
             var seatNumbers = bookingDto.Seats.Select(seat => seat.SeatNumber).ToList();
@@ -56,7 +56,7 @@ namespace server.Controllers
 
             if (alreadyBookedSeats.Any())
             {
-                return BadRequest($"The following seats are already occupied: {string.Join(", ", alreadyBookedSeats)}");
+                return BadRequest(new { message = $"The following seats are already occupied: {string.Join(", ", alreadyBookedSeats)}" });
             }
 
             var booking = new Booking
@@ -66,7 +66,8 @@ namespace server.Controllers
                 AmountPaid = bookingDto.AmountPaid,
                 BookingDate = bookingDto.BookingDate,
                 CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                UpdatedAt = DateTime.Now,
+                BusSchedule = await _context.BusSchedules.FindAsync(bookingDto.BusScheduleID)
             };
 
             _context.Booking.Add(booking);
