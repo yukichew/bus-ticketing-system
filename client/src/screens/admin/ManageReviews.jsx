@@ -161,7 +161,7 @@ const ManageReviews = () => {
                     Bus Operator ID
                   </label>
                   <CustomInput
-                    placeholder="Bus Operator ID"
+                    placeholder="Filter by Bus Operator ID"
                     id="busOperatorID"
                     name="busOperatorID"
                     type="text"
@@ -177,7 +177,7 @@ const ManageReviews = () => {
                     Passenger ID
                   </label>
                   <CustomInput
-                    placeholder="Passenger ID"
+                    placeholder="Filter by Passenger ID"
                     id="passengerID"
                     name="passengerID"
                     type="text"
@@ -236,7 +236,7 @@ const ManageReviews = () => {
                     Comment
                   </label>
                   <CustomInput
-                    placeholder="Comment"
+                    placeholder="Filter by Comment"
                     id="comment"
                     name="comment"
                     type="text"

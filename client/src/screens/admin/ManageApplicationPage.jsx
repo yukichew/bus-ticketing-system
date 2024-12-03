@@ -12,13 +12,14 @@ import ApplicationForm from "../../components/admin/modal/ViewApplication";
 import Status from "../../components/admin/Status";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const ManageApplicationPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false); // Separate state for approval modal
   const [showDetailsModal, setShowDetailsModal] = useState(false); // Separate state for details modal
   const [selectedOperator, setSelectedOperator] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
     companyName: "",
     companyEmail: "",
@@ -26,6 +27,18 @@ const ManageApplicationPage = () => {
     address: "",
     status: "",
   });
+
+  const initialFilters = {
+    companyName: "",
+    companyEmail: "",
+    contactNumber: "",
+    address: "",
+    status: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -128,13 +141,13 @@ const ManageApplicationPage = () => {
       <Sidebar isSidebarOpen={isSidebarOpen} />
 
       <main
-        className={`flex-1 p-4 transition-all duration-300 mt-20 ${
+        className={`flex-1 p-4 transition-all duration-300 mt-16 ${
           isSidebarOpen ? "ml-64" : "ml-0"
         } overflow-y-auto`}
       >
         <div className="w-4/5 mt-8 mx-auto">
           <div className="flex items-center">
-            <h2 className="font-poppins font-bold text-2xl pb-8">
+            <h2 className="font-poppins font-bold text-2xl pb-2">
               Applications Management
             </h2>
           </div>
@@ -142,6 +155,7 @@ const ManageApplicationPage = () => {
           {/* filter input */}
           {showFilters && (
             <Card>
+              {/* First Row: Company Name and Company Email */}
               <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/2">
                   <label
@@ -177,7 +191,8 @@ const ManageApplicationPage = () => {
                 </div>
               </div>
 
-              <div className="flex justify-between gap-4">
+              {/* Second Row: Contact Number, Address, Status */}
+              <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/3">
                   <label
                     htmlFor="contactNumber"
@@ -229,6 +244,15 @@ const ManageApplicationPage = () => {
                     <option value="pending">Pending</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Third Row: Clear Filter Button (Full Width) */}
+              <div className="mt-4 w-full">
+                <CustomButton
+                  title="Clear Filters"
+                  onClick={clearFilters}
+                  className="w-full h-12 text-white bg-primary rounded-md hover:bg-primary-dark"
+                />
               </div>
             </Card>
           )}

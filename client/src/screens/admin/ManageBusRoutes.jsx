@@ -12,13 +12,14 @@ import ViewBusRoutes from "../../components/admin/modal/ViewBusRoutes";
 import Status from "../../components/admin/Status";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
+import CustomButton from "../../components/common/CustomButton";
 
 const ManageBusRoutes = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showModal, setShowModal] = useState(false); // state for approve modal
   const [showDetailsModal, setShowDetailsModal] = useState(false); // separate state for details modal
   const [selectedOperator, setSelectedOperator] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
     busPlate: "",
     origin: "",
@@ -27,6 +28,19 @@ const ManageBusRoutes = () => {
     eta: "",
     status: "",
   });
+
+  const initialFilters = {
+    busPlate: "",
+    origin: "",
+    destination: "",
+    etd: "",
+    eta: "",
+    status: "",
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -121,13 +135,13 @@ const ManageBusRoutes = () => {
       <Sidebar isSidebarOpen={isSidebarOpen} />
 
       <main
-        className={`flex-1 p-4 transition-all duration-300 mt-20 ${
+        className={`flex-1 p-4 transition-all duration-300 mt-16 ${
           isSidebarOpen ? "ml-64" : "ml-0"
         } overflow-y-auto`}
       >
         <div className="w-4/5 mt-8 mx-auto">
           <div className="flex items-center">
-            <h2 className="font-poppins font-bold text-2xl pb-10">
+            <h2 className="font-poppins font-bold text-2xl pb-2">
               Bus Routes Management
             </h2>
           </div>
@@ -188,7 +202,7 @@ const ManageBusRoutes = () => {
               </div>
 
               {/* Second Row */}
-              <div className="flex justify-between gap-4">
+              <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/3">
                   <label
                     htmlFor="etd"
@@ -240,6 +254,15 @@ const ManageBusRoutes = () => {
                     <option value="pending">Pending</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Third Row - Clear Filter Button */}
+              <div className="mt-4 w-full">
+                <CustomButton
+                  title="Clear Filters"
+                  onClick={clearFilters}
+                  className="w-full h-12 text-white bg-primary rounded-md hover:bg-primary-dark"
+                />
               </div>
             </Card>
           )}
