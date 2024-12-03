@@ -23,7 +23,7 @@ namespace server.Models
         public DateTime? ToDate { get; set; }
 
         [StringLength(50)]
-        public string SelectDays { get; set; }
+        public string? SelectDays { get; set; }
 
         [Required]
         [StringLength(20)]
