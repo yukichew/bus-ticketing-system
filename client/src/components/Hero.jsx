@@ -3,7 +3,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaChevronRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import BusTicketForm from "./user/BusTicketForm";
-import { format } from "date-fns";
 
 const Hero = () => {
   const [formState, setFormState] = useState({
@@ -16,16 +15,6 @@ const Hero = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // const formattedFormState = {
-    //   ...formState,
-    //   travelDate: formState.travelDate
-    //     ? format(new Date(formState.travelDate), "yyyy-MM-dd")
-    //     : null,
-    //   returnDate: formState.returnDate
-    //     ? format(new Date(formState.returnDate), "yyyy-MM-dd")
-    //     : null,
-    // };
-    console.log(formState);
     navigate("/bus-tickets", { state: formState });
   };
 

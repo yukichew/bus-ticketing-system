@@ -20,6 +20,7 @@ namespace server.Data
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<Routes> Routes { get; set; }
         public DbSet<BusSchedule> BusSchedules { get; set; }
+        public DbSet<Seat> Seats { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,6 +109,7 @@ namespace server.Data
 
             return await base.SaveChangesAsync(cancellationToken);
         }
+        public DbSet<server.Models.Booking> Booking { get; set; } = default!;
         #endregion
     }
 }

@@ -30,5 +30,8 @@ namespace server.Models
         [Required]
         [StringLength(20)]
         public string Status { get; set; }
+
+        [Required]
+        public double Price { get; set; }
     }
 }

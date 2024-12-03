@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using server.Data;
 using server.Dto;
 using server.Helper;
 using server.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace server.Controllers
 {
@@ -308,6 +304,7 @@ namespace server.Controllers
                 ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID,
                 ETA = eta,
                 Status = busScheduleDTO.Routes.Status,
+                Price = busScheduleDTO.Routes.Price
             };
 
             _context.Routes.Add(route);

@@ -17,7 +17,7 @@ namespace server.Dto.Auth
         [Required(ErrorMessage = "Address is required")]
         public string Address { get; set; }
         [Required(ErrorMessage = "Bus images are required")]
-        public string BusImages { get; set; }
+        public List<string> BusImages { get; set; }
         public bool IsRefundable { get; set; }
     }
 }

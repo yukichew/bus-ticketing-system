@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,10 +23,9 @@ const Carousel = ({ images }) => {
         >
           {images.map((image, index) => (
             <img
-              key={index}
               src={image}
               alt={`image-${index}`}
-              className='w-full object-cover'
+              className='w-full flex-shrink-0'
             />
           ))}
         </div>
@@ -53,7 +52,7 @@ const Carousel = ({ images }) => {
             key={index}
             onClick={() => setCurrentIndex(index)}
             className={`w-3 h-3 rounded-full ${
-              currentIndex === index ? 'bg-gray-800' : 'bg-gray-400'
+              currentIndex === index ? "bg-gray-800" : "bg-gray-400"
             }`}
           />
         ))}
