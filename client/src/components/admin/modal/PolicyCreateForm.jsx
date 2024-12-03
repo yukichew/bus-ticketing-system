@@ -7,7 +7,7 @@ const PolicyCreateForm = ({ onSubmit }) => {
   const [terms, setTerms] = useState("");
 
   return (
-    <div className="flex flex-col space-y-4 w-[400px]">
+    <div className="flex flex-col space-y-4 w-[600px]">
       <header className="font-poppins font-semibold text-lg text-primary mb-4">
         Add New Policy
       </header>
@@ -24,7 +24,7 @@ const PolicyCreateForm = ({ onSubmit }) => {
       </div>
       <div>
         <CustomInput
-          placeholder="Add Terms & Conditions"
+          placeholder="Add Terms & Conditions (e.g. Each terms & conditions are separated with ' , ')"
           id="terms"
           name="terms"
           type="text"
