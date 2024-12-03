@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { IoCalendarOutline } from 'react-icons/io5';
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { IoCalendarOutline } from "react-icons/io5";
 
-const DatePickerField = ({ placeholder, required, id, name }) => {
-  const [selectedDate, setSelectedDate] = useState(null);
+const DatePickerField = ({
+  selectedDate,
+  setSelectedDate,
+  placeholder,
+  required,
+  id,
+  name,
+}) => {
   return (
     <div className='w-full relative flex items-center rounded ring-1 ring-gray-300 font-poppins text-sm bg-white'>
       <IoCalendarOutline

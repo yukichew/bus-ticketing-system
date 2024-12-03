@@ -1,28 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
-import { FaChevronRight } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
-import BusTicketForm from './user/BusTicketForm';
-import { searchSchedule } from '../api/schedule';
+import React, { useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaChevronRight } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import BusTicketForm from "./user/BusTicketForm";
+import { format } from "date-fns";
 
 const Hero = () => {
-  const [departureDate, setDepartureDate] = useState(null);
-  const [returnDate, setReturnDate] = useState(null);
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+  const [formState, setFormState] = useState({
+    originState: "",
+    destinationState: "",
+    travelDate: null,
+    returnDate: null,
+  });
   const navigate = useNavigate();
 
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-
-    const filters = {
-      travelDate: departureDate?.toISOString(),
-      returnDate: returnDate?.toISOString(),
-      origin,
-      destination,
-    };
-
-    navigate('/bus-tickets', { filters });
+    // const formattedFormState = {
+    //   ...formState,
+    //   travelDate: formState.travelDate
+    //     ? format(new Date(formState.travelDate), "yyyy-MM-dd")
+    //     : null,
+    //   returnDate: formState.returnDate
+    //     ? format(new Date(formState.returnDate), "yyyy-MM-dd")
+    //     : null,
+    // };
+    console.log(formState);
+    navigate("/bus-tickets", { state: formState });
   };
 
   return (
@@ -57,14 +61,8 @@ const Hero = () => {
                   Buy Bus Tickets Online
                 </h3>
                 <BusTicketForm
-                  origin={origin}
-                  setOrigin={setOrigin}
-                  destination={destination}
-                  setDestination={setDestination}
-                  departureDate={departureDate}
-                  setDepartureDate={setDepartureDate}
-                  returnDate={returnDate}
-                  setReturnDate={setReturnDate}
+                  formState={formState}
+                  setFormState={setFormState}
                   onSubmit={handleSearch}
                 />
               </div>

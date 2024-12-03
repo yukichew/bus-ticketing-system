@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { FaStar } from 'react-icons/fa';
-import { GoPeople } from 'react-icons/go';
-import { LiaSquareFullSolid } from 'react-icons/lia';
-import { busInfoTabs } from '../../constants/TabItems';
-import CustomButton from '../common/CustomButton';
-import Modal from '../common/Modal';
-import Tabs from '../common/Tabs';
+import React, { useState } from "react";
+import { FaStar } from "react-icons/fa";
+import { GoPeople } from "react-icons/go";
+import { LiaSquareFullSolid } from "react-icons/lia";
+import { busInfoTabs } from "../../constants/TabItems";
+import CustomButton from "../common/CustomButton";
+import Modal from "../common/Modal";
+import Tabs from "../common/Tabs";
 
 const BusCard = ({ schedule }) => {
   const [showModal, setShowModal] = useState(false);
@@ -25,7 +25,7 @@ const BusCard = ({ schedule }) => {
               {schedule.name}
             </p>
             <p className='font-medium text-gray-600 text-xs md:text-sm'>
-              {schedule.type}
+              {schedule.busInfo.busType.types}
             </p>
           </div>
         </div>
@@ -35,9 +35,7 @@ const BusCard = ({ schedule }) => {
         {/* departure and arrival */}
         <div className='grid grid-cols-3 items-center col-span-3 text-center mt-4 mb-4 md:mt-0 md:mb-0'>
           <div>
-            <p className='font-semibold text-lg md:text-xl'>
-              {schedule.etd}
-            </p>
+            <p className='font-semibold text-lg md:text-xl'>{schedule.etd}</p>
             <p className='text-gray-600 text-xs md:text-sm'>
               {schedule.routes.boardingLocation.name}
             </p>
@@ -55,9 +53,7 @@ const BusCard = ({ schedule }) => {
           </div>
 
           <div>
-            <p className='font-semibold text-lg md:text-xl'>
-              {schedule.eta}
-            </p>
+            <p className='font-semibold text-lg md:text-xl'>{schedule.eta}</p>
             <p className='text-gray-600 text-xs md:text-sm'>
               {schedule.routes.arrivalLocation.name}
             </p>
