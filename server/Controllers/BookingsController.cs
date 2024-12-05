@@ -42,6 +42,8 @@ namespace server.Controllers
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDto bookingDto)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
             if (!_context.BusSchedules.Any(bs => bs.BusScheduleID == bookingDto.BusScheduleID))
             {
                 return BadRequest(new { message = "Invalid bus schedule id." });
@@ -62,8 +64,8 @@ namespace server.Controllers
             var booking = new Booking
             {
                 BusScheduleID = bookingDto.BusScheduleID,
-                BookingStatus = bookingDto.BookingStatus,
-                AmountPaid = bookingDto.AmountPaid,
+                BookingStatus = "Pending",
+                AmountPaid = 0,
                 BookingDate = bookingDto.BookingDate,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -88,12 +90,15 @@ namespace server.Controllers
                 {
                     BookingID = booking.BookingID,
                     SeatNumber = seatDto.SeatNumber,
-                    Passenger = passenger
+                    Passenger = passenger,
+                    Status = "Reserved"
                 };
                 _context.Seats.Add(bookingSeat);
             }
 
             await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingID }, booking);
         }

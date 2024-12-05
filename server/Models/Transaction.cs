@@ -3,21 +3,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models
 {
-    public class Seat
+    public class Transaction
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string SeatId { get; set; }
-        [Required]
-        public int SeatNumber { get; set; }
-
+        public string TransactionID { get; set; }
         [Required]
         public int BookingID { get; set; }
-
         [ForeignKey("BookingID")]
         public virtual Booking? Booking { get; set; }
-        public virtual Passenger? Passenger { get; set; }
         [Required]
+        public string PaymentIntentID { get; set; }
+        public double Amount { get; set; }
         public string Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string Purpose { get; set; }
     }
 }

@@ -118,6 +118,8 @@ using (var scope = app.Services.CreateScope())
     await DataSeed.SeedAdminDataSync(userManager);
 }
 
+Stripe.StripeConfiguration.ApiKey = app.Configuration.GetSection("Stripe")["SecretKey"];
+
 // Use CORS
 app.UseCors("AllowReactApp");
 
