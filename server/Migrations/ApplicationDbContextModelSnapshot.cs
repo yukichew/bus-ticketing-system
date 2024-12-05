@@ -826,14 +826,15 @@ namespace server.Migrations
                         .HasForeignKey("BookingID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                        
-            modelBuilder.Entity("server.Models.BusOperator", b =>
-                {
-                    b.HasOne("server.Models.User", null)
-                        .WithOne()
-                        .HasForeignKey("server.Models.BusOperator", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+
+                    modelBuilder.Entity("server.Models.BusOperator", b =>
+                        {
+                            b.HasOne("server.Models.User", null)
+                                .WithOne()
+                                .HasForeignKey("server.Models.BusOperator", "Id")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+                        });
                 });
 #pragma warning restore 612, 618
         }

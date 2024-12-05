@@ -18,3 +18,15 @@ export const initiatePayment = async (paymentDetails) => {
     return catchError(err);
   }
 };
+
+export const confirmTransaction = async (transactionID, status) => {
+  try {
+    const { data } = await api.post("/Transactions/ConfirmTransaction", {
+      transactionID,
+      status,
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};

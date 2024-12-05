@@ -3,8 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
 using server.Models;
-using Stripe;
-using Stripe.Checkout;
+using Stripe
 
 namespace server.Controllers
 {
@@ -15,11 +14,22 @@ namespace server.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _config;
 
-        public TransactionsController(ApplicationDbContext context)
+        public TransactionsController(ApplicationDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
+
+        // GET: api/Transactions
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransaction()
+        {
+            return await _context.Transaction.ToListAsync();
+        }
+
+        #region Check out using Stripe
+        // POST: api/Transactions
         [HttpPost]
         public async Task<ActionResult<Transaction>> CheckOut(TransactionDto transactionDto)
         {
@@ -30,7 +40,7 @@ namespace server.Controllers
                 var stripeService = new PaymentIntentService();
                 var paymentIntent = await stripeService.CreateAsync(new PaymentIntentCreateOptions
                 {
-                    Amount = (long)(transactionDto.Amount * 100),  // Convert to cents
+                    Amount = (long)(transactionDto.Amount * 100),
                     Currency = "myr",
                     Metadata = new Dictionary<string, string>
             {
@@ -45,87 +55,77 @@ namespace server.Controllers
                     Status = "Pending",
                     Amount = transactionDto.Amount,
                     CreatedAt = DateTime.Now,
-                    Purpose = "Booking"
+                    Purpose = "Booking",
+                    Booking = booking
                 };
                 _context.Transaction.Add(transaction);
                 await _context.SaveChangesAsync();
 
-                //return Ok(new { CheckoutSessionUrl = session.Url });
+                // Set a timer to release seats if payment is not completed
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(10));
+
+                    var paymentStatus = await _context.Transaction
+                        .Where(t => t.TransactionID == transaction.TransactionID)
+                        .Select(t => t.Status)
+                        .FirstOrDefaultAsync();
+
+                    if (paymentStatus != "Succeeded")
+                    {
+                        var seatsToDelete = _context.Seats.Where(s => s.BookingID == booking.BookingID);
+                        _context.Seats.RemoveRange(seatsToDelete);
+                        booking.BookingStatus = "Cancelled";
+                        _context.Booking.Update(booking);
+                        await _context.SaveChangesAsync();
+                    }
+                });
+
                 return Ok(new
                 {
                     PaymentIntentClientSecret = paymentIntent.ClientSecret,
-                    TransactionID = transaction.TransactionID
+                    transaction
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred.", error = ex.Message });
+                return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
             }
         }
+        #endregion
 
-        [HttpPost("webhook")]
-        public async Task<IActionResult> StripeWebhook()
+        #region Confirm transaction
+        [HttpPost("ConfirmTransaction")]
+        public async Task<IActionResult> ConfirmTransaction([FromBody] TransactionStatusDto statusDto)
         {
-            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            try
+            var transaction = await _context.Transaction.FindAsync(statusDto.TransactionID);
+            if (transaction == null)
             {
-                var webhookSecret = _config["Stripe:WebhookSecret"];
-                var stripeEvent = EventUtility.ConstructEvent(
-                    json,
-                    Request.Headers["Stripe-Signature"],
-                    webhookSecret
-                );
-
-                if (stripeEvent.Type == "checkout.session.completed")
-                {
-                    var session = stripeEvent.Data.Object as Session;
-                    var bookingId = int.Parse(session.ClientReferenceId);
-
-                    var booking = await _context.Booking.FindAsync(bookingId);
-                    if (booking != null && booking.BookingStatus == "Pending")
-                    {
-                        booking.BookingStatus = "Confirmed";
-                        booking.AmountPaid = booking.AmountPaid;
-                        booking.UpdatedAt = DateTime.Now;
-
-                        var seats = await _context.Seats
-                            .Where(s => s.BookingID == booking.BookingID)
-                            .ToListAsync();
-
-                        seats.ForEach(s => s.Status = "Booked");
-
-                        await _context.SaveChangesAsync();
-                    }
-                }
-                else if (stripeEvent.Type == "checkout.session.expired" || stripeEvent.Type == "payment_intent.payment_failed")
-                {
-                    var session = stripeEvent.Data.Object as Session;
-                    var bookingId = int.Parse(session.ClientReferenceId);
-
-                    var booking = await _context.Booking.FindAsync(bookingId);
-                    if (booking != null && booking.BookingStatus == "Pending")
-                    {
-                        booking.BookingStatus = "Failed";
-                        booking.UpdatedAt = DateTime.Now;
-
-                        var seats = await _context.Seats
-                            .Where(s => s.BookingID == booking.BookingID)
-                            .ToListAsync();
-
-                        seats.ForEach(s => s.Status = "Available");
-
-                        await _context.SaveChangesAsync();
-                    }
-                }
-
-
-                return Ok();
+                return NotFound(new { message = "Transaction not found." });
             }
-            catch (Exception ex)
+
+            if (statusDto.Status == "Succeeded")
             {
-                return BadRequest(new { message = "Webhook error", error = ex.Message });
+                transaction.Status = "Succeeded";
+                var booking = transaction.Booking;
+                booking.BookingStatus = "Confirmed";
+                _context.Transaction.Update(transaction);
+                _context.Booking.Update(booking);
             }
+            else
+            {
+                transaction.Status = "Failed";
+                var seatsToDelete = _context.Seats.Where(s => s.BookingID == transaction.BookingID);
+                _context.Seats.RemoveRange(seatsToDelete);
+
+                var booking = await _context.Booking.FindAsync(transaction.BookingID);
+                booking.BookingStatus = "Cancelled";
+                _context.Booking.Update(booking);
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Transaction updated." });
         }
-
+        #endregion
     }
 }
