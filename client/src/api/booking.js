@@ -9,3 +9,12 @@ export const buyTicket = async (bookingDetails) => {
     return catchError(err);
   }
 };
+
+export const initiatePayment = async (paymentDetails) => {
+  try {
+    const { data } = await api.post("/Transactions", paymentDetails);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};

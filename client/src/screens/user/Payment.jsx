@@ -1,11 +1,52 @@
-import React from 'react';
-import CustomButton from '../../components/common/CustomButton';
-import CustomInput from '../../components/common/CustomInput';
-import Navbar from '../../components/common/Navbar';
-import Footer from '../../components/Footer';
-import TripSummary from '../../components/user/TripSummary';
+import React, { useState } from "react";
+import CustomButton from "../../components/common/CustomButton";
+import Navbar from "../../components/common/Navbar";
+import Footer from "../../components/Footer";
+import TripSummary from "../../components/user/TripSummary";
+import { useLocation } from "react-router-dom";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { initiatePayment } from "../../api/booking";
+import PaymentCard from "../../components/user/PaymentCard";
 
 const Payment = () => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const location = useLocation();
+  const { bookingID, schedule, seats, email, amountPaid, fullname } =
+    location.state || {};
+  const [loading, setLoading] = useState(false);
+
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setLoading(true);
+
+    const response = await initiatePayment({
+      bookingID,
+      email,
+      amount: amountPaid,
+    });
+
+    const { paymentIntentClientSecret } = await response;
+
+    const result = await stripe.confirmCardPayment(paymentIntentClientSecret, {
+      payment_method: {
+        card: elements.getElement(CardElement),
+        billing_details: { name: fullname },
+      },
+    });
+
+    if (result.error) {
+      return alert(result.error.message);
+    }
+    alert("Payment successful!");
+    setLoading(false);
+  };
+
   return (
     <div className='font-poppins'>
       <Navbar />
@@ -19,69 +60,30 @@ const Payment = () => {
 
         <div className='bg-slate-50 rounded-lg shadow-sm border p-4'>
           <h2 className='text-lg font-semibold'>Pickup & Drop off</h2>
-          <TripSummary />
+          <TripSummary schedule={schedule} />
           <div className='flex justify-between font-semibold border-t-2 mt-3 pt-3'>
             <p>Seat No.</p>
-            <p>18, 16, 25</p>
+            <p>{seats.join(", ")}</p>
           </div>
 
           <div className='flex justify-between font-semibold border-t-2 mt-3 pt-3'>
             <p>Amount</p>
-            <p>RM 72.00</p>
+            <p>{schedule.amountPaid}</p>
           </div>
         </div>
 
         <div className='md:p-4'>
-          <h2 className='text-lg font-semibold'>Payment</h2>
-          <p className='text-gray-700 mt-1'>Please enter your card details.</p>
-
-          <form className='mt-5 space-y-4'>
-            <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4'>
-              <CustomInput
-                id={'fullname'}
-                name={'fullname'}
-                placeholder={'Full Name (as displayed on card)'}
-                type={'text'}
-                required
-                value={''}
-                onChange={() => {}}
-              />
-              <CustomInput
-                id={'cardnumber'}
-                name={'cardnumber'}
-                placeholder={'Card Number (xxxx-xxxx-xxxx-xxxx)'}
-                type={''}
-                required
-                value={''}
-                onChange={() => {}}
-              />
-            </div>
-
-            <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-3'>
-              <CustomInput
-                id={'cardExpiry'}
-                name={'cardExpiry'}
-                placeholder={'Card Expiration (MM/YY)'}
-                type={'text'}
-                required
-                value={''}
-                onChange={() => {}}
-              />
-              <CustomInput
-                id={'cvv'}
-                name={'cvv'}
-                placeholder={'CVV'}
-                type={'number'}
-                required
-                value={''}
-                onChange={() => {}}
-              />
-            </div>
-            <CustomButton title={'Pay Now'} type={'submit'} className={''} />
+          <h2 className='text-lg font-semibold mb-3'>Payment Details</h2>
+          <form onSubmit={handlePaymentSubmit}>
+            <PaymentCard onSubmit={handlePaymentSubmit} />
+            <CustomButton
+              title='Pay Now'
+              type='submit'
+              disabled={loading || !stripe}
+            />
           </form>
         </div>
       </div>
-
       <Footer />
     </div>
   );

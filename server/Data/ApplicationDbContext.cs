@@ -111,6 +111,7 @@ namespace server.Data
         }
         public DbSet<server.Models.Booking> Booking { get; set; } = default!;
         public DbSet<server.Models.Passenger> Passenger { get; set; } = default!;
+        public DbSet<server.Models.Transaction> Transaction { get; set; } = default!;
         #endregion
     }
 }

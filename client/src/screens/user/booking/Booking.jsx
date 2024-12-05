@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CustomButton from "../../../components/common/CustomButton";
 import Navbar from "../../../components/common/Navbar";
 import Footer from "../../../components/Footer";
@@ -11,6 +11,7 @@ const Booking = () => {
   const location = useLocation();
   const { selectedSeats, schedule } = location.state || {};
   const [passengerDetails, setPassengerDetails] = useState([]);
+  const navigate = useNavigate();
 
   const date = format(new Date(schedule.travelDate), "yyyy-MM-dd");
   const amoundPaid = selectedSeats.length * schedule.routes.price;
@@ -24,7 +25,6 @@ const Booking = () => {
   const handleSubmit = async () => {
     const bookingDetails = {
       busScheduleID: schedule.busScheduleID,
-      bookingStatus: "Confirmed",
       amountPaid: amoundPaid,
       bookingDate: new Date().toISOString(),
       seats: selectedSeats.map((seatNumber, idx) => ({
@@ -38,7 +38,15 @@ const Booking = () => {
       alert(response.message);
       return;
     }
-    alert("Booking successful!");
+    navigate("/payment", {
+      state: {
+        bookingID: response.bookingID,
+        amountPaid: amoundPaid,
+        seats: selectedSeats,
+        fullname: passengerDetails[0].fullname,
+        schedule: schedule,
+      },
+    });
   };
 
   return (
