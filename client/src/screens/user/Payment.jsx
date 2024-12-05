@@ -4,13 +4,13 @@ import Navbar from "../../components/common/Navbar";
 import Footer from "../../components/Footer";
 import TripSummary from "../../components/user/TripSummary";
 import { useLocation } from "react-router-dom";
+
 import {
   useStripe,
   useElements,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import { confirmTransaction, initiatePayment } from "../../api/booking";
-import PaymentCard from "../../components/user/PaymentCard";
 
 const Payment = () => {
   const stripe = useStripe();

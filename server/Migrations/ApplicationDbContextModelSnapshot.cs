@@ -813,7 +813,7 @@ namespace server.Migrations
                     b.HasOne("server.Models.Passenger", "Passenger")
                         .WithMany()
                         .HasForeignKey("PassengerID");
-
+                        
                     b.Navigation("Booking");
 
                     b.Navigation("Passenger");
