@@ -813,7 +813,7 @@ namespace server.Migrations
                     b.HasOne("server.Models.Passenger", "Passenger")
                         .WithMany()
                         .HasForeignKey("PassengerID");
-
+                        
                     b.Navigation("Booking");
 
                     b.Navigation("Passenger");
@@ -826,10 +826,7 @@ namespace server.Migrations
                         .HasForeignKey("BookingID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Booking");
-                });
-
+                        
             modelBuilder.Entity("server.Models.BusOperator", b =>
                 {
                     b.HasOne("server.Models.User", null)

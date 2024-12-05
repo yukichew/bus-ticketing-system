@@ -38,7 +38,6 @@ const Booking = () => {
       alert(response.message);
       return;
     }
-
     navigate("/payment", {
       state: {
         bookingID: response.bookingID,
