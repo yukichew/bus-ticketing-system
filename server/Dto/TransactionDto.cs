@@ -6,8 +6,6 @@ namespace server.Dto
 {
     public class TransactionDto
     {
-        [Required(ErrorMessage = "Email is required")]
-        public string? Email { get; set; }
         [Required]
         public int BookingID { get; set; }
         [ForeignKey("BookingID")]

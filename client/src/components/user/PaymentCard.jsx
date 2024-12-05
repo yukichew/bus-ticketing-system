@@ -1,9 +1,9 @@
-import React from "react";
 import {
-  CardNumberElement,
-  CardExpiryElement,
   CardCvcElement,
+  CardExpiryElement,
+  CardNumberElement,
 } from "@stripe/react-stripe-js";
+import React from "react";
 
 const elementStyle = {
   base: {

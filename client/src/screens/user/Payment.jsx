@@ -4,8 +4,12 @@ import Navbar from "../../components/common/Navbar";
 import Footer from "../../components/Footer";
 import TripSummary from "../../components/user/TripSummary";
 import { useLocation } from "react-router-dom";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { initiatePayment } from "../../api/booking";
+import {
+  useStripe,
+  useElements,
+  CardNumberElement,
+} from "@stripe/react-stripe-js";
+import { confirmTransaction, initiatePayment } from "../../api/booking";
 import PaymentCard from "../../components/user/PaymentCard";
 
 const Payment = () => {
@@ -31,18 +35,23 @@ const Payment = () => {
       amount: amountPaid,
     });
 
-    const { paymentIntentClientSecret } = await response;
+    const { paymentIntentClientSecret, transaction } = await response;
+    const cardElement = elements.getElement(CardNumberElement);
 
     const result = await stripe.confirmCardPayment(paymentIntentClientSecret, {
       payment_method: {
-        card: elements.getElement(CardElement),
+        card: cardElement,
         billing_details: { name: fullname },
       },
     });
 
     if (result.error) {
-      return alert(result.error.message);
+      return alert(
+        `Payment failed: ${result.error.message}. Please try again.`
+      );
     }
+
+    await confirmTransaction(transaction.transactionID, "Succeeded");
     alert("Payment successful!");
     setLoading(false);
   };
