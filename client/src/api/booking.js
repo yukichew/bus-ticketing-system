@@ -30,3 +30,12 @@ export const confirmTransaction = async (transactionID, status) => {
     return catchError(err);
   }
 };
+
+export const getBookiings = async (email) => {
+  try {
+    const { data } = await api.get("/Bookings/History?email=" + email);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
+using server.Dto.Booking;
 using server.Models;
 
 namespace server.Controllers
@@ -38,6 +39,7 @@ namespace server.Controllers
             return booking;
         }
 
+        #region buy bus ticket
         // POST: api/Bookings
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDto bookingDto)
@@ -66,7 +68,6 @@ namespace server.Controllers
                 BusScheduleID = bookingDto.BusScheduleID,
                 BookingStatus = "Pending",
                 AmountPaid = 0,
-                BookingDate = bookingDto.BookingDate,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
                 BusSchedule = await _context.BusSchedules.FindAsync(bookingDto.BusScheduleID)
@@ -95,13 +96,37 @@ namespace server.Controllers
                 };
                 _context.Seats.Add(bookingSeat);
             }
-
             await _context.SaveChangesAsync();
-
             await transaction.CommitAsync();
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingID }, booking);
         }
+        #endregion
+
+        #region get booking by passenger id
+        // GET: api/Bookings/History?email={email}
+        [HttpGet("History")]
+        public async Task<ActionResult<IEnumerable<Booking>>> GetBookingHistory([FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { message = "Email is required." });
+            }
+
+            var bookings = await _context.Seats
+                .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == email.ToLower())
+                .Include(s => s.Booking)
+                .Select(s => s.Booking)
+                .ToListAsync();
+
+            if (!bookings.Any())
+            {
+                return NotFound(new { message = "No bookings found." });
+            }
+
+            return Ok(bookings);
+        }
+        #endregion
 
         // DELETE: api/Bookings/5
         [HttpDelete("{id}")]

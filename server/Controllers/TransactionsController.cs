@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
 using server.Models;
-using Stripe
+using Stripe;
 
 namespace server.Controllers
 {
@@ -61,10 +61,10 @@ namespace server.Controllers
                 _context.Transaction.Add(transaction);
                 await _context.SaveChangesAsync();
 
-                // Set a timer to release seats if payment is not completed
+                // release seats if payment is not completed within 5 mins
                 _ = Task.Run(async () =>
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(10));
+                    await Task.Delay(TimeSpan.FromMinutes(5));
 
                     var paymentStatus = await _context.Transaction
                         .Where(t => t.TransactionID == transaction.TransactionID)
