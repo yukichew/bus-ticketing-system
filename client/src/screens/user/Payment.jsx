@@ -11,6 +11,7 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import { confirmTransaction, initiatePayment } from "../../api/booking";
+import PaymentCard from "../../components/user/PaymentCard";
 
 const Payment = () => {
   const stripe = useStripe();
