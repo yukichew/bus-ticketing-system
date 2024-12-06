@@ -300,9 +300,9 @@ namespace server.Controllers
             var route = new Routes
             {
                 BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID,
-                ETD = etd,
+                departureTime = etd,
                 ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID,
-                ETA = eta,
+                arrivalTime = eta,
                 Status = busScheduleDTO.Routes.Status,
                 Price = busScheduleDTO.Routes.Price
             };
@@ -418,7 +418,7 @@ namespace server.Controllers
                 DriverID = dto.DriverID,
                 RouteID = routeID,
                 ScheduleStatus = dto.ScheduleStatus,
-                Status = dto.Status
+                Status = string.IsNullOrWhiteSpace(dto.Status) ? "Scheduled" : dto.Status
             };
         }
 
@@ -481,25 +481,11 @@ namespace server.Controllers
                 return BadRequest("Departure time (ETD) must be earlier than arrival time (ETA).");
             }
 
-            // A new schedule must be created 12 hours before the ETD.
-            DateTime scheduleDateTime = busScheduleDTO.TravelDate.Add(etd);
-            DateTime currentTime = DateTime.Now;
-
-            if (scheduleDateTime <= currentTime.AddHours(12))
-            {
-                return BadRequest("A new schedule cannot be created within 12 hours of the current time.");
-            }
-
-            if (existingBusSchedule.Routes == null)
-            {
-                return BadRequest("The schedule must have an associated route.");
-            }
-
             var existingRoutes = existingBusSchedule.Routes;
             existingRoutes.BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID;
-            existingRoutes.ETD = etd;
+            existingRoutes.departureTime = etd;
             existingRoutes.ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID;
-            existingRoutes.ETA = eta;
+            existingRoutes.arrivalTime = eta;
             existingRoutes.Status = busScheduleDTO.Routes.Status;
 
             existingBusSchedule.TravelDate = busScheduleDTO.TravelDate;
@@ -510,20 +496,6 @@ namespace server.Controllers
             existingBusSchedule.IsRecurring = busScheduleDTO.IsRecurring;
             existingBusSchedule.ScheduleStatus = busScheduleDTO.ScheduleStatus;
             existingBusSchedule.Status = busScheduleDTO.Status;
-
-            // To ensure 30 minutes gap exist
-            var lastSchedule = await _context.BusSchedules
-                .Where(bs => bs.BusID == busScheduleDTO.BusID &&
-                             bs.BusScheduleID != id &&
-                             bs.ScheduleStatus != "Cancelled" &&
-                             bs.ScheduleStatus != "Completed")
-                .OrderByDescending(bs => bs.ETD)
-                .FirstOrDefaultAsync();
-
-            if (lastSchedule != null && lastSchedule.ETA.Add(TimeSpan.FromMinutes(30)) > etd)
-            {
-                return BadRequest($"The next trip for bus {busScheduleDTO.BusID} cannot be scheduled within 30 minutes of the previous trip.");
-            }
 
             try
             {

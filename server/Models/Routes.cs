@@ -16,7 +16,7 @@ namespace server.Models
 
         [Required]
         [Column(TypeName = "time")]
-        public TimeSpan ETD { get; set; }
+        public TimeSpan departureTime { get; set; }
 
         [Required]
         public int ArrivalLocationID { get; set; }
@@ -25,7 +25,7 @@ namespace server.Models
 
         [Required]
         [Column(TypeName = "time")]
-        public TimeSpan ETA { get; set; }
+        public TimeSpan arrivalTime { get; set; }
 
         [Required]
         [StringLength(20)]
