@@ -21,6 +21,7 @@ namespace server.Data
         public DbSet<Routes> Routes { get; set; }
         public DbSet<BusSchedule> BusSchedules { get; set; }
         public DbSet<Seat> Seats { get; set; }
+        public DbSet<RatesAndReviews> RatesAndReviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

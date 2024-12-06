@@ -1,33 +1,39 @@
-﻿//using System;
-//using System.ComponentModel.DataAnnotations;
-//using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-//namespace server.Models
-//{
-//    [Table("AspNetRatesAndReviews")]
-//    public class RatesAndReviews
-//    {
-//        [Key]
-//        public int ID { get; set; }
+namespace server.Models
+{
+    public class RatesAndReviews
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
 
-//        [ForeignKey("BusOperator")]
-//        public int BusOperatorID { get; set; }
-//        public BusOperator BusOperator { get; set; }
+        [Required]
+        [StringLength(450)]
+        public string BusOperatorID { get; set; }
 
-//        [ForeignKey("Passenger")]
-//        public int PassengerID { get; set; }
-//        public Passengers Passenger { get; set; }
+        [ForeignKey("BusOperatorID")]
+        public virtual BusOperator BusOperator { get; set; }
 
-//        [MaxLength(1000)]
-//        public string? Comment { get; set; }
+        [StringLength(450)]
+        public string Comment { get; set; }
 
-//        [Range(1, 5)]
-//        public int Rates { get; set; }
+        [Required]
+        public int Rate { get; set; }
 
-//        public DateTime Date { get; set; }
+        [Required]
+        public int PostedById { get; set; }
 
-//        [MaxLength(50)]
-//        [Required]
-//        public string Status { get; set; }
-//    }
-//}
+        [ForeignKey("PostedById")]
+        public virtual Passenger PostedBy { get; set; }
+
+        [Required]
+        public DateTime PostedAt { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string Status { get; set; }
+    }
+}
