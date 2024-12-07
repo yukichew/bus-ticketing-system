@@ -60,7 +60,6 @@ namespace server.Controllers
                 };
                 _context.Transaction.Add(transaction);
                 await _context.SaveChangesAsync();
-
                 return Ok(new
                 {
                     PaymentIntentClientSecret = paymentIntent.ClientSecret,
