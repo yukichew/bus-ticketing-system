@@ -31,7 +31,7 @@ export const confirmTransaction = async (transactionID, status) => {
   }
 };
 
-export const getBookiings = async (email) => {
+export const getBookings = async (email) => {
   try {
     const { data } = await api.get("/Bookings/History?email=" + email);
     return data;

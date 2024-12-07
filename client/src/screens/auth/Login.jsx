@@ -18,18 +18,17 @@ const Login = ({ switchToRegister }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = await login(email, password);
-    console.log(data);
   };
 
   return (
     <>
-      <h3 className="font-poppins text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl">
+      <h3 className='font-poppins text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
         Welcome Back!
       </h3>
-      <div className="font-poppins text-center text-sm text-gray-500">
+      <div className='font-poppins text-center text-sm text-gray-500'>
         Please enter your details
       </div>
-      <form className="mt-12" onSubmit={handleSubmit}>
+      <form className='mt-12' onSubmit={handleSubmit}>
         <CustomInput
           id={"email"}
           name={"email"}
@@ -39,7 +38,7 @@ const Login = ({ switchToRegister }) => {
           icon={TfiEmail}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <div className="relative mt-3">
+        <div className='relative mt-3'>
           <CustomInput
             id={"password"}
             name={"password"}
@@ -50,51 +49,51 @@ const Login = ({ switchToRegister }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <div
-            className="absolute inset-y-0 right-2 pr-3 flex items-center cursor-pointer"
+            className='absolute inset-y-0 right-2 pr-3 flex items-center cursor-pointer'
             onClick={togglePasswordVisibility}
           >
             {visible ? (
-              <IoEye size={20} className="text-gray-400" />
+              <IoEye size={20} className='text-gray-400' />
             ) : (
-              <IoEyeOff size={20} className="text-gray-400" />
+              <IoEyeOff size={20} className='text-gray-400' />
             )}
           </div>
         </div>
 
-        <div className="font-poppins text-left mt-3">
+        <div className='font-poppins text-left mt-3'>
           <button
-            type="button"
+            type='button'
             onClick={() => switchToRegister("forgot-password")}
-            className="text-sm hover:text-primary text-gray-500 underline transition duration-200"
+            className='text-sm hover:text-primary text-gray-500 underline transition duration-200'
           >
             Forgot Password?
           </button>
         </div>
 
-        <div className="mt-11">
+        <div className='mt-11'>
           <CustomButton title={"Login"} />
         </div>
       </form>
 
-      <div className="font-poppins text-center text-sm text-gray-500 mt-5">
+      <div className='font-poppins text-center text-sm text-gray-500 mt-5'>
         - or sign in with -
       </div>
 
-      <div className="flex justify-center mt-2">
+      <div className='flex justify-center mt-2'>
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-          alt="Google Logo"
-          className="w-10 h-10 rounded-full"
+          src='https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg'
+          alt='Google Logo'
+          className='w-10 h-10 rounded-full'
         />
       </div>
 
       {!isAdmin && (
-        <div className="font-poppins text-center text-sm text-gray-500 mt-8">
+        <div className='font-poppins text-center text-sm text-gray-500 mt-8'>
           Hasn't have an account yet?{" "}
           <button
-            type="button"
+            type='button'
             onClick={() => switchToRegister("")}
-            className="underline hover:text-primary transition duration-200"
+            className='underline hover:text-primary transition duration-200'
           >
             Register here
           </button>

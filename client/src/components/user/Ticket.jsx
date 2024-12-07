@@ -1,7 +1,7 @@
-import html2pdf from 'html2pdf.jsx';
-import React, { useRef } from 'react';
-import Logo from '../../assets/Logo';
-import CustomButton from '../common/CustomButton';
+import React, { useRef } from "react";
+import Logo from "../../assets/Logo";
+import CustomButton from "../common/CustomButton";
+import { html2pdf } from "html2pdf.js";
 
 const Ticket = ({ booking }) => {
   const ticketRef = useRef();
@@ -31,25 +31,25 @@ const Ticket = ({ booking }) => {
         </div>
 
         <div className='grid grid-cols-2 gap-3 items-center'>
-          {content({ title: 'Passenger', desc: booking.passengerName })}
-          {content({ title: 'Trip No', desc: booking.tripNo })}
-          {content({ title: 'Date', desc: booking.date })}
+          {content({ title: "Passenger", desc: booking.passengerName })}
+          {content({ title: "Trip No", desc: booking.tripNo })}
+          {content({ title: "Date", desc: booking.date })}
           {content({
-            title: 'Boarding Time',
+            title: "Boarding Time",
             desc: booking.departureTime,
           })}
           {content({
-            title: 'From',
+            title: "From",
             desc: booking.departureLocation,
           })}
           {content({
-            title: 'To',
+            title: "To",
             desc: booking.arrivalLocation,
           })}
-          {content({ title: 'Bus Operator', desc: booking.busOperator })}
-          {content({ title: 'Bus Type', desc: booking.busType })}
-          {content({ title: 'Seat', desc: booking.seatNo })}
-          {content({ title: 'Price', desc: booking.price })}
+          {content({ title: "Bus Operator", desc: booking.busOperator })}
+          {content({ title: "Bus Type", desc: booking.busType })}
+          {content({ title: "Seat", desc: booking.seatNo })}
+          {content({ title: "Price", desc: booking.price })}
         </div>
       </div>
       <CustomButton
