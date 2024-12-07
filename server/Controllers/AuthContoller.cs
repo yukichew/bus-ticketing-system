@@ -203,5 +203,34 @@ namespace server.Controllers
         }
         #endregion
 
+        #region Get User Profile API
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            var userProfile = new
+            {
+                user.Id,
+                user.Email,
+                user.UserName,
+                user.PhoneNumber,
+            };
+
+            return Ok(userProfile);
+        }
+        #endregion
     }
 }

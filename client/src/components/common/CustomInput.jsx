@@ -1,4 +1,5 @@
 import React from "react";
+import React from "react";
 
 const CustomInput = ({
   placeholder,
@@ -10,6 +11,7 @@ const CustomInput = ({
   value,
   onChange,
   multiline = false,
+  error = null,
   error = null,
 }) => {
   return (
@@ -48,7 +50,7 @@ const CustomInput = ({
           />
         )}
       </div>
-      {error && <p className='text-red-500 text-xs mt-1'>{error}</p>}
+      {error && <p className='text-red-500 text-xs mt-1 pl-1'>{error}</p>}
     </div>
   );
 };
