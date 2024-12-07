@@ -1,4 +1,5 @@
 import React from "react";
+import React from "react";
 
 const CustomInput = ({
   placeholder,
@@ -10,6 +11,7 @@ const CustomInput = ({
   value,
   onChange,
   multiline = false,
+  error = null,
   error = null,
 }) => {
   return (
