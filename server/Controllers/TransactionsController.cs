@@ -61,26 +61,6 @@ namespace server.Controllers
                 _context.Transaction.Add(transaction);
                 await _context.SaveChangesAsync();
 
-                // release seats if payment is not completed within 5 mins
-                _ = Task.Run(async () =>
-                {
-                    await Task.Delay(TimeSpan.FromMinutes(5));
-
-                    var paymentStatus = await _context.Transaction
-                        .Where(t => t.TransactionID == transaction.TransactionID)
-                        .Select(t => t.Status)
-                        .FirstOrDefaultAsync();
-
-                    if (paymentStatus != "Succeeded")
-                    {
-                        var seatsToDelete = _context.Seats.Where(s => s.BookingID == booking.BookingID);
-                        _context.Seats.RemoveRange(seatsToDelete);
-                        booking.BookingStatus = "Cancelled";
-                        _context.Booking.Update(booking);
-                        await _context.SaveChangesAsync();
-                    }
-                });
-
                 return Ok(new
                 {
                     PaymentIntentClientSecret = paymentIntent.ClientSecret,

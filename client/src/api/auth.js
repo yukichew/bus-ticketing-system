@@ -4,6 +4,7 @@ import { catchError } from "../utils/error";
 export const login = async (email, password) => {
   try {
     const { data } = await api.post("/Auth/login", { email, password });
+    localStorage.setItem("token", data.token);
     return data;
   } catch (err) {
     return catchError(err);

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CustomButton from "../../../components/common/CustomButton";
-import Navbar from "../../../components/common/Navbar";
-import Footer from "../../../components/Footer";
+import Container from "../../../components/Container";
 import PassengerForm from "./PassengerForm";
 import { format } from "date-fns";
 import { buyTicket } from "../../../api/booking";
@@ -49,9 +48,7 @@ const Booking = () => {
   };
 
   return (
-    <>
-      <Navbar />
-
+    <Container>
       <div className='max-w-7xl mx-auto space-y-5 pt-10 pb-12 px-10'>
         {/* trip summary */}
         <div className='bg-slate-50 border p-4 rounded-md shadow-md border-t-4 border-t-primary'>
@@ -106,9 +103,7 @@ const Booking = () => {
           onClick={handleSubmit}
         />
       </div>
-
-      <Footer />
-    </>
+    </Container>
   );
 };
 
