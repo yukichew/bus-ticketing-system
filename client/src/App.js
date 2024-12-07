@@ -16,28 +16,30 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {UserRoutes.map((route, index) => {
-          if (route.props.path === "/payment") {
-            return (
-              <Route
-                key={index}
-                path={route.props.path}
-                element={
-                  <Elements stripe={stripePromise}>
-                    {route.props.element}
-                  </Elements>
-                }
-              />
-            );
-          }
-          return route;
-        })}
-        {BusOperatorRoutes}
-        {AdminRoutes}
-      </Routes>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Routes>
+          {UserRoutes.map((route, index) => {
+            if (route.props.path === "/payment") {
+              return (
+                <Route
+                  key={index}
+                  path={route.props.path}
+                  element={
+                    <Elements stripe={stripePromise}>
+                      {route.props.element}
+                    </Elements>
+                  }
+                />
+              );
+            }
+            return route;
+          })}
+          {BusOperatorRoutes}
+          {AdminRoutes}
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
