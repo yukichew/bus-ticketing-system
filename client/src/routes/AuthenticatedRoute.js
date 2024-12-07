@@ -1,15 +1,16 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../utils/AuthContext";
 
-const AuthenticatedRoute = ({ isAuthenticated, children }) => {
-  if (!isAuthenticated) {
-    toast.error("You do not have permission to access this page.", {
-      position: toast.POSITION.TOP_CENTER,
-    });
-    return <Navigate to='/' replace />;
-  }
-  return children;
+const AuthenticatedRoute = () => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  return user ? (
+    <Outlet />
+  ) : (
+    <Navigate to='/' state={{ from: location.pathname }} />
+  );
 };
 
 export default AuthenticatedRoute;

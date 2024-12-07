@@ -4,7 +4,7 @@ import { catchError } from "../utils/error";
 export const login = async (email, password) => {
   try {
     const { data } = await api.post("/Auth/login", { email, password });
-    localStorage.setItem("token", data.token);
+    sessionStorage.setItem("token", data.token);
     return data;
   } catch (err) {
     return catchError(err);
@@ -18,6 +18,19 @@ export const register = async (email, password, confirmPassword, role) => {
       password,
       confirmPassword,
       role,
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const getUserProfile = async (token) => {
+  try {
+    const { data } = await api.get("/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     return data;
   } catch (err) {

@@ -1,20 +1,23 @@
-import { jwtDecode } from "jwt-decode";
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { getUserProfile } from "../api/auth";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      const email =
-        decoded[
-          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-        ];
-      console.log(decoded);
-      setUser({ ...decoded, email });
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      return;
     }
+
+    const fetchUserProfile = async () => {
+      const profile = await getUserProfile(token);
+      if (profile) {
+        setUser(profile);
+      }
+    };
+
+    fetchUserProfile();
   }, []);
 
   return (
