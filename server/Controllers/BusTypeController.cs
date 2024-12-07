@@ -98,7 +98,7 @@ namespace server.Controllers
         #region UpdateBusType
         // PUT: api/BusType/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBusType(int id, [FromBody] BusType busType)
+        public async Task<IActionResult> UpdateBusType(Guid id, [FromBody] BusType busType)
         {
             if (id != busType.BusTypeID)
             {
@@ -170,7 +170,7 @@ namespace server.Controllers
             return Ok("The selected bus type is successfully deleted.");
         }
         #endregion
-        private bool BusTypeExists(int id)
+        private bool BusTypeExists(Guid id)
         {
             return _context.Set<BusType>().Any(e => e.BusTypeID == id);
         }

@@ -61,7 +61,7 @@ namespace server.Controllers
         #region UpdateLocation
         // PUT: api/Location/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLocation(int id, [FromBody] Locations location)
+        public async Task<IActionResult> UpdateLocation(Guid id, [FromBody] Locations location)
         {
             if (id != location.LocationID)
             {
@@ -108,7 +108,7 @@ namespace server.Controllers
         }
         #endregion
 
-        private bool LocationExists(int id)
+        private bool LocationExists(Guid id)
         {
             return _context.Set<Locations>().Any(e => e.LocationID == id);
         }

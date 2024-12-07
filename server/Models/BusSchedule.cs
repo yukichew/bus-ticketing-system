@@ -6,8 +6,8 @@ namespace server.Models
     public class BusSchedule
     {
         [Key]
-        [Required]
-        public int BusScheduleID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid BusScheduleID { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime TravelDate { get; set; }
@@ -29,24 +29,18 @@ namespace server.Models
         [Required]
         public bool IsRecurring { get; set; }
 
-        public int? RecurringOptionID { get; set; }
+        public Guid? RecurringOptionID { get; set; }
 
         [ForeignKey("RecurringOptionID")]
         public virtual RecurringOption? RecurringOptions { get; set; }
 
         [Required]
-        public int BusID { get; set; }
+        public Guid BusID { get; set; }
 
         [ForeignKey("BusID")]
         public virtual BusInfo? BusInfo { get; set; }
 
-        [Required]
-        public int DriverID { get; set; }
-
-        [ForeignKey("DriverID")]
-        public virtual Driver? Drivers { get; set; }
-
-        public int RouteID { get; set; }
+        public Guid RouteID { get; set; }
 
         [ForeignKey("RouteID")]
         public virtual Routes? Routes { get; set; }

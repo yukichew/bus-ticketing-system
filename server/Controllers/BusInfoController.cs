@@ -40,7 +40,7 @@ namespace server.Controllers
         #region GetBus
         // GET: api/BusInfo/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<BusInfo>> GetBus(int id)
+        public async Task<ActionResult<BusInfo>> GetBus(Guid id)
         {
             var busInfo = await _context.Set<BusInfo>()
                                 .Include(b => b.BusType)
@@ -131,7 +131,7 @@ namespace server.Controllers
         #region UpdateBus
         // PUT: api/BusInfo/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBus(int id, [FromBody] BusInfo busInfo)
+        public async Task<IActionResult> UpdateBus(Guid id, [FromBody] BusInfo busInfo)
         {
             if (id != busInfo.BusID)
             {
@@ -204,7 +204,7 @@ namespace server.Controllers
         }
         #endregion
 
-        private bool BusInfoExists(int id)
+        private bool BusInfoExists(Guid id)
         {
             return _context.Set<BusInfo>().Any(e => e.BusID == id);
         }

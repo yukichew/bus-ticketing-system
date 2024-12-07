@@ -45,7 +45,7 @@ namespace server.Controllers
 
         // PUT: api/Passengers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPassenger(int id, Passenger passenger)
+        public async Task<IActionResult> PutPassenger(Guid id, Passenger passenger)
         {
             if (id != passenger.PassengerID)
             {
@@ -105,7 +105,7 @@ namespace server.Controllers
             return NoContent();
         }
 
-        private bool PassengerExists(int id)
+        private bool PassengerExists(Guid id)
         {
             return _context.Passenger.Any(e => e.PassengerID == id);
         }

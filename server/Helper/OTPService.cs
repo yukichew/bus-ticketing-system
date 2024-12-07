@@ -9,9 +9,7 @@ namespace server.Helper
         private readonly ConcurrentDictionary<string, (string Otp, DateTime Expiry)> _otpStore = new ConcurrentDictionary<string, (string, DateTime)>();
         private readonly TimeSpan _otpExpiryDuration = TimeSpan.FromMinutes(5);
 
-        /// <summary>
-        /// Generates a new OTP for the given email and stores it.
-        /// </summary>
+        #region Generates a new OTP for the given email and stores it.
         public async Task<string> GenerateOtpAsync(string email)
         {
             if (string.IsNullOrEmpty(email)) throw new ArgumentException("Email cannot be null or empty.");
@@ -19,15 +17,13 @@ namespace server.Helper
             var otp = new Random().Next(100000, 999999).ToString();
             var expiry = DateTime.UtcNow.Add(_otpExpiryDuration);
 
-            // Atomically set the OTP in the store
             _otpStore[email] = (otp, expiry);
 
             return await Task.FromResult(otp);
         }
+        #endregion
 
-        /// <summary>
-        /// Saves a provided OTP for the email (overwrites any existing).
-        /// </summary>
+        #region Saves a provided OTP for the email (overwrites any existing).
         public async Task SaveOTPAsync(string email, string otp)
         {
             if (string.IsNullOrEmpty(email)) throw new ArgumentException("Email cannot be null or empty.");
@@ -38,10 +34,9 @@ namespace server.Helper
 
             await Task.CompletedTask;
         }
+        #endregion
 
-        /// <summary>
-        /// Validates the provided OTP for the given email.
-        /// </summary>
+        #region Validates OTP for the given email.
         public async Task<bool> ValidateOTPAsync(string email, string otp)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(otp)) return false;
@@ -54,5 +49,6 @@ namespace server.Helper
 
             return await Task.FromResult(false);
         }
+        #endregion
     }
 }

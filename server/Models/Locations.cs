@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 namespace server.Models
 {
@@ -6,7 +7,8 @@ namespace server.Models
     public class Locations
     {
         [Key]
-        public int LocationID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid LocationID { get; set; }
 
         [Required]
         [StringLength(256)]

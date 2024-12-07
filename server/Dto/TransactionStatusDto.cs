@@ -5,7 +5,7 @@ namespace server.Dto
     public class TransactionStatusDto
     {
         [Required(ErrorMessage = "Transaction ID is required.")]
-        public string TransactionID { get; set; }
+        public Guid TransactionID { get; set; }
         [Required(ErrorMessage = "Transaction status is required.")]
         public string Status { get; set; }
     }

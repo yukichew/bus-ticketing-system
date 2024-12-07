@@ -2,10 +2,10 @@
 {
     public class RoutesDTO
     {
-        public int BoardingLocationID { get; set; }
-        public string ETD { get; set; }
-        public int ArrivalLocationID { get; set; }
-        public string ETA { get; set; }
+        public Guid BoardingLocationID { get; set; }
+        public string DepartureTime { get; set; }
+        public Guid ArrivalLocationID { get; set; }
+        public string ArrivalTime { get; set; }
         public string Status { get; set; }
         public double Price { get; set; }
     }
