@@ -8,7 +8,7 @@ namespace server.Helper
         #region Roles
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
-            string[] roleNames = { "Admin", "User", "BusOperator" };
+            string[] roleNames = { "Admin", "Member", "BusOperator" };
             foreach (var roleName in roleNames)
             {
                 var roleExist = await roleManager.RoleExistsAsync(roleName);
@@ -32,7 +32,8 @@ namespace server.Helper
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Status = "Active"
                 };
 
                 var result = await userManager.CreateAsync(admin, "Admin@1234");

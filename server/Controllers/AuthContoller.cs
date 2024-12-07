@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using server.Helper;
 using server.Dto.Auth;
+using Microsoft.AspNetCore.Authorization;
 
 namespace server.Controllers
 {
@@ -47,6 +48,8 @@ namespace server.Controllers
             }
 
             user.UserName = registerDto.Fullname;
+            user.Status = "Active";
+
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
@@ -59,6 +62,13 @@ namespace server.Controllers
                 return BadRequest(result.Errors);
             }
 
+            var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest(new { message = "Failed to assign Member role.", errors = roleResult.Errors });
+            }
+
+            await _userManager.SetLockoutEnabledAsync(user, false);
             return Ok(new { message = "Registration successful." });
         }
         #endregion
@@ -75,12 +85,9 @@ namespace server.Controllers
 
             var busOperator = new BusOperator
             {
-                UserName = registerDto.Name,
+                UserName = registerDto.Fullname,
                 Email = registerDto.Email,
                 PhoneNumber = registerDto.PhoneNumber,
-                CompanyName = registerDto.CompanyName,
-                CompanyEmail = registerDto.CompanyEmail,
-                CompanyContact = registerDto.CompanyContact,
                 Address = registerDto.Address,
                 BusImages = registerDto.BusImages,
                 IsRefundable = registerDto.IsRefundable,
@@ -197,8 +204,6 @@ namespace server.Controllers
                 return BadRequest(result.Errors);
             }
 
-            await _userManager.AddToRoleAsync(user, "User");
-            await _userManager.SetLockoutEnabledAsync(user, false);
             return Ok(new { message = "OTP validated successfully." });
         }
         #endregion
