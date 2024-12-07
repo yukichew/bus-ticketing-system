@@ -36,16 +36,21 @@ namespace server.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "User not found." });
+            }
+
             if (!user.EmailConfirmed)
             {
-                return BadRequest("Email verification is required before registration.");
+                return BadRequest(new { message = "Email verification is required before registration." });
             }
 
             user.UserName = registerDto.Fullname;
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors);
+                return BadRequest(new { message = (result.Errors) });
             }
 
             result = await _userManager.AddPasswordAsync(user, registerDto.Password);
@@ -54,7 +59,7 @@ namespace server.Controllers
                 return BadRequest(result.Errors);
             }
 
-            return Ok("Registration successful.");
+            return Ok(new { message = "Registration successful." });
         }
         #endregion
 
@@ -65,7 +70,7 @@ namespace server.Controllers
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
             if (!user.EmailConfirmed)
             {
-                return BadRequest("Email verification is required before registration.");
+                return BadRequest(new { message = "Email verification is required before registration." });
             }
 
             var busOperator = new BusOperator
@@ -93,7 +98,7 @@ namespace server.Controllers
                 return BadRequest(roleResult.Errors);
             }
 
-            return Ok("Bus operator registration successful.");
+            return Ok(new { message = "Bus operator registration successful." });
         }
         #endregion
 
@@ -104,13 +109,13 @@ namespace server.Controllers
             var user = await _userManager.FindByEmailAsync(authDto.Email);
             if (user == null)
             {
-                return Unauthorized("Invalid credentials.");
+                return Unauthorized(new { message = "Invalid credentials." });
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, authDto.Password, false, false);
             if (!result.Succeeded)
             {
-                return Unauthorized("Invalid credentials.");
+                return Unauthorized(new { message = "Invalid credentials." });
             }
 
             var token = GenerateJwtToken(user);
@@ -176,7 +181,7 @@ namespace server.Controllers
             var isValid = await _otpService.ValidateOTPAsync(validateEmailDto.Email, validateEmailDto.OTP);
             if (!isValid)
             {
-                return BadRequest("Invalid or expired OTP.");
+                return BadRequest(new { message = "Invalid or expired OTP." });
             }
 
             var user = new User
@@ -194,7 +199,7 @@ namespace server.Controllers
 
             await _userManager.AddToRoleAsync(user, "User");
             await _userManager.SetLockoutEnabledAsync(user, false);
-            return Ok("OTP validated successfully.");
+            return Ok(new { message = "OTP validated successfully." });
         }
         #endregion
 
