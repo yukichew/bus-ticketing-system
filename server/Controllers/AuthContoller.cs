@@ -49,6 +49,7 @@ namespace server.Controllers
 
             user.UserName = registerDto.Fullname;
             user.Status = "Active";
+            user.PhoneNumber = registerDto.PhoneNumber;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -78,19 +79,20 @@ namespace server.Controllers
         public async Task<IActionResult> RegisterBusOperator([FromBody] BusOperatorRegisterDto registerDto)
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
-            if (!user.EmailConfirmed)
+            if (user != null)
             {
-                return BadRequest(new { message = "Email verification is required before registration." });
+                return BadRequest(new { message = "User already exists." });
             }
 
             var busOperator = new BusOperator
             {
-                UserName = registerDto.Fullname,
                 Email = registerDto.Email,
+                UserName = registerDto.Fullname,
                 PhoneNumber = registerDto.PhoneNumber,
                 Address = registerDto.Address,
                 BusImages = registerDto.BusImages,
                 IsRefundable = registerDto.IsRefundable,
+                Status = "Pending",
             };
 
             var result = await _userManager.CreateAsync(busOperator, registerDto.Password);
@@ -117,6 +119,16 @@ namespace server.Controllers
             if (user == null)
             {
                 return Unauthorized(new { message = "Invalid credentials." });
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("BusOperator"))
+            {
+                var busOperator = user as BusOperator;
+                if (busOperator == null || busOperator.Status != "Active")
+                {
+                    return Unauthorized(new { message = "Your account is pending review or inactive." });
+                }
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, authDto.Password, false, false);
@@ -226,15 +238,7 @@ namespace server.Controllers
                 return NotFound(new { message = "User not found." });
             }
 
-            var userProfile = new
-            {
-                user.Id,
-                user.Email,
-                user.UserName,
-                user.PhoneNumber,
-            };
-
-            return Ok(userProfile);
+            return Ok(user);
         }
         #endregion
     }
