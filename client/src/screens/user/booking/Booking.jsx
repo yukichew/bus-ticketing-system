@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CustomButton from "../../../components/common/CustomButton";
-import Navbar from "../../../components/common/Navbar";
-import Footer from "../../../components/Footer";
+import Container from "../../../components/Container";
 import PassengerForm from "./PassengerForm";
-import { buyTicket } from "../../../api/booking";
 import { format } from "date-fns";
+import { buyTicket } from "../../../api/booking";
 
 const Booking = () => {
   const location = useLocation();
@@ -14,7 +13,7 @@ const Booking = () => {
   const navigate = useNavigate();
 
   const date = format(new Date(schedule.travelDate), "yyyy-MM-dd");
-  const amoundPaid = selectedSeats.length * schedule.routes.price;
+  const amountPaid = selectedSeats.length * schedule.routes.price;
 
   const handlePassengerChange = (index, details) => {
     const updatedDetails = [...passengerDetails];
@@ -25,8 +24,7 @@ const Booking = () => {
   const handleSubmit = async () => {
     const bookingDetails = {
       busScheduleID: schedule.busScheduleID,
-      amountPaid: amoundPaid,
-      bookingDate: new Date().toISOString(),
+      amountPaid: amountPaid,
       seats: selectedSeats.map((seatNumber, idx) => ({
         seatNumber,
         passenger: passengerDetails[idx],
@@ -35,24 +33,22 @@ const Booking = () => {
 
     const response = await buyTicket(bookingDetails);
     if (response?.error) {
-      alert(response.message);
-      return;
+      return alert(response.message);
     }
+
     navigate("/payment", {
       state: {
         bookingID: response.bookingID,
-        amountPaid: amoundPaid,
+        amountPaid,
         seats: selectedSeats,
         fullname: passengerDetails[0].fullname,
-        schedule: schedule,
+        schedule,
       },
     });
   };
 
   return (
-    <>
-      <Navbar />
-
+    <Container>
       <div className='max-w-7xl mx-auto space-y-5 pt-10 pb-12 px-10'>
         {/* trip summary */}
         <div className='bg-slate-50 border p-4 rounded-md shadow-md border-t-4 border-t-primary'>
@@ -95,7 +91,7 @@ const Booking = () => {
               <h3 className='text-lg font-bold'>Total Amount</h3>
             </div>
             <div>
-              <h3 className='text-lg font-bold'>RM {amoundPaid}</h3>
+              <h3 className='text-lg font-bold'>RM {amountPaid}</h3>
             </div>
           </div>
         </div>
@@ -107,9 +103,7 @@ const Booking = () => {
           onClick={handleSubmit}
         />
       </div>
-
-      <Footer />
-    </>
+    </Container>
   );
 };
 

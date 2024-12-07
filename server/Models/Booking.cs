@@ -23,9 +23,6 @@ namespace server.Models
         public double AmountPaid { get; set; }
 
         [Required]
-        public DateTime BookingDate { get; set; }
-
-        [Required]
         public DateTime CreatedAt { get; set; }
 
         [Required]

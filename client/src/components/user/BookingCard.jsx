@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { SlOptionsVertical } from 'react-icons/sl';
-import Rating from '../../screens/user/modal/Rating';
-import Modal from '../common/Modal';
-import Ticket from './Ticket';
+import React, { useState } from "react";
+import { SlOptionsVertical } from "react-icons/sl";
+import Rating from "../../screens/user/modal/Rating";
+import Modal from "../common/Modal";
+import Ticket from "./Ticket";
 
 const BookingCard = ({ booking }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -21,23 +21,27 @@ const BookingCard = ({ booking }) => {
         {/* departure and arrival */}
         <div className='col-span-2'>
           <p className='font-semibold md:text-lg'>
-            {booking.departureLocation} - {booking.arrivalLocation}
+            {booking.busSchedule.routes.boardingLocation.state} -{" "}
+            {booking.busSchedule.routes.arrivalLocation.state}
           </p>
-          <p className='text-gray-600 text-sm'>{booking.busOperator}</p>
+          <p className='text-gray-600 text-sm'>
+            {booking.busSchedule.postedBy.companyName}
+          </p>
         </div>
 
         {/* boarding */}
         <div className='col-span-2'>
           <p className='font-semibold'>Boarding</p>
           <p className='text-gray-500 font-medium text-sm'>
-            {booking.boardingLocation} - {booking.departureTime}
+            {booking.busSchedule.routes.boardingLocation.name} -{" "}
+            {booking.busSchedule.etd}
           </p>
         </div>
 
         {/* status */}
         <div className=''>
-          <p className='font-semibold'>{booking.status}</p>
-          <p className='text-gray-500 text-sm'>Trip No: {booking.tripNo}</p>
+          <p className='font-semibold'>{booking.bookingStatus}</p>
+          <p className='text-gray-500 text-sm'>Trip No: {booking.bookingID}</p>
         </div>
 
         {/* action button */}

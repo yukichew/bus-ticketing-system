@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import { IoArrowBackOutline } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
-import Logo from '../../assets/Logo';
-import { userLinks } from '../../constants/NavbarItems';
-import LoginRegistrationModal from '../../screens/auth/LoginRegisterModal';
-import Modal from './Modal';
+import React, { useContext, useEffect, useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { IoArrowBackOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
+import Logo from "../../assets/Logo";
+import { userLinks } from "../../constants/NavbarItems";
+import LoginRegistrationModal from "../../screens/auth/LoginRegisterModal";
+import Modal from "./Modal";
+import { useAuth } from "../../utils/AuthContext";
 
-const NavbarLinks = () => {
+const NavbarLinks = ({ isLoggedIn }) => {
+  const links = userLinks.filter((link) => !link.isLoginRequired || isLoggedIn);
   return (
     <>
-      {userLinks.map((link) => (
+      {links.map((link) => (
         <Link
           key={link.key}
           to={link.href}
@@ -26,19 +28,23 @@ const NavbarLinks = () => {
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [currentView, setCurrentView] = useState('login');
+  const [currentView, setCurrentView] = useState("login");
+  const { user } = useAuth();
+  const isLoggedIn = user !== null;
 
-  const handleBackToLogin = () => setCurrentView('login');
+  useEffect(() => {
+    setShowModal(false);
+  }, [user]);
 
   return (
     <nav className='w-full px-6 md:px-5 py-7 bg-white shadow-lg'>
-      <div className='container flex items-center justify-between mx-auto text-slate-800'>
+      <div className='container flex items-center justify-between mx-auto text-slate-800 max-w-screen-xl'>
         {/* logo */}
         <Logo />
 
         {/* desktop links */}
         <div className='hidden lg:flex gap-6 items-center'>
-          <NavbarLinks />
+          <NavbarLinks isLoggedIn={isLoggedIn} />
         </div>
 
         {/* desktop login button */}
@@ -68,16 +74,18 @@ const Navbar = () => {
       {toggleMenu && (
         <div className='lg:hidden fixed inset-0 bg-white shadow-lg z-10 flex justify-center items-center'>
           <div className='flex flex-col items-center space-y-4'>
-            <NavbarLinks />
-            <button
-              onClick={() => {
-                setShowModal(true);
-                setToggleMenu(false);
-              }}
-              className='text-secondary font-semibold hover:text-primary hover:underline transition duration-200'
-            >
-              Login
-            </button>
+            <NavbarLinks isLoggedIn={isLoggedIn} />
+            {!isLoggedIn && (
+              <button
+                onClick={() => {
+                  setShowModal(true);
+                  setToggleMenu(false);
+                }}
+                className='text-secondary font-semibold hover:text-primary hover:underline transition duration-200'
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -87,11 +95,11 @@ const Navbar = () => {
         isVisible={showModal}
         onClose={() => setShowModal(false)}
         backButton={
-          currentView !== 'login' && (
+          currentView !== "login" && (
             <IoArrowBackOutline
               size={25}
               className='cursor-pointer text-gray-400 hover:text-gray-800'
-              onClick={handleBackToLogin}
+              onClick={() => setCurrentView("login")}
               aria-label='Back'
             />
           )

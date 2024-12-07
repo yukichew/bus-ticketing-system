@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import CustomButton from "../../components/common/CustomButton";
-import Navbar from "../../components/common/Navbar";
-import Footer from "../../components/Footer";
 import TripSummary from "../../components/user/TripSummary";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   useStripe,
@@ -11,6 +9,8 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import { confirmTransaction, initiatePayment } from "../../api/booking";
+import PaymentCard from "../../components/user/PaymentCard";
+import Container from "../../components/Container";
 
 const Payment = () => {
   const stripe = useStripe();
@@ -19,6 +19,7 @@ const Payment = () => {
   const { bookingID, schedule, seats, email, amountPaid, fullname } =
     location.state || {};
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
@@ -51,14 +52,20 @@ const Payment = () => {
       );
     }
 
-    await confirmTransaction(transaction.transactionID, "Succeeded");
-    alert("Payment successful!");
+    const isConfirmed = await confirmTransaction(
+      transaction.transactionID,
+      "Succeeded"
+    );
+
+    if (!isConfirmed.error) {
+      alert("Payment successful!");
+      navigate("/trips");
+    }
     setLoading(false);
   };
 
   return (
-    <div className='font-poppins'>
-      <Navbar />
+    <Container>
       <div className='grid grid-cols-1 md:grid-cols-2 max-w-7xl mx-auto space-y-5 pt-10 pb-12 px-10'>
         <div className='md:col-span-2 border-t-4 border-t-primary rounded-lg p-4 shadow-md'>
           <h2 className='text-lg font-semibold'>Secure Payment Page</h2>
@@ -93,8 +100,7 @@ const Payment = () => {
           </form>
         </div>
       </div>
-      <Footer />
-    </div>
+    </Container>
   );
 };
 

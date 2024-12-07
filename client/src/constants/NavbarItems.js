@@ -1,6 +1,7 @@
 export const userLinks = [
-  { key: 1, name: "Home", href: "/" },
-  { key: 2, name: "About", href: "/about" },
+  { key: 1, name: "Home", href: "/", isLoginRequired: false },
+  { key: 2, name: "About", href: "/about", isLoginRequired: false },
+  { key: 2, name: "Booking", href: "/trips", isLoginRequired: true },
 ];
 
 export const busOperatorLinks = [
