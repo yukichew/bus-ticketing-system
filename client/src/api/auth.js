@@ -88,7 +88,7 @@ export const resetPassword = async (email, newPassword) => {
   }
 };
 
-export const changePassword = async (oldPassword, newPassword) => {
+export const changePassword = async (oldPassword, newPassword, token) => {
   try {
     const { data } = await api.post(
       '/Auth/change-password',

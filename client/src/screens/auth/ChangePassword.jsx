@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import { validateField } from '../../utils/validate';
 import { changePassword } from '../../api/auth';
 import { toast } from 'react-toastify';
+import Container from '../../components/Container';
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const ChangePassword = () => {
     validateField(field, value, setErrors, resetPasswordSchema);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await changePassword(oldPassword, newPassword);
 
@@ -66,27 +67,12 @@ const ChangePassword = () => {
   };
 
   return (
-    <>
+    <Container>
       <div className='flex h-screen'>
-        {/* Left Side */}
-        <div className='flex-1 bg-slate-50 flex items-center justify-center'>
-          <div className='text-center p-8'>
-            <h2 className='font-poppins text-3xl font-semibold text-gray-800'>
-              Welcome to RideNGo!
-            </h2>
-            <p className='mt-4 text-gray-600'>
-              RideNGo stands as Malaysia's leading online platform for bus
-              ticketing, <br />
-              earning the trust of millions of global travellers.
-            </p>
-          </div>
-        </div>
-
-        {/* Right Side */}
         <div className='flex-1 flex items-center justify-center'>
           <div className='w-full max-w-md p-8'>
             <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
-              Reset Your Password
+              Change Your Password
             </h3>
             <form className='mt-8'>
               <div className='relative mt-3'>
@@ -146,7 +132,7 @@ const ChangePassword = () => {
                 </div>
               </div>
 
-              <div className='mt-28'>
+              <div className='mt-10'>
                 <CustomButton
                   title={'Confirm'}
                   onClick={handleSubmit}
@@ -156,7 +142,7 @@ const ChangePassword = () => {
           </div>
         </div>
       </div>
-    </>
+    </Container>
   );
 };
 
