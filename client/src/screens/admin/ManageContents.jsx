@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import { manageContentTabs } from "../../constants/TabItems";
@@ -7,10 +8,20 @@ import Tabs from "../../components/common/Tabs";
 const ManageContents = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("FAQs"); // Default tab
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [location]);
 
   return (
     <div className="relative flex h-screen overflow-hidden">

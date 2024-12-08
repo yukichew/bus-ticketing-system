@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "../../components/common/Table";
 import { useNavigate } from "react-router-dom";
-import { faqData } from "../../constants/Dummy";
+import { fetchFaqs, deleteFaq } from "../../api/faq";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { IoFilter } from "react-icons/io5";
 import { FaExchangeAlt } from "react-icons/fa";
@@ -10,9 +10,12 @@ import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
 import FaqEditForm from "./modal/FaqEditForm";
 import FaqCreateForm from "./modal/FaqCreateForm";
+import DeleteConfirmation from "./modal/DeleteConfirmation";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const categories = [
   "General",
@@ -24,9 +27,11 @@ const categories = [
 
 const ManageFaq = () => {
   const navigate = useNavigate();
+  const [faqData, setFaqData] = useState([]);
   const columns = ["Question", "Answer", "Category"];
   const columnKeys = ["question", "answer", "category"];
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [isFilterShow, setIsFilterShow] = useState(true);
@@ -48,6 +53,19 @@ const ManageFaq = () => {
     setFilters(initialFilters);
   };
 
+  const fetchDataFromApi = async () => {
+    try {
+      const faqs = await fetchFaqs();
+      setFaqData(faqs);
+    } catch (error) {
+      console.error("Failed to fetch FAQs", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataFromApi();
+  }, []);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({
@@ -56,15 +74,39 @@ const ManageFaq = () => {
     }));
   };
 
-  const filteredData = faqData.filter((item) =>
-    Object.keys(filters).every((key) =>
-      filters[key]
-        ? item[key]?.toLowerCase().includes(filters[key].toLowerCase())
-        : true
-    )
-  );
+  const applyFilters = () => {
+    return faqData.filter((item) =>
+      Object.keys(filters).every((key) => {
+        if (!filters[key]) return true;
+        if (key === "status") {
+          console.log(`Checking status: ${item.status} === ${filters[key]}`);
+          return item.status?.toLowerCase() === filters[key]?.toLowerCase();
+        }
+        return item[key]?.toLowerCase().includes(filters[key].toLowerCase());
+      })
+    );
+  };
 
-  const enhancedData = filteredData.map((item) => ({
+  const handleConfirmDelete = async () => {
+    try {
+      console.log("Deleting FAQ ID:", selectedOperator?.faqId);
+      await deleteFaq(selectedOperator?.faqId);
+
+      const remainingData = faqData.filter(
+        (faq) => faq.faqId !== selectedOperator?.faqId
+      );
+      setFaqData(remainingData);
+      toast.success("FAQ deleted successfully.");
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error during delete", error);
+      toast.error("An error occurred while deleting the FAQ.");
+    }
+  };
+
+  const filteredFaqData = applyFilters();
+
+  const enhancedData = filteredFaqData.map((item) => ({
     ...item,
     status: <Status status={item.status} />,
     originalStatus: item.status,
@@ -76,8 +118,10 @@ const ManageFaq = () => {
       <div className="relative group">
         <button
           onClick={() => {
+            console.log("FAQ ID:", row.faqId);
             setSelectedOperator({
               ...row,
+              faqId: row.faqId,
               originalStatus: row.originalStatus,
             });
             setShowEditModal(true);
@@ -94,7 +138,17 @@ const ManageFaq = () => {
 
       {/* Delete Button */}
       <div className="relative group">
-        <button className="text-grey-500 hover:text-grey-600">
+        <button
+          onClick={() => {
+            console.log("FAQ ID:", row.faqId);
+            setSelectedOperator({
+              ...row,
+              faqId: row.faqId,
+            });
+            setShowDeleteModal(true);
+          }}
+          className="text-grey-500 hover:text-grey-600"
+        >
           <FaRegTrashAlt className="text-xl text-gray-500 cursor-pointer" />
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -106,6 +160,7 @@ const ManageFaq = () => {
 
   return (
     <>
+      <ToastContainer />
       {isFilterShow && (
         <div className="mb-8 mt-5">
           <Card>
@@ -216,7 +271,7 @@ const ManageFaq = () => {
           <span className="text-gray-400 mx-2">|</span>
 
           <button
-            onClick={() => navigate("/faq")}
+            onClick={() => navigate("/faq", { state: { fromAdmin: true } })}
             className="ml-auto flex items-center font-medium hover:text-primary pr-1"
           >
             <FaExchangeAlt size={16} />
@@ -249,7 +304,9 @@ const ManageFaq = () => {
       <Modal isVisible={showEditModal} onClose={() => setShowEditModal(false)}>
         <FaqEditForm
           operator={selectedOperator}
-          onClose={() => setShowEditModal(false)}
+          onClose={() => {
+            setShowEditModal(false);
+          }}
         />
       </Modal>
 
@@ -260,6 +317,20 @@ const ManageFaq = () => {
       >
         <FaqCreateForm onClose={() => setShowCreateModal(false)} />
       </Modal>
+
+      {/* Modal for delete confirmation */}
+      {showDeleteModal && (
+        <Modal
+          isVisible={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeleteConfirmation
+            operator={selectedOperator}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={handleConfirmDelete}
+          />
+        </Modal>
+      )}
     </>
   );
 };
