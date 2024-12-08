@@ -38,7 +38,7 @@ namespace server.Controllers
 
         #region GET a single FAQ
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetFaq(int id)
+        public async Task<IActionResult> GetFaq(Guid id)
         {
             var faq = await _context.Faqs.FindAsync(id);
             if (faq == null) return NotFound();
@@ -65,7 +65,7 @@ namespace server.Controllers
 
         #region PUT - Update a FAQ
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFaq(int id, [FromBody] Faq faq)
+        public async Task<IActionResult> UpdateFaq(Guid id, [FromBody] Faq faq)
         {
             if (id != faq.FaqId) return BadRequest();
 
@@ -102,7 +102,7 @@ namespace server.Controllers
 
         #region DELETE - Delete a FAQ
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFaq(int id)
+        public async Task<IActionResult> DeleteFaq(Guid id)
         {
             var faq = await _context.Faqs.FindAsync(id);
             if (faq == null) return NotFound();

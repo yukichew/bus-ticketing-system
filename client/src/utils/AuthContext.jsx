@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { getUserProfile } from '../api/auth';
+import Loader from '../components/common/Loader';
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(null);
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
-      {loading ? <div>Loading...</div> : children}
+      {loading ? <Loader /> : children}
     </AuthContext.Provider>
   );
 };

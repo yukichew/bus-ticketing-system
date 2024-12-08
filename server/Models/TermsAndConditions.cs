@@ -1,14 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models
 {
     public class TermsAndConditions
     {
-        public int TACId { get; set; } 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid TACId { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string PolicyTitle { get; set; } 
+        public string PolicyTitle { get; set; }
 
         [Required]
         public string Terms { get; set; }
@@ -17,7 +20,7 @@ namespace server.Models
         [MaxLength(20)]
         public string Status { get; set; }
 
-        public DateTime CreatedAt { get; set; } 
+        public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
         // Helper to handle conversion of terms
