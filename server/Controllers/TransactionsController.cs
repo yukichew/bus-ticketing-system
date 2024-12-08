@@ -34,6 +34,10 @@ namespace server.Controllers
         public async Task<ActionResult<Transaction>> CheckOut(TransactionDto transactionDto)
         {
             var booking = await _context.Booking.FindAsync(transactionDto.BookingID);
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking not found." });
+            }
 
             try
             {

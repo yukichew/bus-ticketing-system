@@ -6,26 +6,26 @@ namespace server.Models
     public class Routes
     {
         [Key]
-        [Required]
-        public int RouteID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid RouteID { get; set; }
 
         [Required]
-        public int BoardingLocationID { get; set; }
+        public Guid BoardingLocationID { get; set; }
 
         public virtual Locations BoardingLocation { get; set; }
 
         [Required]
         [Column(TypeName = "time")]
-        public TimeSpan departureTime { get; set; }
+        public TimeSpan DepartureTime { get; set; }
 
         [Required]
-        public int ArrivalLocationID { get; set; }
+        public Guid ArrivalLocationID { get; set; }
 
         public virtual Locations ArrivalLocation { get; set; }
 
         [Required]
         [Column(TypeName = "time")]
-        public TimeSpan arrivalTime { get; set; }
+        public TimeSpan ArrivalTime { get; set; }
 
         [Required]
         [StringLength(20)]

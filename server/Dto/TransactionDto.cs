@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Dto
 {
@@ -7,7 +6,6 @@ namespace server.Dto
     {
         [Required]
         public int BookingID { get; set; }
-        [ForeignKey("BookingID")]
         public double Amount { get; set; }
     }
 }

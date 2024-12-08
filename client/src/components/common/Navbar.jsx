@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -9,7 +9,11 @@ import Modal from "./Modal";
 import { useAuth } from "../../utils/AuthContext";
 
 const NavbarLinks = ({ isLoggedIn }) => {
-  const links = userLinks.filter((link) => !link.isLoginRequired || isLoggedIn);
+  // const links = userLinks.filter((link) => !link.isLoginRequired || isLoggedIn);
+  const links = isLoggedIn
+    ? userLinks
+    : userLinks.filter((link) => !link.isLoginRequired);
+
   return (
     <>
       {links.map((link) => (
@@ -29,12 +33,15 @@ const Navbar = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [currentView, setCurrentView] = useState("login");
+  const [dropdownVisible, setDropdownVisible] = useState(false);
   const { user } = useAuth();
   const isLoggedIn = user !== null;
 
   useEffect(() => {
     setShowModal(false);
   }, [user]);
+
+  const handleLogout = () => {};
 
   return (
     <nav className='w-full px-6 md:px-5 py-7 bg-white shadow-lg'>
@@ -47,14 +54,42 @@ const Navbar = () => {
           <NavbarLinks isLoggedIn={isLoggedIn} />
         </div>
 
-        {/* desktop login button */}
+        {/* desktop user or login button */}
         <div className='hidden lg:flex'>
-          <button
-            onClick={() => setShowModal(true)}
-            className='text-secondary font-semibold hover:text-primary transition duration-200 underline-offset-2'
-          >
-            Login
-          </button>
+          {isLoggedIn ? (
+            <div className='relative'>
+              <button
+                onClick={() => setDropdownVisible(!dropdownVisible)}
+                className='text-slate-600 hover:text-primary transition duration-200 font-medium'
+              >
+                {user.UserName}
+              </button>
+
+              {dropdownVisible && (
+                <div className='absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2'>
+                  <Link
+                    to='/edit-profile'
+                    className='block px-4 py-2 text-slate-600 hover:text-primary'
+                  >
+                    Edit Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className='block w-full text-left px-4 py-2 text-slate-600 hover:text-primary'
+                  >
+                    Log Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowModal(true)}
+              className='text-secondary font-semibold hover:text-primary transition duration-200 underline-offset-2'
+            >
+              Login
+            </button>
+          )}
         </div>
 
         {/* mobile view */}
@@ -85,6 +120,33 @@ const Navbar = () => {
               >
                 Login
               </button>
+            )}
+            {isLoggedIn && (
+              <div>
+                <button
+                  onClick={() => setDropdownVisible(!dropdownVisible)}
+                  className='text-slate-600 hover:text-primary'
+                >
+                  {user.UserName}
+                </button>
+
+                {dropdownVisible && (
+                  <div className='flex flex-col items-center mt-4'>
+                    <Link
+                      to='/edit-profile'
+                      className='text-slate-600 hover:text-primary'
+                    >
+                      Edit Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className='text-slate-600 hover:text-primary'
+                    >
+                      Log Out
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

@@ -9,7 +9,7 @@ import Trips from "../screens/user/Trips";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 
 const isAuthenticated = () => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   return token ? true : false;
 };
 
@@ -27,7 +27,6 @@ const UserRoutes = [
       </AuthenticatedRoute>
     }
   />,
-  ,
 ];
 
 export default UserRoutes;

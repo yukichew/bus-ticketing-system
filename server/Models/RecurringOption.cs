@@ -6,8 +6,8 @@ namespace server.Models
     public class RecurringOption
     {
         [Key]
-        [Required]
-        public int RecurringOptionID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid RecurringOptionID { get; set; }
 
         [Required]
         [StringLength(20)]

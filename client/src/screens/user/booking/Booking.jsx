@@ -5,6 +5,7 @@ import Container from "../../../components/Container";
 import PassengerForm from "./PassengerForm";
 import { format } from "date-fns";
 import { buyTicket } from "../../../api/booking";
+import { toast } from "react-toastify";
 
 const Booking = () => {
   const location = useLocation();
@@ -33,7 +34,10 @@ const Booking = () => {
 
     const response = await buyTicket(bookingDetails);
     if (response?.error) {
-      return alert(response.message);
+      return toast.error(response.message, {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 5000,
+      });
     }
 
     navigate("/payment", {

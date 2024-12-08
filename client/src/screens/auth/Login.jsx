@@ -4,20 +4,53 @@ import { TfiEmail } from "react-icons/tfi";
 import CustomButton from "../../components/common/CustomButton";
 import CustomInput from "../../components/common/CustomInput";
 import { login } from "../../api/auth";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import { validateField } from "../../utils/validate";
 
 const Login = ({ switchToRegister }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
 
   const togglePasswordVisibility = () => {
     setVisible((prevState) => !prevState);
   };
 
+  const loginSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: yup
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .matches(/[0-9]/, "Password must contain at least one number")
+      .matches(
+        /[^a-zA-Z0-9]/,
+        "Password must contain at least one special character (e.g., !, @, #)"
+      )
+      .required("Password is required"),
+  });
+
+  const handleChange = (field, value) => {
+    if (field === "email") setEmail(value);
+    if (field === "password") setPassword(value);
+    validateField(field, value, setErrors, loginSchema);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = await login(email, password);
+    const response = await login(email, password);
+
+    if (response?.error) {
+      toast.error(response.message);
+    } else {
+      toast.success("Login successful");
+    }
   };
 
   return (
@@ -36,7 +69,8 @@ const Login = ({ switchToRegister }) => {
           type={"text"}
           required
           icon={TfiEmail}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => handleChange("email", e.target.value)}
+          error={errors.email}
         />
         <div className='relative mt-3'>
           <CustomInput
@@ -46,7 +80,8 @@ const Login = ({ switchToRegister }) => {
             type={visible ? "text" : "password"}
             required
             icon={IoKeyOutline}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => handleChange("password", e.target.value)}
+            error={errors.password}
           />
           <div
             className='absolute inset-y-0 right-2 pr-3 flex items-center cursor-pointer'

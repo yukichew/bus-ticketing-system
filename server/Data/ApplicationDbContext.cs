@@ -17,7 +17,6 @@ namespace server.Data
         public DbSet<BusInfo> BusInfo { get; set; }
         public DbSet<Locations> Locations { get; set; }
         public DbSet<RecurringOption> RecurringOptions { get; set; }
-        public DbSet<Driver> Drivers { get; set; }
         public DbSet<Routes> Routes { get; set; }
         public DbSet<BusSchedule> BusSchedules { get; set; }
         public DbSet<Seat> Seats { get; set; }

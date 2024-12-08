@@ -7,19 +7,21 @@ namespace server.Models
     public class BusInfo
     {
         [Key]
-        public int BusID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid BusID { get; set; }
 
         [Required]
         [StringLength(50)]
         public string BusPlate { get; set; }
 
         [Required]
-        public int BusTypeID { get; set; }
+        public Guid BusTypeID { get; set; }
 
         [Required]
         [StringLength(20)]
         public string Status { get; set; }
 
         public virtual BusType? BusType { get; }
+        public virtual BusOperator PostedBy { get; set; }
     }
 }

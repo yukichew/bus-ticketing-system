@@ -28,7 +28,6 @@ namespace server.Controllers
             var busSchedules = await _context.Set<BusSchedule>()
                         .Include(b => b.BusInfo)
                         .Include(b => b.RecurringOptions)
-                        .Include(b => b.Drivers)
                         .Include(b => b.Routes)
                             .ThenInclude(r => r.BoardingLocation)
                         .Include(b => b.Routes)
@@ -51,7 +50,6 @@ namespace server.Controllers
             var busSchedulesForToday = await _context.Set<BusSchedule>()
                 .Include(b => b.BusInfo)
                 .Include(b => b.RecurringOptions)
-                .Include(b => b.Drivers)
                 .Include(b => b.Routes)
                     .ThenInclude(r => r.BoardingLocation)
                 .Include(b => b.Routes)
@@ -67,12 +65,11 @@ namespace server.Controllers
         #region GetBusSchedule
         // GET: api/BusSchedule/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<BusSchedule>> GetBusSchedule(int id)
+        public async Task<ActionResult<BusSchedule>> GetBusSchedule(Guid id)
         {
             var busSchedule = await _context.Set<BusSchedule>()
                                 .Include(b => b.BusInfo)
                                 .Include(b => b.RecurringOptions)
-                                .Include(b => b.Drivers)
                                 .Include(b => b.Routes)
                                     .ThenInclude(r => r.BoardingLocation)
                                 .Include(b => b.Routes)
@@ -128,11 +125,6 @@ namespace server.Controllers
                 query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
             }
 
-            if (!string.IsNullOrEmpty(driverFullname))
-            {
-                query = query.Where(bs => EF.Functions.Like(bs.Drivers.Fullname, $"%{driverFullname}%"));
-            }
-
             if (!string.IsNullOrEmpty(scheduleStatus))
             {
                 query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
@@ -145,7 +137,6 @@ namespace server.Controllers
 
             var busSchedules = await query
                 .Include(b => b.BusInfo)
-                .Include(b => b.Drivers)
                 .Include(b => b.Routes)
                     .ThenInclude(r => r.BoardingLocation)
                 .Include(b => b.Routes)
@@ -191,11 +182,6 @@ namespace server.Controllers
                 query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
             }
 
-            if (!string.IsNullOrEmpty(driverFullname))
-            {
-                query = query.Where(bs => EF.Functions.Like(bs.Drivers.Fullname, $"%{driverFullname}%"));
-            }
-
             if (!string.IsNullOrEmpty(scheduleStatus))
             {
                 query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
@@ -203,7 +189,6 @@ namespace server.Controllers
 
             var busSchedules = await query
                 .Include(b => b.BusInfo)
-                .Include(b => b.Drivers)
                 .Include(b => b.Routes)
                     .ThenInclude(r => r.BoardingLocation)
                 .Include(b => b.Routes)
@@ -300,9 +285,9 @@ namespace server.Controllers
             var route = new Routes
             {
                 BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID,
-                departureTime = etd,
+                DepartureTime = etd,
                 ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID,
-                arrivalTime = eta,
+                ArrivalTime = eta,
                 Status = busScheduleDTO.Routes.Status,
                 Price = busScheduleDTO.Routes.Price
             };
@@ -404,8 +389,8 @@ namespace server.Controllers
             DateTime travelDate,
             TimeSpan etd,
             TimeSpan eta,
-            int routeID,
-            int? recurringOptionID)
+            Guid routeID,
+            Guid? recurringOptionID)
         {
             return new BusSchedule
             {
@@ -415,14 +400,13 @@ namespace server.Controllers
                 IsRecurring = dto.IsRecurring,
                 RecurringOptionID = recurringOptionID,
                 BusID = dto.BusID,
-                DriverID = dto.DriverID,
                 RouteID = routeID,
                 ScheduleStatus = dto.ScheduleStatus,
                 Status = string.IsNullOrWhiteSpace(dto.Status) ? "Scheduled" : dto.Status
             };
         }
 
-        private async Task<ActionResult> ValidateScheduleForConflicts(int busID, DateTime travelDate, TimeSpan etd)
+        private async Task<ActionResult> ValidateScheduleForConflicts(Guid busID, DateTime travelDate, TimeSpan etd)
         {
             var existingSchedules = await _context.BusSchedules
                 .Where(bs => bs.BusID == busID && bs.ScheduleStatus != "Cancelled" && bs.ScheduleStatus != "Completed")
@@ -455,7 +439,7 @@ namespace server.Controllers
         #region UpdateBusSchedule
         // PUT: api/BusSchedule/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBusSchedule(int id, BusScheduleDTO busScheduleDTO)
+        public async Task<IActionResult> UpdateBusSchedule(Guid id, BusScheduleDTO busScheduleDTO)
         {
             var existingBusSchedule = await _context.BusSchedules
                 .Include(bs => bs.Routes)
@@ -483,16 +467,15 @@ namespace server.Controllers
 
             var existingRoutes = existingBusSchedule.Routes;
             existingRoutes.BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID;
-            existingRoutes.departureTime = etd;
+            existingRoutes.ETD = etd;
             existingRoutes.ArrivalLocationID = busScheduleDTO.Routes.ArrivalLocationID;
-            existingRoutes.arrivalTime = eta;
+            existingRoutes.ETA = eta;
             existingRoutes.Status = busScheduleDTO.Routes.Status;
 
             existingBusSchedule.TravelDate = busScheduleDTO.TravelDate;
             existingBusSchedule.ETD = etd;
             existingBusSchedule.ETA = eta;
             existingBusSchedule.BusID = busScheduleDTO.BusID;
-            existingBusSchedule.DriverID = busScheduleDTO.DriverID;
             existingBusSchedule.IsRecurring = busScheduleDTO.IsRecurring;
             existingBusSchedule.ScheduleStatus = busScheduleDTO.ScheduleStatus;
             existingBusSchedule.Status = busScheduleDTO.Status;
@@ -600,7 +583,7 @@ namespace server.Controllers
         #region UpdateDelayedStatus
         // PUT: api/BusSchedule/UpdateDelayedStatus/{id}
         [HttpPut("UpdateDelayedStatus/{id}")]
-        public async Task<IActionResult> UpdateDelayedStatus(int id, BusScheduleDTO busScheduleDTO)
+        public async Task<IActionResult> UpdateDelayedStatus(Guid id, BusScheduleDTO busScheduleDTO)
         {
             var busSchedules = await _context.BusSchedules
                 .Where(bs => bs.BusScheduleID == id)
@@ -658,7 +641,7 @@ RideNGo";
         #region UpdateCanceledStatus
         // PUT: api/BusSchedule/UpdateCanceledStatus/{id}
         [HttpPut("UpdateCanceledStatus/{id}")]
-        public async Task<IActionResult> UpdateCanceledStatus(int id, BusScheduleDTO busScheduleDTO)
+        public async Task<IActionResult> UpdateCanceledStatus(Guid id, BusScheduleDTO busScheduleDTO)
         {
             var busSchedules = await _context.BusSchedules
                 .Where(bs => bs.BusScheduleID == id)
@@ -752,7 +735,7 @@ RideNGo";
         }
         #endregion
 
-        private bool BusScheduleExists(int id)
+        private bool BusScheduleExists(Guid id)
         {
             return _context.BusSchedules.Any(e => e.BusScheduleID == id);
         }
