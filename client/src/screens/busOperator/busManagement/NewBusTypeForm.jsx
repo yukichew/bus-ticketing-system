@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
+import { createBusType } from '../../../api/busType';
 
 const NewBusTypeForm = () => {
+    const navigate = useNavigate();
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
-    const [formData, setFormData] = useState({
-        numSeats: '',
+    const [busTypeDetails, setBusTypeDetails] = useState({
         types: '',
+        noOfSeats: '',
         status: '',
     });
 
@@ -19,17 +22,32 @@ const NewBusTypeForm = () => {
 
     const handleSelectStatus = (option) => {
         setSelectedStatusOption(option);
+        handleInputChange('status', option);
         setIsStatusOpen(false);
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-          ...formData,
-          [name]: value,
-        });
+    const handleInputChange = (name, value) => {
+        setBusTypeDetails((prevData) => {
+            const updatedData = {
+              ...prevData,
+              [name]: value,
+            };
+  
+            return updatedData;
+          });
     };
     
+    const handleSubmit = async () => {
+        const response = await createBusType(busTypeDetails);
+
+        if(response){
+            alert("Bus type added successfully!");
+            navigate('/bo/bus');
+        }else{
+            alert("Bus type added failed!");
+        }
+    };
+
     return(
         <>
             <Navbar />
@@ -41,25 +59,28 @@ const NewBusTypeForm = () => {
 
                 <Card header="Bus Information">
                     <div>
-                        <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Types</label>
+                        <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Type</label>
                         <CustomInput
                             id={'types'}
-                            name={'Types'}
+                            name={'Type'}
                             placeholder={'Enter Bus Type'}
                             type={'text'}
                             required
-                            // value={formData.fullname}
+                            value={busTypeDetails.types}
+                            onChange={(e) => handleInputChange("types", e.target.value)}
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700 mb-2">No. of Seats</label>
+                        <label htmlFor="noOfSeats" className="block text-sm font-poppins font-medium text-gray-700 mb-2">No. of Seats</label>
                         <CustomInput
                             type="number"
-                            id="numSeats"
+                            id="noOfSeats"
                             min="1"
                             className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
                             placeholder="Enter Number of Seats"
+                            value={busTypeDetails.noOfSeats}
+                            onChange={(e) => handleInputChange("noOfSeats", parseInt(e.target.value, 10))}
                         />
                     </div>
 
@@ -92,7 +113,7 @@ const NewBusTypeForm = () => {
                 </Card>
                 
                 <div className='mt-8 mb-10'>
-                    <CustomButton title='Create' className='font-semibold'/>
+                    <CustomButton title='Create' className='font-semibold' onClick={handleSubmit}/>
                 </div>
             </div>
 
