@@ -19,8 +19,6 @@ const OTPVerification = () => {
       // Only navigate if verified
       if (source === "register" && type === "user") {
         navigate("/user-registration");
-      } else if (source === "register" && type === "bus-operator") {
-        navigate("/bus-operator-registration");
       } else if (source === "forgot-password") {
         navigate("/reset-password");
       }
