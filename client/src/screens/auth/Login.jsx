@@ -21,7 +21,7 @@ const Login = () => {
     if (action === "register-user") {
       navigate("/email-verification", { state: { source: "register", type: "user" } });
     }else if (action === "register-bo") {
-      navigate("/email-verification", { state: { source: "register", type: "bus-operator" } });
+      navigate("/bus-operator-registration");
     }else if (action === "forgot-password") {
       navigate("/email-verification", { state: { source: "forgot-password" } });
     }
