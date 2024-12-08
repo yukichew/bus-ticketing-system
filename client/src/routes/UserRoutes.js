@@ -8,11 +8,6 @@ import BusTickets from "../screens/user/BusTickets";
 import Trips from "../screens/user/Trips";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 
-const isAuthenticated = () => {
-  const token = sessionStorage.getItem("token");
-  return token ? true : false;
-};
-
 const UserRoutes = [
   <Route path='*' element={<NotFound />} />,
   <Route path='/' element={<Home />} />,
@@ -22,7 +17,7 @@ const UserRoutes = [
   <Route
     path='/trips'
     element={
-      <AuthenticatedRoute isAuthenticated={isAuthenticated}>
+      <AuthenticatedRoute requiredRole='Member'>
         <Trips />
       </AuthenticatedRoute>
     }
