@@ -22,6 +22,6 @@ namespace server.Models
         public string Status { get; set; }
 
         public virtual BusType? BusType { get; }
-        public virtual BusOperator PostedBy { get; set; }
+        public virtual BusOperator? PostedBy { get; set; }
     }
 }
