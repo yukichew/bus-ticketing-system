@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -109,6 +111,18 @@ namespace server.Controllers
                 return BadRequest(new { message = "Invalid bus data." });
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can create buses." });
+            }
+
             var busPlateExists = await _context.Set<BusInfo>().AnyAsync(b => b.BusPlate == busInfo.BusPlate);
             if (busPlateExists)
             {
@@ -121,11 +135,12 @@ namespace server.Controllers
                 return BadRequest(new { message = $"BusType with ID {busInfo.BusTypeID} does not exist." });
             }
 
+            busInfo.PostedBy = busOperator;
+
             _context.Set<BusInfo>().Add(busInfo);
             await _context.SaveChangesAsync();
 
-            //return CreatedAtAction(nameof(GetBus), new { id = busInfo.BusID }, busInfo);
-            return Ok("Bus successfully created.");
+            return CreatedAtAction(nameof(GetBus), new { id = busInfo.BusID }, busInfo);
         }
         #endregion
 

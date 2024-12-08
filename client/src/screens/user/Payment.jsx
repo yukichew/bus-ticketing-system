@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import CustomButton from "../../components/common/CustomButton";
-import TripSummary from "../../components/user/TripSummary";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import CustomButton from '../../components/common/CustomButton';
+import TripSummary from '../../components/user/TripSummary';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   useStripe,
   useElements,
   CardNumberElement,
-} from "@stripe/react-stripe-js";
-import { confirmTransaction, initiatePayment } from "../../api/booking";
-import PaymentCard from "../../components/user/PaymentCard";
-import Container from "../../components/Container";
+} from '@stripe/react-stripe-js';
+import { confirmTransaction, initiatePayment } from '../../api/transaction';
+import PaymentCard from '../../components/user/PaymentCard';
+import Container from '../../components/Container';
 
 const Payment = () => {
   const stripe = useStripe();
@@ -54,12 +54,12 @@ const Payment = () => {
 
     const isConfirmed = await confirmTransaction(
       transaction.transactionID,
-      "Succeeded"
+      'Succeeded'
     );
 
     if (!isConfirmed.error) {
-      alert("Payment successful!");
-      navigate("/trips");
+      alert('Payment successful!');
+      navigate('/trips');
     }
     setLoading(false);
   };
@@ -79,7 +79,7 @@ const Payment = () => {
           <TripSummary schedule={schedule} />
           <div className='flex justify-between font-semibold border-t-2 mt-3 pt-3'>
             <p>Seat No.</p>
-            <p>{seats.join(", ")}</p>
+            <p>{seats.join(', ')}</p>
           </div>
 
           <div className='flex justify-between font-semibold border-t-2 mt-3 pt-3'>
