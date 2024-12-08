@@ -7,7 +7,6 @@ using System.Security.Claims;
 using System.Text;
 using server.Helper;
 using server.Dto.Auth;
-using Microsoft.AspNetCore.Authorization;
 
 namespace server.Controllers
 {
@@ -238,7 +237,10 @@ namespace server.Controllers
                 return NotFound(new { message = "User not found." });
             }
 
-            return Ok(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+
+            return Ok(new { user, role });
         }
         #endregion
     }

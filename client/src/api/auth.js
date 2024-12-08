@@ -17,7 +17,6 @@ export const register = async (email, password, confirmPassword, role) => {
       email,
       password,
       confirmPassword,
-      role,
     });
     return data;
   } catch (err) {
@@ -27,7 +26,7 @@ export const register = async (email, password, confirmPassword, role) => {
 
 export const getUserProfile = async (token) => {
   try {
-    const { data } = await api.get("/profile", {
+    const { data } = await api.get("/Auth/profile", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
