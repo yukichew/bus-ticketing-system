@@ -61,7 +61,7 @@ namespace server.Controllers
 
         #region PUT - Update Terms & Conditions
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTerms(int id, [FromBody] TermsAndConditions terms)
+        public async Task<IActionResult> UpdateTerms(Guid id, [FromBody] TermsAndConditions terms)
         {
             if (id != terms.TACId)
             {
@@ -107,7 +107,7 @@ namespace server.Controllers
 
         #region DELETE - Delete Terms and Conditions
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTerm(int id)
+        public async Task<IActionResult> DeleteTerm(Guid id)
         {
             var term = await _context.TermsAndConditions.FindAsync(id);
             if (term == null) return NotFound();
