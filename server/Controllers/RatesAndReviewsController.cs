@@ -27,6 +27,11 @@ namespace server.Controllers
                 .OrderByDescending(r => r.PostedAt)
                 .ToListAsync();
 
+            if (!ratesAndReviews.Any())
+            {
+                return Ok(new { message = "No rates and reviews found." });
+            }
+
             var totalRatesAndReviews = ratesAndReviews.Count;
 
             var response = new
@@ -51,7 +56,7 @@ namespace server.Controllers
 
             if (ratesAndReviews == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Rate and review with ID {id} not found." });
             }
 
             return Ok(ratesAndReviews);
@@ -69,7 +74,7 @@ namespace server.Controllers
                 .OrderByDescending(r => r.PostedAt)
                 .ToListAsync();
 
-            if (ratesAndReviews == null || !ratesAndReviews.Any())
+            if (!ratesAndReviews.Any())
             {
                 return NotFound(new { message = "No rates and reviews found for the specified BusOperatorID." });
             }
@@ -96,7 +101,7 @@ namespace server.Controllers
 
             if (!busOperatorExists)
             {
-                return BadRequest("Invalid BusOperatorID");
+                return BadRequest(new { message = "Invalid BusOperatorID." });
             }
 
             var ratesAndReviews = new RatesAndReviews
@@ -125,7 +130,7 @@ namespace server.Controllers
 
             if (existingRatesAndReviews == null)
             {
-                return NotFound($"Rates and Reviews with ID {id} not found.");
+                return NotFound(new { message = $"Rates and reviews with ID {id} not found." });
             }
 
             existingRatesAndReviews.BusOperatorID = ratesAndReviewsDto.BusOperatorID;
@@ -144,7 +149,7 @@ namespace server.Controllers
             {
                 if (!_context.RatesAndReviews.Any(r => r.ID == id))
                 {
-                    return NotFound();
+                    return NotFound(new { message = $"Rates and reviews with ID {id} not found." });
                 }
                 else
                 {
@@ -152,7 +157,7 @@ namespace server.Controllers
                 }
             }
 
-            return Ok("The selected rate and review is successfully updated.");
+            return Ok(new { message = "The selected rate and review is successfully updated." });
         }
         #endregion
 
@@ -184,15 +189,16 @@ namespace server.Controllers
         public async Task<IActionResult> DeleteRatesAndReviews(int id)
         {
             var ratesAndReviews = await _context.Set<RatesAndReviews>().FindAsync(id);
+
             if (ratesAndReviews == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Rate and review with ID {id} not found." });
             }
 
             _context.Set<RatesAndReviews>().Remove(ratesAndReviews);
             await _context.SaveChangesAsync();
 
-            return Ok("The selected rate and review is successfully deleted.");
+            return Ok(new { message = "The selected rate and review is successfully deleted." });
         }
         #endregion
     }

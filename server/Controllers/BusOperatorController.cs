@@ -1,118 +1,85 @@
-﻿//using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using server.Data;
-//using server.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using server.Data;
+using server.Models;
 
-//namespace server.Controllers
-//{
-//    [ApiController]
-//    [Route("api/[controller]")]
-//    public class BusOperatorController : Controller
-//    {
-//        private readonly ApplicationDbContext _context;
-//        private readonly UserManager<BusOperator> _userManager;
+namespace server.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BusOperatorController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<BusOperator> _userManager;
 
-//        public BusOperatorController(ApplicationDbContext context, UserManager<BusOperator> userManager)
-//        {
-//            _context = context;
-//            _userManager = userManager;
-//        }
+        public BusOperatorController(ApplicationDbContext context, UserManager<BusOperator> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
-//        // GET: api/BusOperator
-//        [HttpGet]
-//        public async Task<ActionResult> GetAllBusOperator()
-//        {
-//            var busOperators = await _context.Set<BusOperator>().ToListAsync();
-//            return Ok(busOperators);
-//        }
+        // GET: api/BusOperator
+        [HttpGet]
+        public async Task<ActionResult> GetAllBusOperator()
+        {
+            var busOperators = await _context.Set<BusOperator>().ToListAsync();
+            return Ok(busOperators);
+        }
 
-//        // GET: api/BusOperator/{id}
-//        [HttpGet("{id}")]
-//        public async Task<ActionResult> GetBusOperator(int id)
-//        {
-//            var busOperator = await _context.BusOperators.FindAsync(id);
-//            if (busOperator == null)
-//            {
-//                return NotFound();
-//            }
+        // GET: api/BusOperator/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetBusOperator(string id)
+        {
+            var busOperator = await _context.BusOperators
+                .FirstOrDefaultAsync(b => b.Id == id);
 
-//            return Ok(busOperator);
-//        }
+            if (busOperator == null)
+            {
+                return NotFound(new { message = $"Bus Operator with ID {id} not found." });
+            }
 
-//        // POST: api/BusOperator
-//        [HttpPost]
-//        public async Task<ActionResult> CreateBusOperator([FromBody] BusOperator busOperator)
-//        {
-//            if (busOperator == null)
-//                return BadRequest();
+            return Ok(busOperator);
+        }
 
-//            if (!string.IsNullOrEmpty(busOperator.PasswordHash))
-//            {
-//                var result = await _userManager.CreateAsync(busOperator, busOperator.PasswordHash);
+        // PUT: api/BusOperator/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBusOperator(string id, [FromBody] BusOperator busOperator)
+        {
+            if (id != busOperator.Id)
+                return BadRequest(new { message = "BusOperator ID mismatch" });
 
-//                if (!result.Succeeded)
-//                {
-//                    return BadRequest(result.Errors);
-//                }
-//            }
+            var existingBusOperator = await _context.BusOperators.FindAsync(id);
+            if (existingBusOperator == null)
+                return NotFound(new { message = $"Bus operator with ID {id} not found." });
 
-//            _context.BusOperators.Add(busOperator);
-//            await _context.SaveChangesAsync();
+            existingBusOperator.Address = busOperator.Address ?? existingBusOperator.Address;
+            existingBusOperator.CompanyLogo = busOperator.CompanyLogo ?? existingBusOperator.CompanyLogo;
+            existingBusOperator.BusImages = busOperator.BusImages ?? existingBusOperator.BusImages;
+            existingBusOperator.Bio = busOperator.Bio ?? existingBusOperator.Bio;
+            existingBusOperator.IsRefundable = busOperator.IsRefundable ?? existingBusOperator.IsRefundable;
+            existingBusOperator.Status = busOperator.Status ?? existingBusOperator.Status;
 
-//            return CreatedAtAction(nameof(GetBusOperator), new { id = busOperator.BusOperatorID }, busOperator);
-//        }
+            await _context.SaveChangesAsync();
 
-//        // PUT: api/BusOperator/{id}
-//        [HttpPut("{id}")]
-//        public async Task<IActionResult> UpdateBusOperator(int id, [FromBody] BusOperator busOperator)
-//        {
-//            if (id != busOperator.BusOperatorID)
-//                return BadRequest("BusOperator ID mismatch");
+            return Ok(new { message = $"Bus operator with ID {id} has been updated successfully." });
+        }
 
-//            var existingBusOperator = await _context.BusOperators.FindAsync(id);
-//            if (existingBusOperator == null)
-//                return NotFound();
+        // DELETE: api/BusOperator/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBusOperator(string id)
+        {
+            var busOperator = await _context.BusOperators.FindAsync(id);
 
-//            existingBusOperator.CompanyName = busOperator.CompanyName;
-//            existingBusOperator.CompanyEmail = busOperator.CompanyEmail;
-//            existingBusOperator.CompanyContact = busOperator.CompanyContact;
-//            existingBusOperator.Address = busOperator.Address;
-//            existingBusOperator.BusImages = busOperator.BusImages;
-//            existingBusOperator.Bio = busOperator.Bio;
-//            existingBusOperator.IsRefundable = busOperator.IsRefundable;
-//            existingBusOperator.ServiceAndReputations = busOperator.ServiceAndReputations;
-//            existingBusOperator.FullName = busOperator.FullName;
-//            existingBusOperator.ContactNo = busOperator.ContactNo;
-//            existingBusOperator.Status = busOperator.Status;
+            if (busOperator == null)
+            {
+                return NotFound($"Bus operator with ID {id} not found.");
+            }
 
-//            if (!string.IsNullOrEmpty(busOperator.PasswordHash))
-//            {
-//                var result = await _userManager.ChangePasswordAsync(existingBusOperator, existingBusOperator.PasswordHash, busOperator.PasswordHash);
+            _context.BusOperators.Remove(busOperator);
+            await _context.SaveChangesAsync();
 
-//                if (!result.Succeeded)
-//                {
-//                    return BadRequest(result.Errors);
-//                }
-//            }
-
-//            await _context.SaveChangesAsync();
-
-//            return Ok("The selected bus operator is successfully updated.");
-//        }
-
-//        // DELETE: api/BusOperator/{id}
-//        [HttpDelete("{id}")]
-//        public async Task<IActionResult> DeleteBusOperator(int id)
-//        {
-//            var busOperator = await _context.BusOperators.FindAsync(id);
-//            if (busOperator == null)
-//                return NotFound();
-
-//            _context.BusOperators.Remove(busOperator);
-//            await _context.SaveChangesAsync();
-
-//            return Ok("The selected bus operator is successfully deleted.");
-//        }
-//    }
-//}
+            return Ok(new { message = $"Bus operator with ID {id} has been deleted successfully." });
+        }
+    }
+}
