@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IoEye, IoEyeOff, IoKeyOutline } from 'react-icons/io5';
 import { TfiEmail } from 'react-icons/tfi';
 import CustomButton from '../../components/common/CustomButton';
