@@ -1,30 +1,9 @@
-import api from ".";
-import { catchError } from "../utils/error";
+import api from '.';
+import { catchError } from '../utils/error';
 
 export const buyTicket = async (bookingDetails) => {
   try {
-    const { data } = await api.post("/Bookings", bookingDetails);
-    return data;
-  } catch (err) {
-    return catchError(err);
-  }
-};
-
-export const initiatePayment = async (paymentDetails) => {
-  try {
-    const { data } = await api.post("/Transactions", paymentDetails);
-    return data;
-  } catch (err) {
-    return catchError(err);
-  }
-};
-
-export const confirmTransaction = async (transactionID, status) => {
-  try {
-    const { data } = await api.post("/Transactions/ConfirmTransaction", {
-      transactionID,
-      status,
-    });
+    const { data } = await api.post('/Bookings', bookingDetails);
     return data;
   } catch (err) {
     return catchError(err);
@@ -33,7 +12,16 @@ export const confirmTransaction = async (transactionID, status) => {
 
 export const getBookings = async (email) => {
   try {
-    const { data } = await api.get("/Bookings/History?email=" + email);
+    const { data } = await api.get('/Bookings/History?email=' + email);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const getOccupiedSeats = async (busScheduleId) => {
+  try {
+    const { data } = await api.get(`/Seat?busScheduleId=${busScheduleId}`);
     return data;
   } catch (err) {
     return catchError(err);

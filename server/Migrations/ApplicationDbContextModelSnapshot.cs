@@ -160,11 +160,9 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Booking", b =>
                 {
-                    b.Property<int>("BookingID")
+                    b.Property<Guid>("BookingID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("AmountPaid")
                         .HasColumnType("float");
@@ -174,8 +172,8 @@ namespace server.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("BusScheduleID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BusScheduleID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -192,19 +190,20 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.BusInfo", b =>
                 {
-                    b.Property<int>("BusID")
+                    b.Property<Guid>("BusID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BusPlate")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("BusTypeID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BusTypeID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PostedById")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -218,25 +217,22 @@ namespace server.Migrations
 
                     b.HasIndex("BusTypeID");
 
+                    b.HasIndex("PostedById");
+
                     b.ToTable("BusInfo");
                 });
 
             modelBuilder.Entity("server.Models.BusSchedule", b =>
                 {
-                    b.Property<int>("BusScheduleID")
+                    b.Property<Guid>("BusScheduleID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusScheduleID"));
-
-                    b.Property<int>("BusID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BusID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("DriverID")
-                        .HasColumnType("int");
 
                     b.Property<TimeSpan>("ETA")
                         .HasColumnType("time");
@@ -253,11 +249,11 @@ namespace server.Migrations
                     b.Property<string>("Reasons")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RecurringOptionID")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("RecurringOptionID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RouteID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RouteID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ScheduleStatus")
                         .IsRequired()
@@ -279,8 +275,6 @@ namespace server.Migrations
 
                     b.HasIndex("BusID");
 
-                    b.HasIndex("DriverID");
-
                     b.HasIndex("PostedById");
 
                     b.HasIndex("RecurringOptionID");
@@ -292,14 +286,15 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.BusType", b =>
                 {
-                    b.Property<int>("BusTypeID")
+                    b.Property<Guid>("BusTypeID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusTypeID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("NoOfSeats")
                         .HasColumnType("int");
+
+                    b.Property<string>("PostedById")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -313,52 +308,16 @@ namespace server.Migrations
 
                     b.HasKey("BusTypeID");
 
+                    b.HasIndex("PostedById");
+
                     b.ToTable("BusTypes");
-                });
-
-            modelBuilder.Entity("server.Models.Driver", b =>
-                {
-                    b.Property<int>("DriverID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DriverID"));
-
-                    b.Property<string>("ContactNo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("DrivingLicense")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Fullname")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("IcNo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("DriverID");
-
-                    b.ToTable("Drivers");
                 });
 
             modelBuilder.Entity("server.Models.Locations", b =>
                 {
-                    b.Property<int>("LocationID")
+                    b.Property<Guid>("LocationID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LocationID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -390,11 +349,9 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Passenger", b =>
                 {
-                    b.Property<int>("PassengerID")
+                    b.Property<Guid>("PassengerID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PassengerID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -413,13 +370,50 @@ namespace server.Migrations
                     b.ToTable("Passenger");
                 });
 
-            modelBuilder.Entity("server.Models.RecurringOption", b =>
+            modelBuilder.Entity("server.Models.RatesAndReviews", b =>
                 {
-                    b.Property<int>("RecurringOptionID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BusOperatorID")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("PostedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PostedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Rate")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecurringOptionID"));
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusOperatorID");
+
+                    b.HasIndex("PostedById");
+
+                    b.ToTable("RatesAndReviews");
+                });
+
+            modelBuilder.Entity("server.Models.RecurringOption", b =>
+                {
+                    b.Property<Guid>("RecurringOptionID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date");
@@ -451,22 +445,20 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Routes", b =>
                 {
-                    b.Property<int>("RouteID")
+                    b.Property<Guid>("RouteID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RouteID"));
+                    b.Property<Guid>("ArrivalLocationID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ArrivalLocationID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BoardingLocationID")
-                        .HasColumnType("int");
-
-                    b.Property<TimeSpan>("ETA")
+                    b.Property<TimeSpan>("ArrivalTime")
                         .HasColumnType("time");
 
-                    b.Property<TimeSpan>("ETD")
+                    b.Property<Guid>("BoardingLocationID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<TimeSpan>("DepartureTime")
                         .HasColumnType("time");
 
                     b.Property<double>("Price")
@@ -488,15 +480,15 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Seat", b =>
                 {
-                    b.Property<string>("SeatId")
+                    b.Property<Guid>("SeatId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BookingID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BookingID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("PassengerID")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("PassengerID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("SeatNumber")
                         .HasColumnType("int");
@@ -516,15 +508,15 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Transaction", b =>
                 {
-                    b.Property<string>("TransactionID")
+                    b.Property<Guid>("TransactionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int>("BookingID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("BookingID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -593,6 +585,9 @@ namespace server.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -631,39 +626,11 @@ namespace server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanyContact")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
-
-                    b.Property<string>("CompanyEmail")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.Property<string>("CompanyLogo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.Property<bool?>("IsRefundable")
                         .HasColumnType("bit");
-
-                    b.Property<int?>("RatesAndReviewID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SalesAndRevenueID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ServiceAndReputations")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.ToTable("BusOperators", (string)null);
                 });
@@ -738,7 +705,13 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("server.Models.BusOperator", "PostedBy")
+                        .WithMany()
+                        .HasForeignKey("PostedById");
+
                     b.Navigation("BusType");
+
+                    b.Navigation("PostedBy");
                 });
 
             modelBuilder.Entity("server.Models.BusSchedule", b =>
@@ -746,12 +719,6 @@ namespace server.Migrations
                     b.HasOne("server.Models.BusInfo", "BusInfo")
                         .WithMany()
                         .HasForeignKey("BusID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("server.Models.Driver", "Drivers")
-                        .WithMany()
-                        .HasForeignKey("DriverID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -771,13 +738,39 @@ namespace server.Migrations
 
                     b.Navigation("BusInfo");
 
-                    b.Navigation("Drivers");
-
                     b.Navigation("PostedBy");
 
                     b.Navigation("RecurringOptions");
 
                     b.Navigation("Routes");
+                });
+
+            modelBuilder.Entity("server.Models.BusType", b =>
+                {
+                    b.HasOne("server.Models.BusOperator", "PostedBy")
+                        .WithMany()
+                        .HasForeignKey("PostedById");
+
+                    b.Navigation("PostedBy");
+                });
+
+            modelBuilder.Entity("server.Models.RatesAndReviews", b =>
+                {
+                    b.HasOne("server.Models.BusOperator", "BusOperator")
+                        .WithMany()
+                        .HasForeignKey("BusOperatorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("server.Models.Passenger", "PostedBy")
+                        .WithMany()
+                        .HasForeignKey("PostedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusOperator");
+
+                    b.Navigation("PostedBy");
                 });
 
             modelBuilder.Entity("server.Models.Routes", b =>

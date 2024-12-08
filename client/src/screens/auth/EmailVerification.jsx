@@ -1,38 +1,45 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CiLock } from 'react-icons/ci';
+import { TfiEmail } from 'react-icons/tfi';
 import CustomButton from '../../components/common/CustomButton';
 import CustomInput from '../../components/common/CustomInput';
 import * as yup from "yup";
 import { validateField } from "../../utils/validate";
 
-const OTPVerification = () => {
+const EmailVerification = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { source, type } = location.state || {};
-    const [otp, setOTP] = useState("");
+    const [email, setEmail] = useState("");
     const [errors, setErrors] = useState({});
 
-    const verifyOTP = (e) => {
-      e.preventDefault();
+    const verifyEmail = (e) => {
+        e.preventDefault();
 
-      // Only navigate if verified
-      if (source === "register" && type === "user") {
-        navigate("/user-registration");
-      } else if (source === "forgot-password") {
-        navigate("/reset-password");
-      }
+        // Only navigate if verified
+        if (source === "register") {
+            // Perform actions for registration
+            // Show a toast message for registration
+
+            navigate("/otp-verification", { state: { source: "register", type } });
+        } else if (source === "forgot-password") {
+            // Perform actions for password reset
+            // Show a toast message for password reset
+
+            navigate("/otp-verification", { state: { source: "forgot-password" } });
+        }
     };
 
-    const verifyOTPSchema = yup.object().shape({
-        otp: yup
+    const verifyEmailSchema = yup.object().shape({
+        email: yup
           .string()
-          .required("OTP is required"),
+          .email("Invalid email address")
+          .required("Email is required"),
     });
     
     const handleChange = (field, value) => {
-        if (field === "otp") setOTP(value);
-        validateField(field, value, setErrors, verifyOTPSchema);
+        if (field === "email") setEmail(value);
+        validateField(field, value, setErrors, verifyEmailSchema);
     };
 
     return (
@@ -57,23 +64,23 @@ const OTPVerification = () => {
                         <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
                             {source === 'register' ? 'Create An Account' : 'Reset Your Password'}
                         </h3>
-                        <div className='font-poppins text-center text-sm text-gray-500 w-5/6 mx-auto'>
-                            A 6-digit OTP has sent to your verified email.
+                        <div className='font-poppins text-center text-sm text-gray-500 w-4/5 mx-auto'>
+                            Please enter your email for verification
                         </div>
                         <form className='mt-8'>
                             <CustomInput
-                                id={'otp'}
-                                name={'otp'}
-                                placeholder={'OTP'}
+                                id={'email'}
+                                name={'email'}
+                                placeholder={'Email'}
                                 type={'text'}
                                 required
-                                icon={CiLock}
-                                onChange={(e) => handleChange("otp", e.target.value)}
-                                error={errors.otp}
+                                icon={TfiEmail}
+                                onChange={(e) => handleChange("email", e.target.value)}
+                                error={errors.email}
                             />
 
                             <div className='mt-28'>
-                                <CustomButton title={'Verify OTP'} onClick={verifyOTP} />
+                                <CustomButton title={'Verify Email'} onClick={verifyEmail} />
                             </div>
                         </form>
                     </div>
@@ -83,4 +90,4 @@ const OTPVerification = () => {
     );
 };
 
-export default OTPVerification;
+export default EmailVerification;

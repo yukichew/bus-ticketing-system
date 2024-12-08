@@ -7,7 +7,7 @@ namespace server.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PassengerID { get; set; }
+        public Guid PassengerID { get; set; }
         public string Fullname { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }

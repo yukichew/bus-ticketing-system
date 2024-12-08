@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Navbar from '../../../components/common/Navbar';
@@ -6,80 +6,121 @@ import Footer from '../../../components/Footer';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
+import { getBusType, updateBusType } from '../../../api/busType';
 
 const EditBusTypeForm = () => {
     const navigate = useNavigate();
-    const { bus_type_id } = useParams();
+    const { busTypeID } = useParams();
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
-    const [formData, setFormData] = useState({
-        numSeats: '',
+    const [busTypeDetails, setBusTypeDetails] = useState({
+        busTypeID: '',
         types: '',
+        noOfSeats: '',
         status: '',
     });
-    
+
+    const fetchBusTypeData = async () => {
+        const result = await getBusType(busTypeID);
+        setBusTypeDetails(result);
+        setSelectedStatusOption(result.status);
+    };
+
+    useEffect(() => {
+        fetchBusTypeData();
+    }, []);
+
     const statusOptions = ['Active', 'Inactive'];
 
     const handleSelectStatus = (option) => {
         setSelectedStatusOption(option);
+        setBusTypeDetails({
+            ...busTypeDetails,
+            status: option,
+        });
         setIsStatusOpen(false);
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-          ...formData,
-          [name]: value,
+        setBusTypeDetails({
+            ...busTypeDetails,
+            [name]: value,
         });
+    };
+
+    const handleSubmit = async () => {
+        if (!busTypeDetails.types || !busTypeDetails.noOfSeats || selectedStatusOption === 'Select a status') {
+            alert('Please fill out all fields.');
+            return;
+        }
+        
+        const updatedDetails = {
+            busTypeID: busTypeDetails.busTypeID,
+            noOfSeats: parseInt(busTypeDetails.noOfSeats),
+            types: busTypeDetails.types,
+            status: selectedStatusOption,
+        };
+
+        await updateBusType(busTypeID, updatedDetails);
+
+        alert('Bus type updated successfully!');
+        navigate('/bo/bus');
     };
 
     const handleCancel = () => {
-        setFormData({
-            busPlate: '',
-            numSeats: '',
-            types: '',
-            status: '',
-        });
+        navigate('/bo/bus');
     };
 
-    return(
+    return (
         <>
             <Navbar />
 
-            <div className='w-4/5 mt-8 mx-auto'>
-                <div className='flex items-center'>
-                    <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
+            <div className="w-4/5 mt-8 mx-auto">
+                <div className="flex items-center">
+                    <h2 className="font-poppins font-bold text-2xl">Bus Management</h2>
                 </div>
 
                 <Card header="Bus Information">
                     <div>
-                        <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Types</label>
+                        <label htmlFor="types" className="block text-sm font-poppins font-medium text-gray-700 mb-2">
+                            Types
+                        </label>
                         <CustomInput
-                            id={'types'}
-                            name={'Types'}
-                            placeholder={'Enter Bus Type'}
-                            type={'text'}
+                            id="types"
+                            name="types"
+                            placeholder="Enter Bus Type"
+                            type="text"
                             required
-                            // value={formData.fullname}
+                            value={busTypeDetails.types}
+                            onChange={handleInputChange}
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700 mb-2">No. of Seats</label>
+                        <label htmlFor="noOfSeats" className="block text-sm font-poppins font-medium text-gray-700 mb-2">
+                            No. of Seats
+                        </label>
                         <CustomInput
                             type="number"
-                            id="numSeats"
+                            id="noOfSeats"
+                            name="noOfSeats"
                             min="1"
-                            className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
                             placeholder="Enter Number of Seats"
+                            value={busTypeDetails.noOfSeats}
+                            onChange={handleInputChange}
                         />
                     </div>
 
                     <div className="w-full relative inline-block">
-                        <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">Status</label>
+                        <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">
+                            Status
+                        </label>
                         <button
                             onClick={() => setIsStatusOpen(!isStatusOpen)}
-                            className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedStatusOption === 'Select a status' ? 'text-gray-400' : 'text-black'}`}
+                            className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${
+                                selectedStatusOption === 'Select a status' ? 'text-gray-400' : 'text-black'
+                            }`}
                         >
                             {selectedStatusOption}
                             <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -102,16 +143,20 @@ const EditBusTypeForm = () => {
                         )}
                     </div>
                 </Card>
-                
-                <div className='mt-8 mb-10 flex justify-between'>
-                    <CustomButton title='Cancel' className='w-24' onClick={handleCancel}/>
-                    <CustomButton title='Save' className='w-24'/>
+
+                <div className="mt-8 mb-10 flex justify-between">
+                    <div className='w-28'>
+                        <CustomButton title="Cancel" onClick={handleCancel} />
+                    </div>
+                    <div className='w-28'>
+                        <CustomButton title="Save" onClick={handleSubmit} />
+                    </div>
                 </div>
             </div>
 
             <Footer />
         </>
     );
-}
+};
 
 export default EditBusTypeForm;

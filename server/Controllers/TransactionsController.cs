@@ -34,6 +34,10 @@ namespace server.Controllers
         public async Task<ActionResult<Transaction>> CheckOut(TransactionDto transactionDto)
         {
             var booking = await _context.Booking.FindAsync(transactionDto.BookingID);
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking not found." });
+            }
 
             try
             {
@@ -83,24 +87,34 @@ namespace server.Controllers
                 return NotFound(new { message = "Transaction not found." });
             }
 
+            var booking = transaction.Booking;
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking not found." });
+            }
+
+            var seats = _context.Seats.Where(s => s.BookingID == transaction.BookingID);
+
             if (statusDto.Status == "Succeeded")
             {
                 transaction.Status = "Succeeded";
-                var booking = transaction.Booking;
                 booking.BookingStatus = "Confirmed";
-                _context.Transaction.Update(transaction);
-                _context.Booking.Update(booking);
+
+                foreach (var seat in seats)
+                {
+                    seat.Status = "Occupied";
+                    _context.Seats.Update(seat);
+                }
             }
             else
             {
                 transaction.Status = "Failed";
-                var seatsToDelete = _context.Seats.Where(s => s.BookingID == transaction.BookingID);
-                _context.Seats.RemoveRange(seatsToDelete);
-
-                var booking = await _context.Booking.FindAsync(transaction.BookingID);
+                _context.Seats.RemoveRange(seats);
                 booking.BookingStatus = "Cancelled";
-                _context.Booking.Update(booking);
             }
+
+            _context.Transaction.Update(transaction);
+            _context.Booking.Update(booking);
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Transaction updated." });

@@ -46,11 +46,6 @@ namespace server.Controllers
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (!_context.BusSchedules.Any(bs => bs.BusScheduleID == bookingDto.BusScheduleID))
-            {
-                return BadRequest(new { message = "Invalid bus schedule id." });
-            }
-
             var seatNumbers = bookingDto.Seats.Select(seat => seat.SeatNumber).ToList();
 
             var alreadyBookedSeats = await _context.Seats
@@ -144,7 +139,7 @@ namespace server.Controllers
             return NoContent();
         }
 
-        private bool BookingExists(int id)
+        private bool BookingExists(Guid id)
         {
             return _context.Booking.Any(e => e.BookingID == id);
         }

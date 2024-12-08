@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { IoArrowBackOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/Logo";
-import { userLinks } from "../../constants/NavbarItems";
-import LoginRegistrationModal from "../../screens/auth/LoginRegisterModal";
-import Modal from "./Modal";
+import { busOperatorLinks, userLinks } from "../../constants/NavbarItems";
 import { useAuth } from "../../utils/AuthContext";
 
-const NavbarLinks = ({ isLoggedIn }) => {
-  // const links = userLinks.filter((link) => !link.isLoginRequired || isLoggedIn);
-  const links = isLoggedIn
-    ? userLinks
-    : userLinks.filter((link) => !link.isLoginRequired);
+const NavbarLinks = ({ role }) => {
+  const links =
+    role === "BusOperator"
+      ? busOperatorLinks
+      : userLinks.filter(
+          (link) =>
+            !link.isLoginRequired || (link.isLoginRequired && role === "Member")
+        );
 
   return (
     <>
@@ -30,18 +30,19 @@ const NavbarLinks = ({ isLoggedIn }) => {
 };
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [toggleMenu, setToggleMenu] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [currentView, setCurrentView] = useState("login");
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const { user } = useAuth();
-  const isLoggedIn = user !== null;
+  const { auth } = useAuth();
 
-  useEffect(() => {
-    setShowModal(false);
-  }, [user]);
+  const handleLogout = () => {
+    sessionStorage.clear();
+    window.location.reload();
+  };
 
-  const handleLogout = () => {};
+  const navigateToLogin = () => {
+    navigate("/login");
+  };
 
   return (
     <nav className='w-full px-6 md:px-5 py-7 bg-white shadow-lg'>
@@ -51,18 +52,18 @@ const Navbar = () => {
 
         {/* desktop links */}
         <div className='hidden lg:flex gap-6 items-center'>
-          <NavbarLinks isLoggedIn={isLoggedIn} />
+          <NavbarLinks role={auth?.role} />
         </div>
 
         {/* desktop user or login button */}
         <div className='hidden lg:flex'>
-          {isLoggedIn ? (
+          {auth ? (
             <div className='relative'>
               <button
                 onClick={() => setDropdownVisible(!dropdownVisible)}
                 className='text-slate-600 hover:text-primary transition duration-200 font-medium'
               >
-                {user.UserName}
+                {auth.user.userName}
               </button>
 
               {dropdownVisible && (
@@ -84,7 +85,7 @@ const Navbar = () => {
             </div>
           ) : (
             <button
-              onClick={() => setShowModal(true)}
+              onClick={navigateToLogin}
               className='text-secondary font-semibold hover:text-primary transition duration-200 underline-offset-2'
             >
               Login
@@ -109,25 +110,22 @@ const Navbar = () => {
       {toggleMenu && (
         <div className='lg:hidden fixed inset-0 bg-white shadow-lg z-10 flex justify-center items-center'>
           <div className='flex flex-col items-center space-y-4'>
-            <NavbarLinks isLoggedIn={isLoggedIn} />
-            {!isLoggedIn && (
+            <NavbarLinks role={auth?.role} />
+            {!auth && (
               <button
-                onClick={() => {
-                  setShowModal(true);
-                  setToggleMenu(false);
-                }}
+                onClick={navigateToLogin}
                 className='text-secondary font-semibold hover:text-primary hover:underline transition duration-200'
               >
                 Login
               </button>
             )}
-            {isLoggedIn && (
+            {auth && (
               <div>
                 <button
                   onClick={() => setDropdownVisible(!dropdownVisible)}
                   className='text-slate-600 hover:text-primary'
                 >
-                  {user.UserName}
+                  {auth.user.userName}
                 </button>
 
                 {dropdownVisible && (
@@ -151,28 +149,6 @@ const Navbar = () => {
           </div>
         </div>
       )}
-
-      {/* login modal */}
-      <Modal
-        isVisible={showModal}
-        onClose={() => setShowModal(false)}
-        backButton={
-          currentView !== "login" && (
-            <IoArrowBackOutline
-              size={25}
-              className='cursor-pointer text-gray-400 hover:text-gray-800'
-              onClick={() => setCurrentView("login")}
-              aria-label='Back'
-            />
-          )
-        }
-        className='w-full sm:w-4/6 lg:w-2/6'
-      >
-        <LoginRegistrationModal
-          currentView={currentView}
-          setCurrentView={setCurrentView}
-        />
-      </Modal>
     </nav>
   );
 };

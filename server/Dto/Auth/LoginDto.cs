@@ -2,10 +2,8 @@
 
 namespace server.Dto.Auth
 {
-    public class LoginDto
+    public class LoginDto : VerifyEmailDto
     {
-        [Required(ErrorMessage = "Email is required")]
-        public string? Email { get; set; }
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
     }

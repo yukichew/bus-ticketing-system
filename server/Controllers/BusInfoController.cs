@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -40,7 +42,7 @@ namespace server.Controllers
         #region GetBus
         // GET: api/BusInfo/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<BusInfo>> GetBus(int id)
+        public async Task<ActionResult<BusInfo>> GetBus(Guid id)
         {
             var busInfo = await _context.Set<BusInfo>()
                                 .Include(b => b.BusType)
@@ -48,7 +50,7 @@ namespace server.Controllers
 
             if (busInfo == null)
             {
-                return NotFound();
+                return BadRequest(new { message = "Bus not found." });
             }
 
             return Ok(busInfo);
@@ -106,20 +108,34 @@ namespace server.Controllers
         {
             if (busInfo == null)
             {
-                return BadRequest();
+                return BadRequest(new { message = "Invalid bus data." });
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can create buses." });
             }
 
             var busPlateExists = await _context.Set<BusInfo>().AnyAsync(b => b.BusPlate == busInfo.BusPlate);
             if (busPlateExists)
             {
-                return Conflict($"A bus with the plate '{busInfo.BusPlate}' already exists.");
+                return BadRequest(new { message = $"A bus with the plate '{busInfo.BusPlate}' already exists." });
             }
 
             var busTypeExists = await _context.Set<BusType>().AnyAsync(bt => bt.BusTypeID == busInfo.BusTypeID);
             if (!busTypeExists)
             {
-                return BadRequest($"BusType with ID {busInfo.BusTypeID} does not exist.");
+                return BadRequest(new { message = $"BusType with ID {busInfo.BusTypeID} does not exist." });
             }
+
+            busInfo.PostedBy = busOperator;
 
             _context.Set<BusInfo>().Add(busInfo);
             await _context.SaveChangesAsync();
@@ -131,11 +147,11 @@ namespace server.Controllers
         #region UpdateBus
         // PUT: api/BusInfo/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBus(int id, [FromBody] BusInfo busInfo)
+        public async Task<IActionResult> UpdateBus(Guid id, [FromBody] BusInfo busInfo)
         {
             if (id != busInfo.BusID)
             {
-                return BadRequest();
+                return BadRequest(new { message = "Bus ID mismatch." });
             }
 
             _context.Entry(busInfo).State = EntityState.Modified;
@@ -148,7 +164,7 @@ namespace server.Controllers
             {
                 if (!BusInfoExists(id))
                 {
-                    return NotFound();
+                    return BadRequest(new { message = "Bus not found." });
                 }
                 else
                 {
@@ -160,32 +176,6 @@ namespace server.Controllers
         }
         #endregion
 
-        #region ChangeBusStatus
-        // PUT: api/BusInfo/ChangeStatus/{id}
-        [HttpPut("ChangeStatus/{id}")]
-        public async Task<ActionResult> ChangeBusStatus(int id, [FromBody] string newStatus)
-        {
-            var busInfo = await _context.BusInfo.FindAsync(id);
-
-            if (busInfo == null)
-            {
-                return NotFound($"Bus with ID {id} not found.");
-            }
-
-            busInfo.Status = newStatus;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok($"Bus status updated to '{newStatus}' for BusID {id}.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-        #endregion
-
         #region DeleteBus
         // DELETE: api/BusInfo/{id}
         [HttpDelete("{id}")]
@@ -194,7 +184,7 @@ namespace server.Controllers
             var busInfo = await _context.Set<BusInfo>().FindAsync(id);
             if (busInfo == null)
             {
-                return NotFound();
+                return BadRequest(new { message = "Bus not found." });
             }
 
             _context.Set<BusInfo>().Remove(busInfo);
@@ -204,7 +194,7 @@ namespace server.Controllers
         }
         #endregion
 
-        private bool BusInfoExists(int id)
+        private bool BusInfoExists(Guid id)
         {
             return _context.Set<BusInfo>().Any(e => e.BusID == id);
         }

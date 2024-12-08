@@ -5,8 +5,8 @@ namespace server.Models
     public class BusType
     {
         [Key]
-        [Required]
-        public int BusTypeID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid BusTypeID { get; set; }
 
         [Required]
         public int NoOfSeats { get; set; }
@@ -18,5 +18,6 @@ namespace server.Models
         [Required]
         [StringLength(20)]
         public string Status { get; set; }
+        public virtual BusOperator? PostedBy { get; set; }
     }
 }

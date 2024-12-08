@@ -11,27 +11,35 @@ import NewBusForm from '../screens/busOperator/busManagement/NewBusForm';
 import EditBusForm from '../screens/busOperator/busManagement/EditBusForm';
 import PassengerList from '../screens/busOperator/busManagement/PassengerList';
 import UserProfile from '../screens/busOperator/profile/UserProfile';
+import AuthenticatedRoute from './AuthenticatedRoute';
 
-const BusOperatorRoutes = [
-  <Route path='/bo/dashboard' element={<BODashboard />} />,
-  <Route path='/bo/user-profile' element={<UserProfile />} />,
-  <Route path='/bo/bus' element={<ManageBus />} />,
-  <Route path='/bo/bus/new-bus' element={<NewBusForm />} />,
-  <Route path='/bo/bus/edit-bus' element={<EditBusForm />} />,
-  // <Route path='/bo/bus/edit-bus/:bus_id' element={<EditBusForm />} />
-  <Route path='/bo/bus/new-bus-type' element={<NewBusTypeForm />} />,
-  <Route path='/bo/bus/edit-bus-type' element={<EditBusTypeForm />} />,
-  // <Route path='/bo/bus/edit-bus-type/:bus_type_id' element={<EditBusTypeForm />} />
-  <Route path='/bo/bus/new-bus-schedule' element={<NewBusScheduleForm />} />,
-  <Route path='/bo/bus/edit-bus-schedule' element={<EditBusScheduleForm />} />,
-  // <Route path='/bo/bus/edit-bus-schedule/:bus_schedule_id' element={<EditBusScheduleForm />} />
-  <Route
-    path='/bo/bus/bus-schedule/passenger-lists'
-    element={<PassengerList />}
-  />,
-  <Route path='/bo/rates-and-reviews' element={<BORatesAndReviews />} />,
-  <Route path='/bo/user-profile' element={<UserProfile />} />,
-  <Route path='/bo/bus' element={<ManageBus />} />,
+const routesConfig = [
+  { path: '/bo/dashboard', component: BODashboard },
+  { path: '/bo/user-profile', component: UserProfile },
+  { path: '/bo/bus', component: ManageBus },
+  { path: '/bo/bus/new-bus', component: NewBusForm },
+  { path: '/bo/bus/edit-bus/:busID', component: EditBusForm },
+  { path: '/bo/bus/new-bus-type', component: NewBusTypeForm },
+  { path: '/bo/bus/edit-bus-type/:busTypeID', component: EditBusTypeForm },
+  { path: '/bo/bus/new-bus-schedule', component: NewBusScheduleForm },
+  {
+    path: '/bo/bus/edit-bus-schedule/:busScheduleID',
+    component: EditBusScheduleForm,
+  },
+  { path: '/bo/bus/bus-schedule/passenger-lists', component: PassengerList },
+  { path: '/bo/rates-and-reviews', component: BORatesAndReviews },
 ];
+
+const BusOperatorRoutes = routesConfig.map(({ path, component: Component }) => (
+  <Route
+    key={path}
+    path={path}
+    element={
+      // <AuthenticatedRoute requiredRole='BusOperator'>
+      <Component />
+      // </AuthenticatedRoute>
+    }
+  />
+));
 
 export default BusOperatorRoutes;

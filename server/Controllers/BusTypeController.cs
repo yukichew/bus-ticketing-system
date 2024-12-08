@@ -22,6 +22,12 @@ namespace server.Controllers
         public async Task<ActionResult> GetAllBusTypes()
         {
             var busTypes = await _context.Set<BusType>().ToListAsync();
+
+            if (!busTypes.Any())
+            {
+                return Ok(new { message = "No bus types available." });
+            }
+
             return Ok(busTypes);
         }
         #endregion
@@ -32,9 +38,10 @@ namespace server.Controllers
         public async Task<ActionResult<BusType>> GetBusType(int id)
         {
             var busType = await _context.Set<BusType>().FindAsync(id);
+
             if (busType == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Bus type with ID {id} not found." });
             }
 
             return Ok(busType);
@@ -66,15 +73,15 @@ namespace server.Controllers
                 query = query.Where(b => b.Status == status);
             }
 
-            var busType = await query
+            var busTypes = await query
                                 .ToListAsync();
 
-            if (busType.Count == 0)
+            if (!busTypes.Any())
             {
-                return Ok(new { message = "No relevant data found." });
+                return Ok(new { message = "No matching bus types found." });
             }
 
-            return Ok(busType);
+            return Ok(busTypes);
         }
         #endregion
 
@@ -85,7 +92,7 @@ namespace server.Controllers
         {
             if (busType == null)
             {
-                return BadRequest();
+                return BadRequest(new { message = "Bus type information is required." });
             }
 
             _context.Set<BusType>().Add(busType);
@@ -98,11 +105,11 @@ namespace server.Controllers
         #region UpdateBusType
         // PUT: api/BusType/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBusType(int id, [FromBody] BusType busType)
+        public async Task<IActionResult> UpdateBusType(Guid id, [FromBody] BusType busType)
         {
-            if (id != busType.BusTypeID)
+            if (busType == null)
             {
-                return BadRequest("BusType ID mismatch");
+                return NotFound(new { message = $"Bus type with ID {id} not found." });
             }
 
             _context.Entry(busType).State = EntityState.Modified;
@@ -115,7 +122,7 @@ namespace server.Controllers
             {
                 if (!BusTypeExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new { message = $"Bus type with ID {id} does not exist." });
                 }
                 else
                 {
@@ -123,33 +130,7 @@ namespace server.Controllers
                 }
             }
 
-            return Ok("The selected bus type is successfully updated.");
-        }
-        #endregion
-
-        #region ChangeBusTypeStatus
-        // PUT: api/BusType/ChangeStatus/{id}
-        [HttpPut("ChangeStatus/{id}")]
-        public async Task<ActionResult> ChangeBusTypeStatus(int id, [FromBody] string newStatus)
-        {
-            var busType = await _context.BusTypes.FindAsync(id);
-
-            if (busType == null)
-            {
-                return NotFound($"Bus type with ID {id} not found.");
-            }
-
-            busType.Status = newStatus;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok($"Bus type status updated to '{newStatus}' for BusType ID {id}.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return Ok(new { message = "The selected bus type was successfully updated." });
         }
         #endregion
 
@@ -159,18 +140,19 @@ namespace server.Controllers
         public async Task<IActionResult> DeleteBusType(int id)
         {
             var busType = await _context.Set<BusType>().FindAsync(id);
+
             if (busType == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Bus type with ID {id} not found." });
             }
 
             _context.Set<BusType>().Remove(busType);
             await _context.SaveChangesAsync();
 
-            return Ok("The selected bus type is successfully deleted.");
+            return Ok(new { message = "The selected bus type was successfully deleted." });
         }
         #endregion
-        private bool BusTypeExists(int id)
+        private bool BusTypeExists(Guid id)
         {
             return _context.Set<BusType>().Any(e => e.BusTypeID == id);
         }

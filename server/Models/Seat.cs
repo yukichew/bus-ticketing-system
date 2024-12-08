@@ -7,12 +7,12 @@ namespace server.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string SeatId { get; set; }
+        public Guid SeatId { get; set; }
         [Required]
         public int SeatNumber { get; set; }
 
         [Required]
-        public int BookingID { get; set; }
+        public Guid BookingID { get; set; }
 
         [ForeignKey("BookingID")]
         public virtual Booking? Booking { get; set; }
