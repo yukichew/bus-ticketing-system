@@ -32,7 +32,7 @@ const Footer = () => {
 
               <li>
                 <Link
-                  href="#"
+                  to="/contact-us"
                   className="text-gray-500 transition hover:opacity-75 font-poppins"
                 >
                   Contact Us
