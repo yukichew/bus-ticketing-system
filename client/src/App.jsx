@@ -4,6 +4,7 @@ import "./App.css";
 import AdminRoutes from "./routes/AdminRoutes";
 import BusOperatorRoutes from "./routes/BusOperatorRoutes";
 import UserRoutes from "./routes/UserRoutes";
+import AuthRoutes from "./routes/AuthRoutes";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 const stripePromise = loadStripe(
@@ -19,6 +20,7 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
+          {AuthRoutes}
           {UserRoutes.map((route, index) => {
             if (route.props.path === "/payment") {
               return (
