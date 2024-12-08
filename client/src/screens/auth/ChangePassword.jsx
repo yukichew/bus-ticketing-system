@@ -5,15 +5,24 @@ import CustomButton from '../../components/common/CustomButton';
 import CustomInput from '../../components/common/CustomInput';
 import * as yup from 'yup';
 import { validateField } from '../../utils/validate';
+import { changePassword } from '../../api/auth';
+import { toast } from 'react-toastify';
 
-const ResetPassword = () => {
+const ChangePassword = () => {
   const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [password, setPassword] = useState('');
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
   const [errors, setErrors] = useState({});
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setIsConfirmPasswordVisible((prevState) => !prevState);
   };
 
   const resetPasswordSchema = yup.object().shape({
@@ -26,16 +35,34 @@ const ResetPassword = () => {
         /[^a-zA-Z0-9]/,
         'Password must contain at least one special character (e.g., !, @, #)'
       )
-      .required('Password is required'),
+      .required('New password is required'),
+    oldPassword: yup
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+      .matches(/[0-9]/, 'Password must contain at least one number')
+      .matches(
+        /[^a-zA-Z0-9]/,
+        'Password must contain at least one special character (e.g., !, @, #)'
+      )
+      .required('Old password is required'),
   });
 
   const handleChange = (field, value) => {
-    if (field === 'password') setPassword(value);
+    if (field === 'newPassword') setNewPassword(value);
+    if (field === 'oldPassword') setOldPassword(value);
     validateField(field, value, setErrors, resetPasswordSchema);
   };
 
-  const handleSubmit = () => {
-    navigate('/login');
+  const handleSubmit = async () => {
+    e.preventDefault();
+    const response = await changePassword(oldPassword, newPassword);
+
+    if (response?.error) {
+      return toast.error(response.message);
+    }
+
+    toast.success('Password changed successfully');
   };
 
   return (
@@ -64,6 +91,34 @@ const ResetPassword = () => {
             <form className='mt-8'>
               <div className='relative mt-3'>
                 <CustomInput
+                  id={'oldPassword'}
+                  name={'oldPassword'}
+                  placeholder={'Old Password'}
+                  type={isConfirmPasswordVisible ? 'text' : 'password'}
+                  required
+                  icon={IoKeyOutline}
+                  onChange={(e) => handleChange('oldPassword', e.target.value)}
+                  error={errors.oldPassword}
+                />
+                <div
+                  className='absolute inset-y-0 right-2 pr-3 flex items-center cursor-pointer'
+                  onClick={toggleConfirmPasswordVisibility}
+                >
+                  {isConfirmPasswordVisible ? (
+                    <IoEye
+                      size={20}
+                      className='text-gray-400'
+                    />
+                  ) : (
+                    <IoEyeOff
+                      size={20}
+                      className='text-gray-400'
+                    />
+                  )}
+                </div>
+              </div>
+              <div className='relative mt-3'>
+                <CustomInput
                   id={'newpassword'}
                   name={'newpassword'}
                   placeholder={'New Password'}
@@ -71,7 +126,7 @@ const ResetPassword = () => {
                   required
                   icon={IoKeyOutline}
                   onChange={(e) => handleChange('password', e.target.value)}
-                  error={errors.password}
+                  error={errors.newPassword}
                 />
                 <div
                   className='absolute inset-y-0 right-2 pr-3 flex items-center cursor-pointer'
@@ -90,6 +145,7 @@ const ResetPassword = () => {
                   )}
                 </div>
               </div>
+
               <div className='mt-28'>
                 <CustomButton
                   title={'Confirm'}
@@ -104,4 +160,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ChangePassword;
