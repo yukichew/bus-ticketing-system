@@ -464,6 +464,12 @@ namespace server.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<TimeSpan>("arrivalTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("departureTime")
+                        .HasColumnType("time");
+
                     b.HasKey("RouteID");
 
                     b.HasIndex("ArrivalLocationID");

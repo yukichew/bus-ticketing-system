@@ -17,14 +17,11 @@ const BusOperatorRoutes = [
   <Route path='/bo/user-profile' element={<UserProfile />} />,
   <Route path='/bo/bus' element={<ManageBus />} />,
   <Route path='/bo/bus/new-bus' element={<NewBusForm />} />,
-  <Route path='/bo/bus/edit-bus' element={<EditBusForm />} />,
-  // <Route path='/bo/bus/edit-bus/:bus_id' element={<EditBusForm />} />
+  <Route path='/bo/bus/edit-bus/:busID' element={<EditBusForm />} />,
   <Route path='/bo/bus/new-bus-type' element={<NewBusTypeForm />} />,
-  <Route path='/bo/bus/edit-bus-type' element={<EditBusTypeForm />} />,
-  // <Route path='/bo/bus/edit-bus-type/:bus_type_id' element={<EditBusTypeForm />} />
+  <Route path='/bo/bus/edit-bus-type/:busTypeID' element={<EditBusTypeForm />} />,
   <Route path='/bo/bus/new-bus-schedule' element={<NewBusScheduleForm />} />,
-  <Route path='/bo/bus/edit-bus-schedule' element={<EditBusScheduleForm />} />,
-  // <Route path='/bo/bus/edit-bus-schedule/:bus_schedule_id' element={<EditBusScheduleForm />} />
+  <Route path='/bo/bus/edit-bus-schedule/:busScheduleID' element={<EditBusScheduleForm />} />,
   <Route
     path='/bo/bus/bus-schedule/passenger-lists'
     element={<PassengerList />}

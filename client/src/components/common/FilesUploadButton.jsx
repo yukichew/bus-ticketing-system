@@ -49,12 +49,12 @@ const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFile
     return (
         <>
             <div className="flex flex-col items-center justify-center w-full">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg px-6 py-6 text-center cursor-pointer w-full" onDrop={handleDrop} onDragOver={handleDragOver}>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer w-full" onDrop={handleDrop} onDragOver={handleDragOver}>
                     <div className="flex flex-col items-center justify-center">
-                        <label htmlFor="file-upload" className="flex flex-col items-center justify-center font-poppins text-gray-500 rounded-full w-16 h-16 bg-indigo-50 shadow-lg mt-2">
-                            <PiUploadSimple className="text-primary" size={32} />
+                        <label htmlFor="file-upload" className="flex flex-col items-center justify-center font-poppins text-gray-500 rounded-full w-12 h-12 bg-indigo-50 shadow-md">
+                            <PiUploadSimple className="text-primary" size={24} />
                         </label>
-                        <div className="font-poppins text-black mt-8">
+                        <div className="font-poppins text-black text-xs mt-3">
                             <label htmlFor="file-upload" className="underline font-semibold text-primary cursor-pointer mr-1">
                                 Click here
                             </label>
@@ -68,7 +68,7 @@ const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFile
                             onChange={handleFileChange}
                             multiple
                         />
-                        <div className="font-poppins text-sm text-gray-500 mt-3">
+                        <div className="font-poppins text-xs text-gray-500 mt-1">
                             Supported Format: SVG, JPG, PNG
                         </div>
                     </div>
@@ -77,29 +77,29 @@ const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFile
                 {files.length > 0 && (
                     <div className="mt-2 w-full">
                         <div className="flex flex-col space-y-2">
-                            {files.map((file, index) => (
-                                <div key={index} className="flex items-center justify-between w-full">
-                                    <div className={`flex-shrink-0 ${aspectRatio === "square" ? "h-20 w-20" : "h-16 w-24"}`}>
-                                        <img
-                                            src={URL.createObjectURL(file)}
-                                            alt={file.name}
-                                            className={`w-full h-full object-cover ${aspectRatio === "square" ? "aspect-square" : "aspect-[16/9]"}`}
-                                        />
-                                    </div>
-                                    <div className="flex-grow ml-3 flex items-center justify-between"> {/* Allow file name to grow and be on the right */}
-                                        <span className="font-poppins text-sm break-words">{file.name}</span>
-                                        <button
-                                            onClick={() => handleDelete(index)}
-                                            className="rounded-full p-1 border border-gray-100 shadow-lg hover:bg-red-100 transition duration-200"
-                                        >
-                                            <AiOutlineDelete className="text-red-500" size={20} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                        {files.map((file, index) => (
+                            <div key={index} className="flex items-center justify-between w-full">
+                            <div className={`flex-shrink-0 ${aspectRatio === "square" ? "h-12 w-12" : "h-10 w-16"}`}> {/* Reduced image size */}
+                                <img
+                                src={URL.createObjectURL(file)}
+                                alt={file.name}
+                                className={`w-full h-full object-cover ${aspectRatio === "square" ? "aspect-square" : "aspect-[16/9]"}`}
+                                />
+                            </div>
+                            <div className="flex-grow ml-3 flex items-center justify-between"> {/* Allow file name to grow and be on the right */}
+                                <span className="font-poppins text-sm break-words">{file.name}</span>
+                                <button
+                                onClick={() => handleDelete(index)}
+                                className="rounded-full p-1 border border-gray-100 shadow-lg hover:bg-red-100 transition duration-200"
+                                >
+                                <AiOutlineDelete className="text-red-500" size={20} />
+                                </button>
+                            </div>
+                            </div>
+                        ))}
                         </div>
                     </div>
-                )}
+                    )}
             </div>
         </>
     );

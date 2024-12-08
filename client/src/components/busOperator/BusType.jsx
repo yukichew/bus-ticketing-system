@@ -2,60 +2,85 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { CiEdit, CiExport } from "react-icons/ci";
+import { CiEdit, CiExport, CiSearch } from "react-icons/ci";
+import { GrPowerReset } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai";
 import Table from '../common/Table';
 import Card from '../common/Card';
-import { BusTypeStatus } from './BusTypeStatus';
+import { getAllBusType, searchBusType, deleteBusType } from '../../api/busType';
 
 const BusType = () => {
     const navigate = useNavigate();
+    const [busTypeData, setBusTypeData] = useState([]);
     const [isNumSeatsOpen, setIsNumSeatsOpen] = useState(false);
     const [selectedNumSeatsOption, setSelectedNumSeatsOption] = useState('All');
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
     const [selectedBusTypeOption, setSelectedBusTypeOption] = useState('All');
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
+    const [busTypeOptions, setBusTypeOptions] = useState([]);
+    const [numSeatsOptions, setNumSeatsOptions] = useState([]);
+    const [filters, setFilters] = useState({
+        types: '',
+        noOfSeats: '',
+        status: '',
+    });
     const busTypeDropdownRef = useRef(null);
     const numSeatsDropdownRef = useRef(null);
     const statusDropdownRef = useRef(null);
 
-    const handleNavigate = (screen) => {
+    const handleNavigate = (screen, busTypeID) => {
         switch (screen) {
             case 'newBusType':
-                navigate('/bo/bus/new-bus-type');
+                navigate(`/bo/bus/new-bus-type`);
                 break;
             case 'editBusType':
-                navigate('/bo/bus/edit-bus-type');
+                navigate(`/bo/bus/edit-bus-type/${busTypeID}`);
                 break;
             default:
                 break;
         }
     };
 
-    const [busTypeData, setBusTypeData] = useState([
-        { id: "1", seats: '24', busType: 'Executive', status: 'Active' },
-        { id: "2", seats: '27', busType: 'Executive (2+1)', status: 'Inactive' },
-        { id: "3", seats: '30', busType: 'Executive', status: 'Inactive' },
-        { id: "4", seats: '27', busType: 'Executive (2+1)', status: 'Active' }
-    ]);    
+    const fetchBusTypeData = async () => {
+        const results = await getAllBusType();
+        
+        const formattedData = results.map((item) => ({
+            busTypeID: item.busTypeID,
+            types: item.types,
+            noOfSeats: `${item.noOfSeats} seats`,
+            status: item.status,
+        }));
+    
+        const busTypeOptions = [...new Set(formattedData.map((item) => item.types))];
+        const numSeatsOptions = [...new Set(formattedData.map((item) => item.noOfSeats))];
 
-    const columns = ['Bus Type', 'No. of Seats'];
+        setBusTypeData(formattedData);
+        setBusTypeOptions(busTypeOptions);
+        setNumSeatsOptions(numSeatsOptions);
+    };
 
-    const columnKeys = ['busType', 'seats'];
+    useEffect(() => {
+        fetchBusTypeData();
+    }, []);
 
-    const busTypeOptions = ['All', 'Executive', 'Executive (2+1)'];
+    const columns = ['Types', 'No. of Seats'];
 
-    const numSeatsOptions = ['All', '24', '27', '30'];
+    const columnKeys = ['types', 'noOfSeats'];
 
     const statusOptions = ['Active', 'Inactive'];
+
+    const statusStyles = {
+        'Active': 'text-lime-700 bg-lime-100',
+        'Inactive': 'text-red-600 bg-red-100',
+    };
 
     const actionIcons = (row) => (
         <div className="flex justify-center space-x-2">
             <div className="relative group">
                 <CiEdit 
                     className="text-gray-500 text-xl cursor-pointer" 
-                    onClick={() => handleNavigate('editBusType')}
+                    onClick={() => handleNavigate('editBusType', row.busTypeID)}
                 />
                 <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-16 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
                     Edit
@@ -67,7 +92,7 @@ const BusType = () => {
             <div className="relative group">
                 <AiOutlineDelete 
                     className="text-gray-500 text-xl cursor-pointer" 
-                    onClick={() => handleDelete()}
+                    onClick={() => handleDelete(row.busTypeID)}
                 />
                 <div className="absolute left-1/2 transform -translate-x-1/2 -top-11 w-16 font-poppins text-center text-sm text-white bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-1 py-2">
                     Delete
@@ -76,39 +101,82 @@ const BusType = () => {
         </div>
     );
 
-    const enhancedData = busTypeData.map((item, index) => ({
+    const enhancedData = busTypeData.map((item) => ({
         ...item,
         status: (
-            <BusTypeStatus
-                status={item.status}
-                onStatusChange={(newStatus) => handleStatusChange(newStatus, index)}
-            />
-        )
+            <div className={`flex items-center justify-center relative w-40 h-8 ${statusStyles[item.status] || 'text-gray-600 bg-gray-100'} rounded-lg border-1 border-gray-50 shadow-md p-1 font-poppins font-medium text-sm`}>
+                {item.status}
+            </div>
+        ),
     }));
-
-    const handleStatusChange = (newStatus, index) => {
-        const updatedData = [...busTypeData];
-        updatedData[index].status = newStatus;
-        setBusTypeData(updatedData); 
+    
+    const handleSelectBusType = (option) => {
+        setSelectedBusTypeOption(option);
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            types: option === 'All' ? '' : option,
+        }));
+        setIsBusTypeOpen(false);
     };
     
     const handleSelectNumSeats = (option) => {
+        const numSeatsValue = option === 'All' ? '' : option.replace(' seats', '');
         setSelectedNumSeatsOption(option);
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            noOfSeats: numSeatsValue,
+        }));
         setIsNumSeatsOpen(false);
     };
-
-    const handleSelectBusType = (option) => {
-        setSelectedBusTypeOption(option);
-        setIsBusTypeOpen(false);
-    };
-
+    
     const handleSelectStatus = (option) => {
         setSelectedStatusOption(option);
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            status: option === 'Select a status' ? '' : option,
+        }));
         setIsStatusOpen(false);
     };
 
-    const handleDelete = () => {
-        // delete logic
+    const handleSearch = async () => {
+        const activeFilters = Object.fromEntries(
+            Object.entries(filters).filter(([_, value]) => value !== '')
+        );
+
+        const results = await searchBusType(activeFilters);
+        const formattedData = results.map((item) => ({
+            busTypeID: item.busTypeID,
+            types: item.types,
+            noOfSeats: `${item.noOfSeats} seats`,
+            status: item.status,
+        }));
+
+        setBusTypeData(formattedData);
+    }
+
+    const handleReset = () => {
+        setFilters({
+            types: '',
+            noOfSeats: '',
+            status: '',
+        });
+        
+        setSelectedBusTypeOption('All');
+        setSelectedNumSeatsOption('All');
+        setSelectedStatusOption('Select a status');
+
+        fetchBusTypeData();
+    };
+
+    const handleDelete = async (busTypeID) => {
+        const response = await deleteBusType(busTypeID);
+
+        if(response){
+            alert("Bus type deleted successfully!");
+            fetchBusTypeData();
+        }else{
+            alert("Bus type deleted failed!");
+        }
     };
 
     useEffect(() => {
@@ -134,9 +202,21 @@ const BusType = () => {
         <>
             <div className='mb-8 -mt-5'>
                 <Card>
+                    <div className="mb-6 flex items-center justify-end gap-4 text-gray-700">
+                        <div className="flex items-center gap-2 text-primary" onClick={handleSearch}>
+                            <CiSearch />
+                            <span className="font-poppins font-medium">Search</span>
+                        </div>
+                        <span className="text-gray-400">|</span>
+                        <div className="flex items-center gap-2" onClick={handleReset}>
+                            <GrPowerReset />
+                            <span className="font-poppins font-medium">Reset</span>
+                        </div>
+                    </div>
+
                     <div className="flex justify-between gap-4">
                         <div ref={busTypeDropdownRef} className="relative inline-block text-left w-1/3">
-                            <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
+                            <label htmlFor="types" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
                             <button
                                 onClick={() => setIsBusTypeOpen(!isBusTypeOpen)}
                                 className={`inline-flex justify-between w-full rounded-lg border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary ${selectedBusTypeOption === 'All' ? 'text-gray-400' : 'text-black'}`}
@@ -148,13 +228,13 @@ const BusType = () => {
                             {isBusTypeOpen && (
                                 <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                     <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                        {busTypeOptions.map((option, index) => (
+                                        {busTypeOptions.map((type, index) => (
                                             <li
                                                 key={index}
-                                                onClick={() => handleSelectBusType(option)}
+                                                onClick={() => handleSelectBusType(type)}
                                                 className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
                                             >
-                                                {option}
+                                                {type}
                                             </li>
                                         ))}
                                     </ul>
@@ -175,13 +255,13 @@ const BusType = () => {
                             {isNumSeatsOpen && (
                                 <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                     <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                        {numSeatsOptions.map((option, index) => (
+                                        {numSeatsOptions.map((seats, index) => (
                                             <li
                                                 key={index}
-                                                onClick={() => handleSelectNumSeats(option)}
+                                                onClick={() => handleSelectNumSeats(seats)}
                                                 className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
                                             >
-                                                {option}
+                                                {seats}
                                             </li>
                                         ))}
                                     </ul>
@@ -202,13 +282,13 @@ const BusType = () => {
                             {isStatusOpen && (
                                 <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                     <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                        {statusOptions.map((option, index) => (
+                                        {statusOptions.map((status, index) => (
                                             <li
                                                 key={index}
-                                                onClick={() => handleSelectStatus(option)}
+                                                onClick={() => handleSelectStatus(status)}
                                                 className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
                                             >
-                                                {option}
+                                                {status}
                                             </li>
                                         ))}
                                     </ul>
@@ -221,7 +301,9 @@ const BusType = () => {
 
             <div className="flex justify-between items-center mt-7">
                 <p className='text-gray-500'>
-                    <span className='font-semibold text-secondary'>4 buses </span>found
+                    <span className='font-semibold text-secondary'>
+                        {busTypeData.length} results
+                    </span> found
                 </p>
 
                 <div className="flex justify-end">
