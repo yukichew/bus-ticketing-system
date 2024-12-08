@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Sidebar from "../../components/admin/Sidebar";
 import Card from "../../components/common/Card";
+import Container from "../../components/Container";
 import { FaRegHandPointRight } from "react-icons/fa";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { IoIosArrowRoundBack } from "react-icons/io";
@@ -45,20 +46,10 @@ const PolicyUserView = () => {
   }, []);
 
   return (
-    <div className="relative flex h-screen overflow-hidden">
-      <AdminHeader
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-      />
-      <Sidebar isSidebarOpen={isSidebarOpen} />
-
-      <main
-        className={`flex-1 p-4 transition-all duration-300 mt-20 ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        } overflow-y-auto`}
-      >
+    <Container>
+      <div className="relative flex min-h-screen overflow-hidden">
         <div className="w-4/5 mt-8 mx-auto">
-          <h2 className="font-poppins font-bold text-2xl mb-4">
+          <h2 className="font-poppins font-bold text-2xl mb-6">
             Terms and Conditions
           </h2>
           {location.state?.fromAdmin && (
@@ -112,12 +103,12 @@ const PolicyUserView = () => {
               </div>
             ))}
           </Card>
-          <p className="ml-auto flex items-center font-medium text-gray-500 pt-4">
+          <p className="ml-auto flex items-center font-medium text-gray-500 pt-6 pb-8">
             Note: The information above is subject to changes from time to time.
           </p>
         </div>
-      </main>
-    </div>
+      </div>
+    </Container>
   );
 };
 

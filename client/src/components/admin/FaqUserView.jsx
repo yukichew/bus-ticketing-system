@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import AdminHeader from "../../components/admin/AdminHeader";
-import Sidebar from "../../components/admin/Sidebar";
 import Card from "../../components/common/Card";
+import Container from "../../components/Container";
 import { fetchActiveFaqs } from "../../api/faq";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import {
@@ -13,7 +12,6 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const FaqUserView = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [expandedQuestionId, setExpandedQuestionId] = useState(null);
   const [faqData, setFaqData] = useState([]);
@@ -34,15 +32,14 @@ const FaqUserView = () => {
     setExpandedQuestionId((prev) => (prev === id ? null : id));
   };
 
-  // Only fetch FAQs where status = "Active"
   useEffect(() => {
     const getFaqs = async () => {
       try {
         const data = await fetchActiveFaqs();
-        console.log("Fetched FAQs Data:", data); // Log for debugging
+        console.log("Fetched FAQs Data:", data);
         const faqsWithIds = data.map((faq, index) => ({
           ...faq,
-          faqId: index.toString(), // Ensure each FAQ has a unique string ID
+          faqId: index.toString(),
         }));
         setFaqData(faqsWithIds);
         setLoading(false);
@@ -65,20 +62,10 @@ const FaqUserView = () => {
   }, {});
 
   return (
-    <div className="relative flex h-screen overflow-hidden">
-      <AdminHeader
-        isSidebarOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-      />
-      <Sidebar isSidebarOpen={isSidebarOpen} />
-
-      <main
-        className={`flex-1 p-4 transition-all duration-300 mt-20 ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        } overflow-y-auto`}
-      >
+    <Container>
+      <div className="relative flex min-h-screen overflow-hidden">
         <div className="w-4/5 mt-8 mx-auto">
-          <h2 className="font-poppins font-bold text-2xl mb-4">
+          <h2 className="font-poppins font-bold text-2xl mb-6">
             Frequently Asked Questions
           </h2>
           {location.state?.fromAdmin && (
@@ -143,12 +130,12 @@ const FaqUserView = () => {
               </div>
             ))}
           </Card>
-          <p className="ml-auto flex items-center font-medium text-gray-500 pt-4">
+          <p className="ml-auto flex items-center font-medium text-gray-500 pt-6 pb-8">
             Note: The info above are subjected to changes from time to time.
           </p>
         </div>
-      </main>
-    </div>
+      </div>
+    </Container>
   );
 };
 
