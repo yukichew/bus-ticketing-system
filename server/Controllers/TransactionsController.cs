@@ -110,7 +110,7 @@ namespace server.Controllers
                     seat.Status = "Occupied";
                     _context.Seats.Update(seat);
                 }
-
+                
                 // send payment receipt email
                 var passenger = seats.FirstOrDefault().Passenger;
                 var receiptMessage = $"Dear {passenger.Fullname},\n\n" +

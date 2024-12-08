@@ -25,7 +25,7 @@ namespace server.Controllers
             {
                 return BadRequest("Invalid bus schedule ID");
             }
-
+            
             var seatNumbers = await _context.Seats
                 .Where(s => s.Booking.BusScheduleID == busScheduleGuid && (s.Status == "Occupied" || s.Status == "Reserved"))
                 .Select(s => s.SeatNumber)

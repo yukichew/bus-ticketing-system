@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { faqData } from "../../constants/Dummy";
+import React, { useState, useEffect } from "react";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Sidebar from "../../components/admin/Sidebar";
 import Card from "../../components/common/Card";
+import { fetchActiveFaqs } from "../../api/faq";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import {
   RiQuestionAnswerLine,
@@ -10,13 +10,17 @@ import {
   RiArrowDropUpLine,
 } from "react-icons/ri";
 import { IoIosArrowRoundBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const FaqUserView = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState(null);
-  const [expandedQuestion, setExpandedQuestion] = useState(null);
+  const [expandedQuestionId, setExpandedQuestionId] = useState(null);
+  const [faqData, setFaqData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -26,9 +30,30 @@ const FaqUserView = () => {
     setExpandedCategory((prev) => (prev === category ? null : category));
   };
 
-  const handleQuestionClick = (question) => {
-    setExpandedQuestion((prev) => (prev === question ? null : question));
+  const handleQuestionClick = (id) => {
+    setExpandedQuestionId((prev) => (prev === id ? null : id));
   };
+
+  // Only fetch FAQs where status = "Active"
+  useEffect(() => {
+    const getFaqs = async () => {
+      try {
+        const data = await fetchActiveFaqs();
+        console.log("Fetched FAQs Data:", data); // Log for debugging
+        const faqsWithIds = data.map((faq, index) => ({
+          ...faq,
+          faqId: index.toString(), // Ensure each FAQ has a unique string ID
+        }));
+        setFaqData(faqsWithIds);
+        setLoading(false);
+      } catch (err) {
+        setError("Unable to fetch FAQs.");
+        setLoading(false);
+      }
+    };
+
+    getFaqs();
+  }, []);
 
   // Group FAQs by category
   const categorizedFaqs = faqData.reduce((acc, faq) => {
@@ -56,13 +81,15 @@ const FaqUserView = () => {
           <h2 className="font-poppins font-bold text-2xl mb-4">
             Frequently Asked Questions
           </h2>
-          <button
-            className="ml-auto flex items-center font-medium hover:text-primary pr-1"
-            onClick={() => navigate("/manage-contents")}
-          >
-            <IoIosArrowRoundBack size={16} />
-            <p className="mx-1">Return to Admin View</p>
-          </button>
+          {location.state?.fromAdmin && (
+            <button
+              className="ml-auto flex items-center font-medium hover:text-primary pr-1"
+              onClick={() => navigate("/manage-contents")}
+            >
+              <IoIosArrowRoundBack size={16} />
+              <p className="mx-1">Return to Admin View</p>
+            </button>
+          )}
           <Card>
             {Object.keys(categorizedFaqs).map((category, index) => (
               <div key={category} className="mb-6">
@@ -76,18 +103,18 @@ const FaqUserView = () => {
                   <ul className="list-none pl-0">
                     {categorizedFaqs[category].map((faq) => (
                       <li
-                        key={faq.question}
+                        key={faq.faqId}
                         className="flex flex-col mb-6 cursor-pointer"
                       >
                         <div
                           className="flex items-center mb-1 font-poppins hover:text-primary"
-                          onClick={() => handleQuestionClick(faq.question)}
+                          onClick={() => handleQuestionClick(faq.faqId)}
                         >
                           <FaRegQuestionCircle className="mr-2 text-gray-500" />
                           <h4 className="font-semibold flex-grow">
                             {faq.question}
                           </h4>
-                          {expandedQuestion === faq.question ? (
+                          {expandedQuestionId === faq.faqId ? (
                             <RiArrowDropUpLine
                               size={24}
                               className="text-gray-500"
@@ -99,7 +126,7 @@ const FaqUserView = () => {
                             />
                           )}
                         </div>
-                        {expandedQuestion === faq.question && (
+                        {expandedQuestionId === faq.faqId && (
                           <div className="flex items-start mt-1 border-t pt-2">
                             <div className="flex items-center justify-center w-8 h-8 mr-2 text-gray-500">
                               <RiQuestionAnswerLine className="w-4 h-4" />
