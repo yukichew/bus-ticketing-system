@@ -78,7 +78,7 @@ namespace server.Controllers
 
             if (busSchedule == null)
             {
-                return NotFound();
+                return BadRequest(new { message = "Bus schedule not found." });
             }
 
             return Ok(busSchedule);
@@ -213,7 +213,7 @@ namespace server.Controllers
         {
             if (busScheduleDTO.Routes == null)
             {
-                return BadRequest("Routes information is required.");
+                return BadRequest(new { message = "Routes information is required." });
             }
 
             TimeSpan etd = ParseTimeSpan(busScheduleDTO.ETD);
@@ -222,13 +222,13 @@ namespace server.Controllers
             // To ensure the bus schedule create between operating hours (6:00 AM to 9:00 PM)
             if (etd < TimeSpan.FromHours(6) || etd > TimeSpan.FromHours(21))
             {
-                return BadRequest("Bus can only be scheduled during operation hours (6:00 AM to 9:00 PM).");
+                return BadRequest(new { message = "Bus can only be scheduled during operation hours (6:00 AM to 9:00 PM)." });
             }
 
             // To ensure the ETD is earlier than ETA
             if (etd >= eta)
             {
-                return BadRequest("Departure time (ETD) must be earlier than arrival time (ETA).");
+                return BadRequest(new { message = "Departure time (ETD) must be earlier than arrival time (ETA)." });
             }
 
             // Get the current time for comparison
@@ -236,7 +236,7 @@ namespace server.Controllers
 
             if (busScheduleDTO.RecurringOptions == null)
             {
-                return BadRequest("RecurringOptions information is required.");
+                return BadRequest(new { message = "RecurringOptions information is required." });
             }
 
             // For 'None' RecurringOption
@@ -323,7 +323,7 @@ namespace server.Controllers
                 if (recurringOptions.Options == "None")
                 {
                     if (recurringOptions.Date == null)
-                        return BadRequest("Date is required when RecurringOptions is 'None'.");
+                        return BadRequest(new { message = "Date is required when RecurringOptions is 'None'." });
 
                     var busSchedule = CreateBusSchedule(busScheduleDTO, recurringOptions.Date.Value, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
                     busSchedules.Add(busSchedule);
@@ -331,13 +331,13 @@ namespace server.Controllers
                 else if (recurringOptions.Options == "Daily")
                 {
                     if (recurringOptions.FromDate == null || recurringOptions.ToDate == null)
-                        return BadRequest("FromDate and ToDate are required when RecurringOptions is 'Daily'.");
+                        return BadRequest(new { message = "FromDate and ToDate are required when RecurringOptions is 'Daily'." });
 
                     // Check if the date range exceeds 3 months
                     var dateDifference = recurringOptions.ToDate.Value - recurringOptions.FromDate.Value;
                     if (dateDifference.TotalDays > 90)
                     {
-                        return BadRequest("The date range cannot exceed 3 months.");
+                        return BadRequest(new { message = "The date range cannot exceed 3 months." });
                     }
 
                     for (var date = recurringOptions.FromDate.Value; date <= recurringOptions.ToDate.Value; date = date.AddDays(1))
@@ -349,12 +349,12 @@ namespace server.Controllers
                 else if (recurringOptions.Options == "Monthly")
                 {
                     if (recurringOptions.FromDate == null || recurringOptions.ToDate == null || recurringOptions.SelectDays == null || !recurringOptions.SelectDays.Any())
-                        return BadRequest("FromDate, ToDate, and SelectDays are required when RecurringOptions is 'Monthly'.");
+                        return BadRequest(new { message = "FromDate, ToDate, and SelectDays are required when RecurringOptions is 'Monthly'." });
 
                     var dateDifference = recurringOptions.ToDate.Value - recurringOptions.FromDate.Value;
                     if (dateDifference.TotalDays > 90)
                     {
-                        return BadRequest("The date range cannot exceed 3 months.");
+                        return BadRequest(new { message = "The date range cannot exceed 3 months." });
                     }
 
                     var daysOfWeek = recurringOptions.SelectDays.Select(day => Enum.Parse<DayOfWeek>(day, true)).ToList();
@@ -370,12 +370,12 @@ namespace server.Controllers
                 }
                 else
                 {
-                    return BadRequest("Invalid RecurringOptions value.");
+                    return BadRequest(new { message = "Invalid RecurringOptions value." });
                 }
             }
             else
             {
-                return BadRequest("RecurringOptions information is required.");
+                return BadRequest(new { message = "RecurringOptions information is required." });
             }
 
             _context.BusSchedules.AddRange(busSchedules);
@@ -418,7 +418,7 @@ namespace server.Controllers
 
                 if (travelDate.Add(etd) <= DateTime.Now.AddHours(12))
                 {
-                    return BadRequest("A new schedule cannot be created within 12 hours of the current time.");
+                    return BadRequest(new { message = "A new schedule cannot be created within 12 hours of the current time." });
                 }
 
                 DateTime newScheduleDateTime = travelDate.Add(etd);
@@ -427,8 +427,11 @@ namespace server.Controllers
                     (newScheduleDateTime.TimeOfDay == existingScheduleDateTime.TimeOfDay ||
                      newScheduleDateTime.TimeOfDay.Add(TimeSpan.FromMinutes(30)) > existingScheduleDateTime.TimeOfDay))
                 {
-                    return BadRequest($"There is already a schedule for bus {busID} on {newScheduleDateTime.Date:yyyy-MM-dd} at {newScheduleDateTime:HH:mm}. " +
-                                       $"No schedule can be created within 30 minutes of another schedule.");
+                    return BadRequest(new
+                    {
+                        message = $"There is already a schedule for bus {busID} on {newScheduleDateTime.Date:yyyy-MM-dd} at {newScheduleDateTime:HH:mm}. " +
+                                       $"No schedule can be created within 30 minutes of another schedule."
+                    });
                 }
             }
 
@@ -448,7 +451,7 @@ namespace server.Controllers
 
             if (existingBusSchedule == null)
             {
-                return NotFound($"Bus Schedule with ID {id} not found.");
+                return NotFound(new { message = $"Bus Schedule with ID {id} not found." });
             }
 
             TimeSpan etd = TimeSpan.Parse(busScheduleDTO.ETD);
@@ -457,26 +460,12 @@ namespace server.Controllers
             // To avoid the new ETD and ETA is outside the operation hours.
             if (etd < TimeSpan.FromHours(6) || etd > TimeSpan.FromHours(21))
             {
-                return BadRequest("Bus can only be scheduled during operation hours (6:00 AM to 9:00 PM).");
+                return BadRequest(new { message = "Bus can only be scheduled during operation hours (6:00 AM to 9:00 PM)." });
             }
 
             if (etd >= eta)
             {
-                return BadRequest("Departure time (ETD) must be earlier than arrival time (ETA).");
-            }
-
-            // A new schedule must be created 12 hours before the ETD.
-            DateTime scheduleDateTime = busScheduleDTO.TravelDate.Add(etd);
-            DateTime currentTime = DateTime.Now;
-
-            if (scheduleDateTime <= currentTime.AddHours(12))
-            {
-                return BadRequest("A new schedule cannot be created within 12 hours of the current time.");
-            }
-
-            if (existingBusSchedule.Routes == null)
-            {
-                return BadRequest("The schedule must have an associated route.");
+                return BadRequest(new { message = "Departure time (ETD) must be earlier than arrival time (ETA)." });
             }
 
             var existingRoutes = existingBusSchedule.Routes;
@@ -502,7 +491,7 @@ namespace server.Controllers
             {
                 if (!BusScheduleExists(id))
                 {
-                    return NotFound($"Bus schedule with ID {id} not found after update attempt.");
+                    return NotFound(new { message = $"Bus schedule with ID {id} not found after update attempt." });
                 }
                 else
                 {
@@ -510,7 +499,7 @@ namespace server.Controllers
                 }
             }
 
-            return Ok("The bus schedule was successfully updated.");
+            return Ok(new { message = "The bus schedule was successfully updated." });
         }
         #endregion
 
@@ -522,7 +511,7 @@ namespace server.Controllers
             var busSchedule = await _context.Set<BusSchedule>().FindAsync(id);
             if (busSchedule == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Bus Schedule with ID {id} not found." });
             }
 
             _context.Set<BusSchedule>().Remove(busSchedule);
@@ -547,7 +536,7 @@ namespace server.Controllers
 
             if (!busSchedules.Any())
             {
-                return Ok("No schedules to update.");
+                return Ok(new { message = "No schedules to update." });
             }
 
             foreach (var schedule in busSchedules)
@@ -557,7 +546,7 @@ namespace server.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok($"Updated {busSchedules.Count} schedules to 'On Time'.");
+            return Ok(new { message = $"Updated {busSchedules.Count} schedules to 'On Time'." });
         }
         #endregion
 
@@ -580,7 +569,7 @@ namespace server.Controllers
 
             if (!busSchedules.Any())
             {
-                return Ok("No schedules to update.");
+                return Ok(new { message = "No schedules to update." });
             }
 
             foreach (var schedule in busSchedules)
@@ -590,7 +579,7 @@ namespace server.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok($"Updated {busSchedules.Count} schedules to 'En Route'.");
+            return Ok(new { message = $"Updated {busSchedules.Count} schedules to 'En Route'." });
         }
         #endregion
 
@@ -605,7 +594,7 @@ namespace server.Controllers
 
             if (!busSchedules.Any())
             {
-                return Ok("No schedules to update.");
+                return Ok(new { message = "No schedules to update." });
             }
 
             var passengers = new List<dynamic>
@@ -642,80 +631,13 @@ RideNGo";
                     }
                     catch (Exception ex)
                     {
-                        return BadRequest($"Failed to send email to {passenger.email}: {ex.Message}");
+                        return BadRequest(new { message = $"Failed to send email to {passenger.email}: {ex.Message}" });
                     }
                 }
             }
 
             await _context.SaveChangesAsync();
             return Ok($"Updated {busSchedules.Count} schedules to 'Delayed' and notified passengers.");
-        }
-        #endregion
-
-        #region UpdateCanceledStatus
-        // PUT: api/BusSchedule/UpdateCanceledStatus/{id}
-        [HttpPut("UpdateCanceledStatus/{id}")]
-        public async Task<IActionResult> UpdateCanceledStatus(Guid id, BusScheduleDTO busScheduleDTO)
-        {
-            var busSchedules = await _context.BusSchedules
-                .Where(bs => bs.BusScheduleID == id)
-                .ToListAsync();
-
-            if (!busSchedules.Any())
-            {
-                return Ok("No schedules to update.");
-            }
-
-            // No cancellation is allowed on the travel date.
-            foreach (var busSchedule in busSchedules)
-            {
-                if (busSchedule.TravelDate.Date == DateTime.Now.Date)
-                {
-                    return BadRequest("Cancellation is not allowed on the travel date.");
-                }
-
-                busSchedule.ScheduleStatus = "Canceled";
-                busSchedule.ETD = ParseTimeSpan(busScheduleDTO.ETD);
-                busSchedule.ETA = ParseTimeSpan(busScheduleDTO.ETA);
-                busSchedule.Reasons = busScheduleDTO.Reasons;
-            }
-
-            var passengers = new List<dynamic>
-            {
-                new { fullname = "yuki", email = "yingying.nly@gmail.com" },
-                new { fullname = "jezlyn", email = "tp068103@mail.apu.edu.my" }
-            };
-
-            foreach (var passenger in passengers)
-            {
-                foreach (var busSchedule in busSchedules)
-                {
-                    string emailMessage = $@"Dear {passenger.fullname},
-
-We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been canceled.
-
-The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.
-
-Reason for cancellation: {busSchedule.Reasons}
-
-Thank you for your understanding.
-
-Best regards,
-RideNGo";
-
-                    try
-                    {
-                        await _emailHelper.SendEmailAsync(passenger.fullname, passenger.email, "Bus Schedule Cancellation Notice", emailMessage);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest($"Failed to send email to {passenger.email}: {ex.Message}");
-                    }
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok($"Updated {busSchedules.Count} schedules to 'Delayed'.");
         }
         #endregion
 
@@ -735,7 +657,7 @@ RideNGo";
 
             if (!busSchedules.Any())
             {
-                return Ok("No schedules to update.");
+                return Ok(new { message = "No schedules to update." });
             }
 
             foreach (var schedule in busSchedules)
@@ -745,7 +667,7 @@ RideNGo";
 
             await _context.SaveChangesAsync();
 
-            return Ok($"Updated {busSchedules.Count} schedules to 'Completed'.");
+            return Ok(new { message = $"Updated {busSchedules.Count} schedules to 'Completed'." });
         }
         #endregion
 
