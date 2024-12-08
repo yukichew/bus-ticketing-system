@@ -1,5 +1,4 @@
 import React from "react";
-import React from "react";
 
 const CustomInput = ({
   placeholder,
@@ -12,15 +11,14 @@ const CustomInput = ({
   onChange,
   multiline = false,
   error = null,
-  error = null,
 }) => {
   return (
-    <div className='w-full'>
-      <div className='relative flex items-center'>
+    <div className="w-full">
+      <div className="relative flex items-center">
         {Icon && (
           <Icon
             size={20}
-            className='absolute text-gray-400 pointer-events-none ml-3'
+            className="absolute text-gray-400 pointer-events-none ml-3"
           />
         )}
         {multiline ? (
@@ -50,7 +48,7 @@ const CustomInput = ({
           />
         )}
       </div>
-      {error && <p className='text-red-500 text-xs mt-1 pl-1'>{error}</p>}
+      {error && <p className="text-red-500 text-xs mt-1 pl-1">{error}</p>}
     </div>
   );
 };
