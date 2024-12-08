@@ -1,16 +1,31 @@
-import React from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../utils/AuthContext";
+import React from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
 
-const AuthenticatedRoute = () => {
-  const { user } = useAuth();
+const AuthenticatedRoute = ({ requiredRole }) => {
+  const { auth } = useAuth();
   const location = useLocation();
+  console.log('AuthenticatedRoute: ', auth);
 
-  return user ? (
-    <Outlet />
-  ) : (
-    <Navigate to='/' state={{ from: location.pathname }} />
-  );
+  if (!auth) {
+    return (
+      <Navigate
+        to='/login'
+        state={{ from: location.pathname }}
+      />
+    );
+  }
+
+  if (requiredRole && auth.role !== requiredRole) {
+    return (
+      <Navigate
+        to='/'
+        state={{ from: location.pathname }}
+      />
+    );
+  }
+
+  return <Outlet />;
 };
 
 export default AuthenticatedRoute;
