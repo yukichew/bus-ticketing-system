@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RiSteering2Line } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import CustomButton from '../common/CustomButton';
@@ -39,7 +39,8 @@ const Seatmap = ({ schedule, layout }) => {
 
   useEffect(() => {
     const fetchOccupiedSeats = async () => {
-      const data = await getOccupiedSeats(schedule.busScheduleId);
+      const data = await getOccupiedSeats(schedule.busScheduleID);
+      if (data.error) return;
       setOccupiedSeats(data);
     };
     fetchOccupiedSeats();

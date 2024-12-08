@@ -25,24 +25,13 @@ namespace server.Controllers
             {
                 return BadRequest("Invalid bus schedule ID");
             }
+            
+            var seatNumbers = await _context.Seats
+                .Where(s => s.Booking.BusScheduleID == busScheduleGuid && (s.Status == "Occupied" || s.Status == "Reserved"))
+                .Select(s => s.SeatNumber)
+                .ToListAsync();
 
-            var query = _context.Seats.AsQueryable();
-
-            if (!string.IsNullOrEmpty(busScheduleId))
-            {
-                query = query.Where(s => s.Booking.BusScheduleID == busScheduleGuid);
-            }
-
-            query = query.Where(s => s.Status == "Occupied");
-
-            var seats = await query.ToListAsync();
-
-            if (seats == null || seats.Count == 0)
-            {
-                return NotFound(new { message = "No seat found." });
-            }
-
-            return Ok(seats);
+            return Ok(seatNumbers);
         }
 
     }
