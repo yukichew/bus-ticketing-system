@@ -43,7 +43,7 @@ const Rating = ({ booking, user, onSuccess }) => {
     toast.success('Rating added successfully');
     onSuccess();
   };
-
+  
   return (
     <>
       {/* header */}
