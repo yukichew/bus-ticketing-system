@@ -30,7 +30,7 @@ namespace server.Helper
             {
                 admin = new User
                 {
-                    UserName = adminEmail,
+                    UserName = "admin",
                     Email = adminEmail,
                     EmailConfirmed = true,
                     Status = "Active"

@@ -39,13 +39,14 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const profile = await getUserProfile(auth.token);
-      setProfile(profile);
+      if (auth) {
+        const profile = await getUserProfile(auth.token);
+        setProfile(profile);
+      }
     };
     fetchProfile();
   }, []);
 
-  console.log(profile);
   const handleLogout = () => {
     sessionStorage.clear();
     window.location.reload();
