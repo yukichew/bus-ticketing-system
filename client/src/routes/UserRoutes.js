@@ -37,7 +37,11 @@ const UserRoutes = [
   />,
   <Route
     path='/profile'
-    element={<Profile />}
+    element={
+      <AuthenticatedRoute requiredRole='Member'>
+        <Profile />
+      </AuthenticatedRoute>
+    }
   />,
   <Route
     path='/trips'

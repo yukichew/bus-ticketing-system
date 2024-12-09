@@ -1,8 +1,8 @@
 import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 
-const AuthenticatedRoute = ({ requiredRole }) => {
+const AuthenticatedRoute = ({ children, requiredRole }) => {
   const { auth } = useAuth();
   const location = useLocation();
   console.log('AuthenticatedRoute: ', auth);
@@ -25,7 +25,7 @@ const AuthenticatedRoute = ({ requiredRole }) => {
     );
   }
 
-  return <Outlet />;
+  return children;
 };
 
 export default AuthenticatedRoute;

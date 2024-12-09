@@ -35,9 +35,9 @@ const BusOperatorRoutes = routesConfig.map(({ path, component: Component }) => (
     key={path}
     path={path}
     element={
-      // <AuthenticatedRoute requiredRole='BusOperator'>
-      <Component />
-      // </AuthenticatedRoute>
+      <AuthenticatedRoute requiredRole='BusOperator'>
+        <Component />
+      </AuthenticatedRoute>
     }
   />
 ));
