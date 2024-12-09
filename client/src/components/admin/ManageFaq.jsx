@@ -10,7 +10,7 @@ import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
 import FaqEditForm from "./modal/FaqEditForm";
 import FaqCreateForm from "./modal/FaqCreateForm";
-import DeleteConfirmation from "./modal/DeleteConfirmation";
+import PromptConfirmation from "./modal/PromptConfirmation";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
@@ -324,8 +324,9 @@ const ManageFaq = () => {
           isVisible={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
         >
-          <DeleteConfirmation
-            operator={selectedOperator}
+          <PromptConfirmation
+            header="Are you sure you want to delete this FAQ?"
+            confirmTitle="Delete"
             onClose={() => setShowDeleteModal(false)}
             onConfirm={handleConfirmDelete}
           />
