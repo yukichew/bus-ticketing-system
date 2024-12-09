@@ -25,9 +25,9 @@ namespace server.Controllers
             return await _context.Booking.ToListAsync();
         }
 
-        // GET: api/Bookings/{busScheduleId}
+        // GET: api/Bookings/{bookingID}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Booking>> GetBooking(int id)
+        public async Task<ActionResult<Booking>> GetBooking(Guid id)
         {
             var booking = await _context.Booking.FindAsync(id);
 
@@ -98,7 +98,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region get booking by passenger id
+        #region get booking by passenger email
         // GET: api/Bookings/History?email={email}
         [HttpGet("History")]
         public async Task<ActionResult<IEnumerable<Booking>>> GetBookingHistory([FromQuery] string email)
@@ -126,22 +126,6 @@ namespace server.Controllers
             return Ok(bookings);
         }
         #endregion
-
-        // DELETE: api/Bookings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBooking(int id)
-        {
-            var booking = await _context.Booking.FindAsync(id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-
-            _context.Booking.Remove(booking);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         private bool BookingExists(Guid id)
         {

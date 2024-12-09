@@ -141,6 +141,14 @@ namespace server.Controllers
                 return NotFound(new { message = "Passenger not found." });
             }
 
+            var existingReview = await _context.RatesAndReviews
+                .FirstOrDefaultAsync(r => r.BookingID == ratesAndReviewsDto.BookingId && r.PostedById == passenger.PassengerID);
+
+            if (existingReview != null)
+            {
+                return Conflict(new { message = "You have already posted a review for this booking." });
+            }
+
             var ratesAndReviews = new RatesAndReviews
             {
                 BookingID = ratesAndReviewsDto.BookingId,
