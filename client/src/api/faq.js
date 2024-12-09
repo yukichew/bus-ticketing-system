@@ -1,21 +1,20 @@
-import api from ".";
-import { catchError } from "../utils/error";
-import axios from "axios";
+import api from '.';
+import { catchError } from '../utils/error';
 
 // Fetch all FAQs
 export const fetchFaqs = async () => {
   try {
-    const { data } = await api.get("/Faq/all");
+    const { data } = await api.get('/Faq/all');
     return data;
   } catch (err) {
     return catchError(err);
   }
 };
 
-// Fetch all FAQs
+// Fetch all active FAQs
 export const fetchActiveFaqs = async () => {
   try {
-    const { data } = await api.get("/Faq/active");
+    const { data } = await api.get('/Faq/active');
     return data;
   } catch (err) {
     return catchError(err);
@@ -25,7 +24,7 @@ export const fetchActiveFaqs = async () => {
 // Create a new FAQ
 export const createFaq = async (faq) => {
   try {
-    const response = await api.post("/Faq", faq);
+    const response = await api.post('/Faq', faq);
     return response.data;
   } catch (err) {
     return catchError(err);

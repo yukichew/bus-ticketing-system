@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
@@ -11,10 +13,12 @@ namespace server.Controllers
     public class RatesAndReviewsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public RatesAndReviewsController(ApplicationDbContext context)
+        public RatesAndReviewsController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         #region GetAllRatesAndReviews
@@ -23,7 +27,7 @@ namespace server.Controllers
         public async Task<ActionResult> GetAllRatesAndReviews()
         {
             var ratesAndReviews = await _context.Set<RatesAndReviews>()
-                .Include(b => b.BusOperator)
+                .Include(b => b.Booking.BusSchedule.PostedBy)
                 .OrderByDescending(r => r.PostedAt)
                 .ToListAsync();
 
@@ -50,7 +54,7 @@ namespace server.Controllers
         public async Task<ActionResult<RatesAndReviews>> GetRatesAndReviews(Guid id)
         {
             var ratesAndReviews = await _context.Set<RatesAndReviews>()
-                                .Include(b => b.BusOperator)
+                                .Include(b => b.Booking)
                                 .OrderByDescending(r => r.PostedAt)
                                 .FirstOrDefaultAsync(b => b.ID == id);
 
@@ -69,8 +73,8 @@ namespace server.Controllers
         public async Task<ActionResult> GetRatesAndReviewsByBusOperatorID(string busOperatorID)
         {
             var ratesAndReviews = await _context.Set<RatesAndReviews>()
-                .Include(b => b.BusOperator)
-                .Where(r => r.BusOperatorID == busOperatorID)
+                .Include(b => b.Booking)
+                .Where(r => r.Booking.BusSchedule.PostedBy.Id == busOperatorID)
                 .OrderByDescending(r => r.PostedAt)
                 .ToListAsync();
 
@@ -91,25 +95,31 @@ namespace server.Controllers
         }
         #endregion
 
-        #region AddRatesAndReviews
+        #region Add rates and reviews api
         // POST: api/RatesAndReviews
+        [Authorize(Policy = "MemberOnly")]
         [HttpPost]
         public async Task<ActionResult> AddRatesAndReviews([FromBody] RatesAndReviewsDTO ratesAndReviewsDto)
         {
-            var busOperatorExists = await _context.BusOperators
-                                                   .AnyAsync(b => b.Id == ratesAndReviewsDto.BusOperatorID);
-
-            if (!busOperatorExists)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                return BadRequest(new { message = "Invalid BusOperatorID." });
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var booking = await _context.Booking.FindAsync(ratesAndReviewsDto.BookingId);
+            if (booking == null)
+            {
+                return NotFound(new { message = "Booking not found." });
             }
 
             var ratesAndReviews = new RatesAndReviews
             {
-                BusOperatorID = ratesAndReviewsDto.BusOperatorID,
+                BookingID = ratesAndReviewsDto.BookingId,
+                Booking = booking,
                 Comment = ratesAndReviewsDto.Comment,
                 Rate = ratesAndReviewsDto.Rate,
-                PostedById = ratesAndReviewsDto.PostedById,
+                PostedById = user.Id,
                 PostedAt = DateTime.Now,
                 Status = ratesAndReviewsDto.Status
             };
@@ -133,12 +143,9 @@ namespace server.Controllers
                 return NotFound(new { message = $"Rates and reviews with ID {id} not found." });
             }
 
-            existingRatesAndReviews.BusOperatorID = ratesAndReviewsDto.BusOperatorID;
             existingRatesAndReviews.Comment = ratesAndReviewsDto.Comment;
             existingRatesAndReviews.Rate = ratesAndReviewsDto.Rate;
             existingRatesAndReviews.Status = ratesAndReviewsDto.Status;
-            existingRatesAndReviews.PostedById = ratesAndReviewsDto.PostedById;
-
             _context.Entry(existingRatesAndReviews).State = EntityState.Modified;
 
             try

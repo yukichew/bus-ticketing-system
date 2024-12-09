@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import Loader from '../components/common/Loader';
+import { jwtDecode } from 'jwt-decode';
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(null);
@@ -12,8 +13,26 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
       return;
     }
-    setAuth({ token, role });
-    setLoading(false);
+
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+
+      if (decodedToken.exp < currentTime) {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('role');
+        setAuth(null);
+      } else {
+        setAuth({ token, role });
+      }
+    } catch (error) {
+      console.error('Invalid token:', error);
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('role');
+      setAuth(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   return (

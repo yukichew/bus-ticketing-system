@@ -14,7 +14,7 @@ const Trips = () => {
     const fetchProfileAndBookings = async () => {
       if (auth) {
         const profile = await getUserProfile(auth.token);
-        setUser(profile);
+        setUser({ ...profile, token: auth.token });
 
         if (profile) {
           const result = await getBookings(profile.email);
