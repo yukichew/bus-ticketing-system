@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Table from "../../components/common/Table";
 import { FaRegEye } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import { SiTicktick } from "react-icons/si";
-import { applications } from "../../constants/Dummy";
 import { IoFilter } from "react-icons/io5";
 import Modal from "../../components/common/Modal";
 import ApplicationForm from "../../components/admin/modal/ViewApplication";
@@ -13,28 +12,54 @@ import Status from "../../components/admin/Status";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
+import { getAllPendingBo } from "../../api/auth";
 
 const ManageApplicationPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showApprovalModal, setShowApprovalModal] = useState(false); // Separate state for approval modal
-  const [showDetailsModal, setShowDetailsModal] = useState(false); // Separate state for details modal
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
+  const [applications, setApplications] = useState([]);
   const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
-    companyName: "",
-    companyEmail: "",
-    contactNumber: "",
-    address: "",
-    status: "",
+    userName: "",
+    email: "",
+    phoneNumber: "",
   });
 
   const initialFilters = {
-    companyName: "",
-    companyEmail: "",
-    contactNumber: "",
-    address: "",
-    status: "",
+    userName: "",
+    email: "",
+    phoneNumber: "",
   };
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const response = await getAllPendingBo();
+        setApplications(response || []);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchApplications();
+  }, []);
+
+  const applyFilters = () => {
+    return applications.filter((item) =>
+      Object.keys(filters).every((key) => {
+        if (!filters[key]) return true;
+        if (key === "status") {
+          console.log(`Checking status: ${item.status} === ${filters[key]}`);
+          return item.status?.toLowerCase() === filters[key]?.toLowerCase();
+        }
+        return item[key]?.toLowerCase().includes(filters[key].toLowerCase());
+      })
+    );
+  };
+
+  const filteredPendingBoData = applyFilters();
 
   const clearFilters = () => {
     setFilters(initialFilters);
@@ -44,18 +69,8 @@ const ManageApplicationPage = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const columns = [
-    "Company Name",
-    "Company Email",
-    "Contact Number",
-    "Address",
-  ];
-  const columnKeys = [
-    "companyName",
-    "companyEmail",
-    "contactNumber",
-    "address",
-  ];
+  const columns = ["User Name", "Email", "Phone Number"];
+  const columnKeys = ["userName", "email", "phoneNumber"];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -65,13 +80,7 @@ const ManageApplicationPage = () => {
     }));
   };
 
-  const filteredData = applications.filter((operator) =>
-    Object.keys(filters).every((key) =>
-      operator[key].toLowerCase().includes(filters[key].toLowerCase())
-    )
-  );
-
-  const enhancedData = filteredData.map((item) => ({
+  const enhancedData = filteredPendingBoData.map((item) => ({
     ...item,
     status: <Status status={item.status} />,
     originalStatus: item.status,
@@ -157,96 +166,57 @@ const ManageApplicationPage = () => {
             <Card>
               {/* First Row: Company Name and Company Email */}
               <div className="flex justify-between gap-4 mb-4">
-                <div className="w-1/2">
+                <div className="w-1/3">
                   <label
-                    htmlFor="companyName"
+                    htmlFor="userName"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"
                   >
-                    Company Name
+                    User Name
                   </label>
                   <CustomInput
-                    placeholder="Filter by Company Name"
-                    id="companyName"
-                    name="companyName"
+                    placeholder="Filter by User Name"
+                    id="userName"
+                    name="userName"
                     type="text"
-                    value={filters.companyName}
+                    value={filters.userName}
                     onChange={handleFilterChange}
                   />
                 </div>
-                <div className="w-1/2">
+                <div className="w-1/3">
                   <label
-                    htmlFor="companyEmail"
+                    htmlFor="email"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"
                   >
-                    Company Email
+                    Email
                   </label>
                   <CustomInput
                     placeholder="Filter by Company Email"
-                    id="companyEmail"
-                    name="companyEmail"
+                    id="email"
+                    name="email"
                     type="text"
-                    value={filters.companyEmail}
+                    value={filters.email}
+                    onChange={handleFilterChange}
+                  />
+                </div>
+
+                <div className="w-1/3">
+                  <label
+                    htmlFor="phoneNumber"
+                    className="block text-md font-poppins font-medium text-gray-700 mb-2"
+                  >
+                    Phone Number
+                  </label>
+                  <CustomInput
+                    placeholder="Filter by Phone Number"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="text"
+                    value={filters.phoneNumber}
                     onChange={handleFilterChange}
                   />
                 </div>
               </div>
 
-              {/* Second Row: Contact Number, Address, Status */}
-              <div className="flex justify-between gap-4 mb-4">
-                <div className="w-1/3">
-                  <label
-                    htmlFor="contactNumber"
-                    className="block text-md font-poppins font-medium text-gray-700 mb-2"
-                  >
-                    Contact Number
-                  </label>
-                  <CustomInput
-                    placeholder="Filter by Contact Number"
-                    id="contactNumber"
-                    name="contactNumber"
-                    type="text"
-                    value={filters.contactNumber}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-                <div className="w-1/3">
-                  <label
-                    htmlFor="address"
-                    className="block text-md font-poppins font-medium text-gray-700 mb-2"
-                  >
-                    Address
-                  </label>
-                  <CustomInput
-                    placeholder="Filter by Address"
-                    id="address"
-                    name="address"
-                    type="text"
-                    value={filters.address}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-                <div className="w-1/3">
-                  <label
-                    htmlFor="status"
-                    className="block text-md font-poppins font-medium text-gray-700 mb-2"
-                  >
-                    Status
-                  </label>
-                  <select
-                    id="status"
-                    name="status"
-                    value={filters.status}
-                    onChange={handleFilterChange}
-                    className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
-                  >
-                    <option value="">All Status</option>
-                    <option value="approved">Approved</option>
-                    <option value="pending">Pending</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Third Row: Clear Filter Button (Full Width) */}
               <div className="mt-4 w-full">
                 <CustomButton
                   title="Clear Filters"
@@ -260,7 +230,7 @@ const ManageApplicationPage = () => {
           <div className="flex justify-between items-center mt-12 mb-4">
             <p className="text-gray-500">
               <span className="font-semibold text-secondary">
-                {filteredData.length} applications
+                {filteredPendingBoData.length} applications
               </span>{" "}
               found
             </p>

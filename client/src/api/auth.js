@@ -1,11 +1,11 @@
-import api from '.';
-import { catchError } from '../utils/error';
+import api from ".";
+import { catchError } from "../utils/error";
 
 export const login = async (email, password) => {
   try {
-    const { data } = await api.post('/Auth/login', { email, password });
-    sessionStorage.setItem('token', data.token);
-    sessionStorage.setItem('role', data.role);
+    const { data } = await api.post("/Auth/login", { email, password });
+    sessionStorage.setItem("token", data.token);
+    sessionStorage.setItem("role", data.role);
     return data;
   } catch (err) {
     return catchError(err);
@@ -14,7 +14,7 @@ export const login = async (email, password) => {
 
 export const register = async (email, password, confirmPassword) => {
   try {
-    const { data } = await api.post('/Auth/register', {
+    const { data } = await api.post("/Auth/register", {
       email,
       password,
       confirmPassword,
@@ -27,7 +27,7 @@ export const register = async (email, password, confirmPassword) => {
 
 export const getUserProfile = async (token) => {
   try {
-    const { data } = await api.get('/Auth/profile', {
+    const { data } = await api.get("/Auth/profile", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -40,8 +40,8 @@ export const getUserProfile = async (token) => {
 
 export const verifyEmail = async (email) => {
   try {
-    const token = sessionStorage.getItem('token');
-    const { data } = await api.post('/Auth/verify-email', { email });
+    const token = sessionStorage.getItem("token");
+    const { data } = await api.post("/Auth/verify-email", { email });
     return data;
   } catch (err) {
     return catchError(err);
@@ -49,7 +49,7 @@ export const verifyEmail = async (email) => {
 };
 export const forgotPassword = async (email) => {
   try {
-    const { data } = await api.post('/Auth/forgot-password', { email });
+    const { data } = await api.post("/Auth/forgot-password", { email });
     return data;
   } catch (err) {
     return catchError(err);
@@ -58,7 +58,7 @@ export const forgotPassword = async (email) => {
 
 export const validateOTP = async (email, OTP) => {
   try {
-    const { data } = await api.post('/Auth/validate-otp', { email, OTP });
+    const { data } = await api.post("/Auth/validate-otp", { email, OTP });
     return data;
   } catch (err) {
     return catchError(err);
@@ -67,7 +67,7 @@ export const validateOTP = async (email, OTP) => {
 
 export const validateOTPForResetPassword = async (email, OTP) => {
   try {
-    const { data } = await api.post('/Auth/validate-otp-reset-password', {
+    const { data } = await api.post("/Auth/validate-otp-reset-password", {
       email,
       OTP,
     });
@@ -79,7 +79,7 @@ export const validateOTPForResetPassword = async (email, OTP) => {
 
 export const resetPassword = async (email, newPassword) => {
   try {
-    const { data } = await api.post('/Auth/reset-password', {
+    const { data } = await api.post("/Auth/reset-password", {
       email,
       newPassword,
     });
@@ -91,9 +91,9 @@ export const resetPassword = async (email, newPassword) => {
 
 export const changePassword = async (oldPassword, newPassword) => {
   try {
-    const token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem("token");
     const { data } = await api.post(
-      '/Auth/change-password',
+      "/Auth/change-password",
       {
         oldPassword,
         newPassword,
@@ -113,7 +113,7 @@ export const changePassword = async (oldPassword, newPassword) => {
 export const editProfile = async (fullname, phoneNumber, token) => {
   try {
     const { data } = await api.put(
-      '/Auth/edit-profile',
+      "/Auth/edit-profile",
       {
         fullname,
         phoneNumber,
@@ -124,6 +124,16 @@ export const editProfile = async (fullname, phoneNumber, token) => {
         },
       }
     );
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const getAllPendingBo = async () => {
+  try {
+    const { data } = await api.get("/Auth/get-pending-application");
+    console.log("Fetching data", data);
     return data;
   } catch (err) {
     return catchError(err);

@@ -8,6 +8,8 @@ using System.Text;
 using server.Helper;
 using server.Dto.Auth;
 using Microsoft.AspNetCore.Authorization;
+using server.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace server.Controllers
 {
@@ -21,8 +23,9 @@ namespace server.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly EmailService _emailService;
         private readonly OTPService _otpService;
+        private readonly ApplicationDbContext _context;
 
-        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager, EmailService emailService, OTPService otpService)
+        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager, EmailService emailService, OTPService otpService, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -30,6 +33,7 @@ namespace server.Controllers
             _signInManager = signInManager;
             _emailService = emailService;
             _otpService = otpService;
+            _context = context;
         }
 
         #region Register
@@ -340,6 +344,33 @@ namespace server.Controllers
             }
 
             return Ok(new { message = "Profile updated successfully." });
+        }
+        #endregion
+
+        #region GET all pending Bus Operators API
+        [HttpGet("get-pending-application")]
+        public async Task<IActionResult> GetPendingApplication()
+        {
+            // Fetch the BusOperator role ID
+            var busOperatorRoleId = await _context.Roles
+                .Where(r => r.Name == "BusOperator")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (busOperatorRoleId == null)
+            {
+                return BadRequest(new { message = "BusOperator role not found." });
+            }
+
+            // Fetch pending applications for users with the BusOperator role
+            var pendingApplications = await (from user in _context.Users
+                                             join userRole in _context.UserRoles
+                                             on user.Id equals userRole.UserId
+                                             where userRole.RoleId == busOperatorRoleId && user.Status == "Pending"
+                                             select user)
+                                              .ToListAsync();
+
+            return Ok(pendingApplications);
         }
         #endregion
     }

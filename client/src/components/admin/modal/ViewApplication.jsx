@@ -1,85 +1,77 @@
-import React, { useState, useEffect } from "react";
-import CustomButton from "../../../components/common/CustomButton";
+import React, { useEffect, useState } from "react";
 import CustomInput from "../../../components/common/CustomInput";
+import CustomButton from "../../../components/common/CustomButton";
 
-const ApplicationForm = ({ operator, onClose, isApproved }) => {
+const ApplicationForm = ({ operator, onClose }) => {
   const [companyInfo, setCompanyInfo] = useState({
-    companyname: "",
-    companyemail: "",
-    companycontact: "",
+    userName: "",
+    email: "",
+    phoneContact: "",
     address: "",
+    image: "",
   });
 
   useEffect(() => {
     if (operator) {
       setCompanyInfo({
-        companyname: operator.companyName,
-        companyemail: operator.companyEmail,
-        companycontact: operator.contactNumber,
-        address: operator.address,
+        userName: operator.userName || "",
+        email: operator.email || "",
+        phoneContact: operator.phoneNumber || "",
+        address: operator.address || "",
       });
     }
   }, [operator]);
 
-  const handleCompanyChange = (e) => {
+  const handleChange = (e) => {
     const { id, value } = e.target;
-    setCompanyInfo((prevInfo) => ({
-      ...prevInfo,
+    setCompanyInfo((prev) => ({
+      ...prev,
       [id]: value,
     }));
   };
 
   return (
-    <div className="flex flex-col space-y-4 w-[400px]">
+    <div className="flex flex-col space-y-4 w-[600px]">
       <div className="pointer-events-none">
         <label
-          htmlFor="companyname"
+          htmlFor="userName"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Company Name
+          User Name
         </label>
         <CustomInput
-          placeholder="Enter company name"
-          id="companyname"
-          name="companyname"
-          type="text"
-          value={companyInfo.companyname}
-          onChange={handleCompanyChange}
-          required
+          placeholder="User Name"
+          id="userName"
+          value={companyInfo.userName}
+          onChange={handleChange}
         />
       </div>
       <div className="pointer-events-none">
         <label
-          htmlFor="companyemail"
+          htmlFor="email"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Company Email
+          Email
         </label>
         <CustomInput
-          placeholder="Enter company email"
-          id="companyemail"
-          name="companyemail"
-          type="email"
-          value={companyInfo.companyemail}
-          onChange={handleCompanyChange}
-          required
+          placeholder="Email"
+          id="email"
+          value={companyInfo.email}
+          onChange={handleChange}
         />
       </div>
       <div className="pointer-events-none">
         <label
-          htmlFor="companycontact"
+          htmlFor="phoneContact"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Company Contact
+          Contact
         </label>
         <CustomInput
-          placeholder="Enter company contact number"
-          id="companycontact"
-          name="companycontact"
-          type="text"
-          value={companyInfo.companycontact}
-          onChange={handleCompanyChange}
-          required
+          placeholder="Phone Contact"
+          id="phoneContact"
+          value={companyInfo.phoneContact}
+          onChange={handleChange}
         />
       </div>
       <div className="pointer-events-none">
@@ -90,16 +82,14 @@ const ApplicationForm = ({ operator, onClose, isApproved }) => {
           Address
         </label>
         <CustomInput
-          placeholder="Enter address"
+          placeholder="Address"
           id="address"
-          name="address"
-          type="text"
           value={companyInfo.address}
-          onChange={handleCompanyChange}
-          multiline
+          onChange={handleChange}
         />
       </div>
-      {!isApproved && <CustomButton title={"Approve Application"} />}
+
+      <CustomButton title="Approve Application" onClick={onClose} />
     </div>
   );
 };
