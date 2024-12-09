@@ -1,28 +1,36 @@
-import React from "react";
-import { Route } from "react-router-dom";
-import FaqUserView from "../components/admin/FaqUserView";
-import PolicyUserView from "../components/admin/PolicyUserView";
-import AdminDashboard from "../screens/admin/AdminDashboard";
-import AdminProfile from "../screens/admin/AdminProfile";
-import ManageApplicationPage from "../screens/admin/ManageApplicationPage";
-import ManageBusRoutes from "../screens/admin/ManageBusRoutes";
-import ManageContents from "../screens/admin/ManageContents";
-import ManageTransactionsPage from "../screens/admin/ManageTransactionsPage";
-import ManageUserPage from "../screens/admin/ManageUserPage";
-import ManageReviews from "../screens/admin/ManageReviews";
+import React from 'react';
+import { Route } from 'react-router-dom';
+import AdminDashboard from '../screens/admin/AdminDashboard';
+import AdminProfile from '../screens/admin/AdminProfile';
+import ManageApplicationPage from '../screens/admin/ManageApplicationPage';
+import ManageBusRoutes from '../screens/admin/ManageBusRoutes';
+import ManageContents from '../screens/admin/ManageContents';
+import ManageTransactionsPage from '../screens/admin/ManageTransactionsPage';
+import ManageUserPage from '../screens/admin/ManageUserPage';
+import ManageReviews from '../screens/admin/ManageReviews';
+import AuthenticatedRoute from './AuthenticatedRoute';
 
-const AdminRoutes = [
-  <Route path="/admin-dashboard" element={<AdminDashboard />} />,
-  <Route path="/manage-user" element={<ManageUserPage />} />,
-  <Route path="/manage-applications" element={<ManageApplicationPage />} />,
-  <Route path="/manage-bus-routes" element={<ManageBusRoutes />} />,
-  <Route path="/manage-bus-routes" element={<ManageBusRoutes />} />,
-  <Route path="/manage-transactions" element={<ManageTransactionsPage />} />,
-  <Route path="/manage-contents" element={<ManageContents />} />,
-  <Route path="/faq" element={<FaqUserView />} />,
-  <Route path="/policies" element={<PolicyUserView />} />,
-  <Route path="/admin-profile" element={<AdminProfile />} />,
-  <Route path="/manage-reviews" element={<ManageReviews />} />,
+const routesConfig = [
+  { path: '/admin-dashboard', component: AdminDashboard },
+  { path: '/manage-user', component: ManageUserPage },
+  { path: '/manage-applications', component: ManageApplicationPage },
+  { path: '/manage-bus-routes', component: ManageBusRoutes },
+  { path: '/manage-transactions', component: ManageTransactionsPage },
+  { path: '/manage-contents', component: ManageContents },
+  { path: '/admin-profile', component: AdminProfile },
+  { path: '/manage-reviews', component: ManageReviews },
 ];
+
+const AdminRoutes = routesConfig.map(({ path, component: Component }) => (
+  <Route
+    key={path}
+    path={path}
+    element={
+      <AuthenticatedRoute requiredRole='Admin'>
+        <Component />
+      </AuthenticatedRoute>
+    }
+  />
+));
 
 export default AdminRoutes;
