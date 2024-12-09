@@ -130,9 +130,19 @@ export const editProfile = async (fullname, phoneNumber, token) => {
   }
 };
 
-export const getAllPendingBo = async () => {
+export const getAllBo = async () => {
   try {
-    const { data } = await api.get("/Auth/get-pending-application");
+    const { data } = await api.get("/Auth/get-busoperators");
+    console.log("Fetching data", data);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const getAllMembers = async () => {
+  try {
+    const { data } = await api.get("/Auth/get-members");
     console.log("Fetching data", data);
     return data;
   } catch (err) {

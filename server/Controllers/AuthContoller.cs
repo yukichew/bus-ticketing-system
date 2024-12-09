@@ -347,11 +347,10 @@ namespace server.Controllers
         }
         #endregion
 
-        #region GET all pending Bus Operators API
-        [HttpGet("get-pending-application")]
+        #region GET all Bus Operators API
+        [HttpGet("get-busoperators")]
         public async Task<IActionResult> GetPendingApplication()
         {
-            // Fetch the BusOperator role ID
             var busOperatorRoleId = await _context.Roles
                 .Where(r => r.Name == "BusOperator")
                 .Select(r => r.Id)
@@ -362,15 +361,40 @@ namespace server.Controllers
                 return BadRequest(new { message = "BusOperator role not found." });
             }
 
-            // Fetch pending applications for users with the BusOperator role
-            var pendingApplications = await (from user in _context.Users
+            var busOperators = await (from user in _context.Users
                                              join userRole in _context.UserRoles
                                              on user.Id equals userRole.UserId
-                                             where userRole.RoleId == busOperatorRoleId && user.Status == "Pending"
+                                             where userRole.RoleId == busOperatorRoleId
                                              select user)
                                               .ToListAsync();
 
-            return Ok(pendingApplications);
+            return Ok(busOperators);
+        }
+        #endregion
+
+        #region GET all Members API
+        [HttpGet("get-members")]
+        public async Task<IActionResult> GetAllMembers()
+        {
+            var membersId = await _context.Roles
+                .Where(r => r.Name == "Member")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (membersId == null)
+            {
+                return BadRequest(new { message = "Member role not found." });
+            }
+
+            var members = await (from user in _context.Users
+                                 join userRole in _context.UserRoles
+                                 on user.Id equals userRole.UserId
+                                 where userRole.RoleId == membersId
+                                 select user)
+                                 .ToListAsync();
+
+
+            return Ok(members);
         }
         #endregion
     }

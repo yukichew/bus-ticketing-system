@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import CustomButton from "../../../components/common/CustomButton";
 import CustomInput from "../../../components/common/CustomInput";
-import DatePickerField from "../../common/DatePickerField";
 
-const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
+const ViewUserDetails = ({ operator, onClose, isDeactivated }) => {
   const [userInfo, setUserInfo] = useState({
-    fullName: "",
+    userName: "",
     email: "",
-    dob: "",
     phoneNumber: "",
     status: "",
   });
@@ -15,7 +12,7 @@ const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
   useEffect(() => {
     if (operator) {
       setUserInfo({
-        fullName: operator.fullName || "",
+        userName: operator.userName || "",
         email: operator.email || "",
         dob: operator.dob || "",
         phoneNumber: operator.phoneNumber || "",
@@ -35,26 +32,26 @@ const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
   return (
     <div className="flex flex-col space-y-4 w-[400px] mx-auto">
       <header className="font-poppins font-semibold text-lg text-primary mb-4">
-        Passenger Details
+        User Details
       </header>
-      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
+      <div className="pointer-events-none">
         <label
-          htmlFor="fullName"
+          htmlFor="userName"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Full Name
+          User Name
         </label>
         <CustomInput
-          placeholder="Enter full name"
-          id="fullName"
-          name="fullName"
+          placeholder="Enter User Name"
+          id="userName"
+          name="userName"
           type="text"
-          value={userInfo.fullName}
+          value={userInfo.userName}
           onChange={handleChange}
           required
         />
       </div>
-      <div className={`${isDeactivated ? "pointer-events-none" : ""}`}>
+      <div className="pointer-events-none">
         <label
           htmlFor="email"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -72,7 +69,7 @@ const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
         />
       </div>
 
-      <div className={`${isDeactivated ? "pointer-events-none" : ""} pb-6`}>
+      <div className="pointer-events-none pb-6">
         <label
           htmlFor="phoneNumber"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
@@ -89,10 +86,8 @@ const PassengerUpdateForm = ({ operator, onClose, isDeactivated }) => {
           required
         />
       </div>
-
-      {!isDeactivated && <CustomButton title={"Save Changes"} />}
     </div>
   );
 };
 
-export default PassengerUpdateForm;
+export default ViewUserDetails;
