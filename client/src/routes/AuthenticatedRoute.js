@@ -1,28 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
+import { toast } from 'react-toastify';
+import Loader from '../components/common/Loader';
 
 const AuthenticatedRoute = ({ children, requiredRole }) => {
   const { auth } = useAuth();
   const location = useLocation();
-  console.log('AuthenticatedRoute: ', auth);
+  const [redirectPath, setRedirectPath] = useState(null);
+  const [isChecking, setIsChecking] = useState(true);
 
-  if (!auth) {
+  const handleAuthCheck = () => {
+    if (!auth) {
+      showError('You need to be logged in to access this page.', '/login');
+      return;
+    }
+
+    if (requiredRole && auth.role !== requiredRole) {
+      showError(
+        'You do not have the required permissions to access this page.',
+        '/'
+      );
+      return;
+    }
+
+    setIsChecking(false);
+  };
+
+  const showError = (message, path) => {
+    toast.error(message);
+    setTimeout(() => {
+      setRedirectPath(path);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    handleAuthCheck();
+  }, [auth, requiredRole]);
+
+  if (redirectPath) {
     return (
       <Navigate
-        to='/login'
+        to={redirectPath}
         state={{ from: location.pathname }}
       />
     );
   }
 
-  if (requiredRole && auth.role !== requiredRole) {
-    return (
-      <Navigate
-        to='/'
-        state={{ from: location.pathname }}
-      />
-    );
+  if (isChecking) {
+    return null;
   }
 
   return children;

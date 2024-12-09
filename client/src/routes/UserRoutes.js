@@ -6,9 +6,8 @@ import Home from '../screens/user/Home';
 import ContactUs from '../screens/user/ContactUs';
 import Payment from '../screens/user/Payment';
 import BusTickets from '../screens/user/BusTickets';
-import Trips from '../screens/user/Trips';
-import AuthenticatedRoute from './AuthenticatedRoute';
-import Profile from '../screens/user/Profile';
+import FaqUserView from '../components/admin/FaqUserView';
+import PolicyUserView from '../components/admin/PolicyUserView';
 
 const UserRoutes = [
   <Route
@@ -32,24 +31,16 @@ const UserRoutes = [
     element={<BusTickets />}
   />,
   <Route
+    path='/faq'
+    element={<FaqUserView />}
+  />,
+  <Route
+    path='/policies'
+    element={<PolicyUserView />}
+  />,
+  <Route
     path='/contact-us'
     element={<ContactUs />}
-  />,
-  <Route
-    path='/profile'
-    element={
-      <AuthenticatedRoute requiredRole='Member'>
-        <Profile />
-      </AuthenticatedRoute>
-    }
-  />,
-  <Route
-    path='/trips'
-    element={
-      <AuthenticatedRoute requiredRole='Member'>
-        <Trips />
-      </AuthenticatedRoute>
-    }
   />,
 ];
 

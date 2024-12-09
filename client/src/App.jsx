@@ -9,6 +9,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import MemberRoutes from './routes/MemberRoutes';
 
 const stripePromise = loadStripe(
   'pk_test_51Pjg7s08WeyfGZMBKCnDiE2nlWFgN0vq2vM2rfYCaKkkhhBRdpa3uFkxdTcP4CCiJG9lrdSSOIELTdxlTkhYPqaK00rr2N0yXu'
@@ -23,11 +24,12 @@ function App() {
     <>
       <ToastContainer
         position='top-center'
-        autoClose={3000}
+        autoClose={2000}
       />
       <BrowserRouter>
         <Routes>
           {AuthRoutes}
+          {MemberRoutes}
           {UserRoutes.map((route, index) => {
             if (route.props.path === '/payment') {
               return (
