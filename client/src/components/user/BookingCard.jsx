@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { SlOptionsVertical } from "react-icons/sl";
-import Rating from "../../screens/user/modal/Rating";
-import Modal from "../common/Modal";
-import Ticket from "./Ticket";
+import React, { useState } from 'react';
+import { SlOptionsVertical } from 'react-icons/sl';
+import Rating from '../../screens/user/modal/Rating';
+import Modal from '../common/Modal';
+import Ticket from './Ticket';
 
-const BookingCard = ({ booking }) => {
+const BookingCard = ({ booking, seatNumber, user }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewPdf, setViewPdf] = useState(false);
   const [ratingView, setRatingView] = useState(false);
 
   return (
-    <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50 border'>
-      <div className='grid grid-cols-1 md:grid-cols-7 p-6 gap-2 items-center'>
+    <div className='rounded-lg font-poppins shadow-md mb-4 mx-auto bg-slate-50 border'>
+      <div className='grid grid-cols-1 md:grid-cols-10 p-6 gap-2 items-center'>
         {/* trip date and time */}
         <div className=''>
           <p className='font-extrabold text-xl md:text-2xl text-primary'>15</p>
@@ -19,29 +19,31 @@ const BookingCard = ({ booking }) => {
         </div>
 
         {/* departure and arrival */}
-        <div className='col-span-2'>
+        <div className='col-span-3 pl-3'>
           <p className='font-semibold md:text-lg'>
-            {booking.busSchedule.routes.boardingLocation.state} -{" "}
+            {booking.busSchedule.routes.boardingLocation.state} -{' '}
             {booking.busSchedule.routes.arrivalLocation.state}
           </p>
           <p className='text-gray-600 text-sm'>
-            {booking.busSchedule.postedBy.companyName}
+            {booking.busSchedule.postedBy.userName}
           </p>
         </div>
 
         {/* boarding */}
-        <div className='col-span-2'>
+        <div className='col-span-3 pl-2'>
           <p className='font-semibold'>Boarding</p>
           <p className='text-gray-500 font-medium text-sm'>
-            {booking.busSchedule.routes.boardingLocation.name} -{" "}
+            {booking.busSchedule.routes.boardingLocation.name}
+          </p>
+          <p className='text-gray-500 font-medium text-sm'>
             {booking.busSchedule.etd}
           </p>
         </div>
 
         {/* status */}
-        <div className=''>
+        <div className='col-span-2'>
           <p className='font-semibold'>{booking.bookingStatus}</p>
-          <p className='text-gray-500 text-sm'>Trip No: {booking.bookingID}</p>
+          <p className='text-gray-500 text-sm'>ID: {booking.bookingID}</p>
         </div>
 
         {/* action button */}
@@ -79,7 +81,11 @@ const BookingCard = ({ booking }) => {
         onClose={() => setViewPdf(false)}
         className='w-11/12 md:w-3/4 lg:w-1/2'
       >
-        <Ticket booking={booking} />
+        <Ticket
+          booking={booking}
+          seatNumber={seatNumber}
+          user={user}
+        />
       </Modal>
 
       {/* Rate and review modal */}
@@ -88,7 +94,7 @@ const BookingCard = ({ booking }) => {
         onClose={() => setRatingView(false)}
         className='w-11/12 md:w-3/4 lg:w-1/2'
       >
-        <Rating />
+        <Rating booking={booking} />
       </Modal>
     </div>
   );

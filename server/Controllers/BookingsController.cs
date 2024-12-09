@@ -111,7 +111,11 @@ namespace server.Controllers
             var bookings = await _context.Seats
                 .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == email.ToLower())
                 .Include(s => s.Booking)
-                .Select(s => s.Booking)
+                .Select(s => new
+                {
+                    seatNumber = s.SeatNumber,
+                    booking = s.Booking
+                })
                 .ToListAsync();
 
             if (!bookings.Any())

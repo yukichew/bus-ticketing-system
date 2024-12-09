@@ -104,6 +104,7 @@ namespace server.Controllers
             {
                 transaction.Status = "Succeeded";
                 booking.BookingStatus = "Confirmed";
+                booking.AmountPaid = transaction.Amount;
 
                 foreach (var seat in seats)
                 {

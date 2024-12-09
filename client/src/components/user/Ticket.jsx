@@ -1,9 +1,10 @@
-import React, { useRef } from "react";
-import Logo from "../../assets/Logo";
-import CustomButton from "../common/CustomButton";
-import { html2pdf } from "html2pdf.js";
+import React, { useRef } from 'react';
+import Logo from '../../assets/Logo';
+import CustomButton from '../common/CustomButton';
+import { format } from 'date-fns';
+import html2pdf from 'html2pdf.js';
 
-const Ticket = ({ booking }) => {
+const Ticket = ({ booking, seatNumber, user }) => {
   const ticketRef = useRef();
 
   const generatePDF = ({ bookingID }) => {
@@ -21,7 +22,10 @@ const Ticket = ({ booking }) => {
 
   return (
     <>
-      <div ref={ticketRef} className='p-6 rounded-lg border font-poppins m-4'>
+      <div
+        ref={ticketRef}
+        className='p-6 rounded-lg border font-poppins m-4'
+      >
         <div className='flex flex-row'>
           <Logo />
 
@@ -31,25 +35,40 @@ const Ticket = ({ booking }) => {
         </div>
 
         <div className='grid grid-cols-2 gap-3 items-center'>
-          {content({ title: "Passenger", desc: booking.passengerName })}
-          {content({ title: "Trip No", desc: booking.tripNo })}
-          {content({ title: "Date", desc: booking.date })}
+          {content({ title: 'Passenger', desc: user.userName })}
           {content({
-            title: "Boarding Time",
-            desc: booking.departureTime,
+            title: 'Trip No',
+            desc: booking.busSchedule.busScheduleID,
           })}
           {content({
-            title: "From",
-            desc: booking.departureLocation,
+            title: 'Date',
+            desc: format(
+              new Date(booking.busSchedule.travelDate),
+              'yyyy-MM-dd'
+            ),
           })}
           {content({
-            title: "To",
-            desc: booking.arrivalLocation,
+            title: 'Boarding Time',
+            desc: booking.busSchedule.etd,
           })}
-          {content({ title: "Bus Operator", desc: booking.busOperator })}
-          {content({ title: "Bus Type", desc: booking.busType })}
-          {content({ title: "Seat", desc: booking.seatNo })}
-          {content({ title: "Price", desc: booking.price })}
+          {content({
+            title: 'From',
+            desc: booking.busSchedule.routes.boardingLocation.name,
+          })}
+          {content({
+            title: 'To',
+            desc: booking.busSchedule.routes.arrivalLocation.name,
+          })}
+          {content({
+            title: 'Bus Operator',
+            desc: booking.busSchedule.postedBy.userName,
+          })}
+          {content({
+            title: 'Bus Type',
+            desc: booking.busSchedule.busInfo.busType.types,
+          })}
+          {content({ title: 'Seat', desc: seatNumber })}
+          {content({ title: 'Price', desc: booking.busSchedule.routes.price })}
         </div>
       </div>
       <CustomButton

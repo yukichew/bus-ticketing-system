@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import "react-datepicker/dist/react-datepicker.css";
-import { FaChevronRight } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import BusTicketForm from "./user/BusTicketForm";
+import React, { useState } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
+import { FaChevronRight } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import BusTicketForm from './user/BusTicketForm';
 
 const Hero = () => {
   const [formState, setFormState] = useState({
-    originState: "",
-    destinationState: "",
+    originState: '',
+    destinationState: '',
     travelDate: null,
     returnDate: null,
   });
@@ -15,7 +15,7 @@ const Hero = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate("/bus-tickets", { state: formState });
+    navigate('/bus-tickets', { state: formState });
   };
 
   return (
