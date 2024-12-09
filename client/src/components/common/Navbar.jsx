@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../assets/Logo';
 import { busOperatorLinks, userLinks } from '../../constants/NavbarItems';
 import { useAuth } from '../../utils/AuthContext';
-import { getUserProfile } from '../../api/auth';
+import { getUserProfile, logout } from '../../api/auth';
 
 const NavbarLinks = ({ role }) => {
   const links =
@@ -48,7 +48,10 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.clear();
+    const logout = async () => {
+      const result = await logout();
+      return result;
+    };
     window.location.reload();
   };
 

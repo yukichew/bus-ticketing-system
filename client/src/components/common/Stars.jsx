@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaStar } from 'react-icons/fa6';
 
 const Stars = ({
@@ -8,6 +8,10 @@ const Stars = ({
   onRatingChange,
 }) => {
   const [currentRating, setCurrentRating] = useState(rating);
+
+  useEffect(() => {
+    setCurrentRating(rating);
+  }, [rating]);
 
   const handleClick = (index) => {
     if (isClickable) {

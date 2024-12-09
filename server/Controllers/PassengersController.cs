@@ -31,16 +31,16 @@ namespace server.Controllers
 
         // GET: api/Passengers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Passenger>> GetPassenger(int id)
+        public async Task<ActionResult<Passenger>> GetPassenger(Guid id)
         {
             var passenger = await _context.Passenger.FindAsync(id);
 
             if (passenger == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Passenger not found." });
             }
 
-            return passenger;
+            return Ok(passenger);
         }
 
         // PUT: api/Passengers/5

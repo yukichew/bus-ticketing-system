@@ -13,3 +13,12 @@ export const addRating = async (ratingDetails, token) => {
     return catchError(err);
   }
 };
+
+export const getActiveRatings = async (id) => {
+  try {
+    const { data } = await api.get(`/RatesAndReviews/Active/${id}`);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
