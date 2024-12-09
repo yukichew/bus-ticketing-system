@@ -60,13 +60,13 @@ const BookingCard = ({ booking, seatNumber, user }) => {
             <div className='absolute mt-6 w-48 bg-white border border-gray-200 rounded-md shadow-lg text-gray-700 font-medium'>
               <button
                 onClick={() => setViewPdf(!viewPdf)}
-                className='block w-full px-4 py-3 text-left hover:bg-gray-100'
+                className='block w-full py-3 hover:bg-gray-100'
               >
                 Ticket Details
               </button>
               <button
                 onClick={() => setRatingView(!ratingView)}
-                className='block px-4 py-3 hover:bg-gray-100'
+                className='block w-full py-3 hover:bg-gray-100'
               >
                 Rate and Review
               </button>
@@ -94,7 +94,11 @@ const BookingCard = ({ booking, seatNumber, user }) => {
         onClose={() => setRatingView(false)}
         className='w-11/12 md:w-3/4 lg:w-1/2'
       >
-        <Rating booking={booking} />
+        <Rating
+          booking={booking}
+          user={user}
+          onSuccess={() => setRatingView(false)}
+        />
       </Modal>
     </div>
   );
