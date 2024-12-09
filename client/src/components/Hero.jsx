@@ -15,7 +15,13 @@ const Hero = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate('/bus-tickets', { state: formState });
+    const queryParams = new URLSearchParams({
+      originState: formState.originState,
+      destinationState: formState.destinationState,
+      travelDate: formState.travelDate,
+      returnDate: formState.returnDate,
+    }).toString();
+    navigate(`/bus-tickets?${queryParams}`);
   };
 
   return (

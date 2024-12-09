@@ -95,6 +95,28 @@ namespace server.Controllers
         }
         #endregion
 
+        #region GetActiveRatesAndReviewsByBusOperatorID
+        // GET: api/RatesAndReviews/BusOperator/Active/{busOperatorID}
+        [HttpGet("Active/{busOperatorID}")]
+        public async Task<ActionResult> GetActiveRatesAndReviewsByBusOperatorID(string busOperatorID)
+        {
+            var activeRatesAndReviews = await _context.Set<RatesAndReviews>()
+                .Include(r => r.Booking)
+                .ThenInclude(b => b.BusSchedule)
+                .Where(r => r.Status == "Active" && r.Booking.BusSchedule.PostedBy.Id == busOperatorID)
+                .OrderByDescending(r => r.PostedAt)
+                .ToListAsync();
+
+            if (!activeRatesAndReviews.Any())
+            {
+                return NotFound(new { message = "No active rates and reviews found for the specified bus operator." });
+            }
+
+            return Ok(activeRatesAndReviews);
+        }
+        #endregion
+
+
         #region Add rates and reviews api
         // POST: api/RatesAndReviews
         [Authorize(Policy = "MemberOnly")]
@@ -113,13 +135,19 @@ namespace server.Controllers
                 return NotFound(new { message = "Booking not found." });
             }
 
+            var passenger = await _context.Passenger.FindAsync(user.Email);
+            if (passenger == null)
+            {
+                return NotFound(new { message = "Passenger not found." });
+            }
+
             var ratesAndReviews = new RatesAndReviews
             {
                 BookingID = ratesAndReviewsDto.BookingId,
                 Booking = booking,
                 Comment = ratesAndReviewsDto.Comment,
                 Rate = ratesAndReviewsDto.Rate,
-                PostedById = user.Id,
+                PostedById = passenger.PassengerID,
                 PostedAt = DateTime.Now,
                 Status = ratesAndReviewsDto.Status
             };

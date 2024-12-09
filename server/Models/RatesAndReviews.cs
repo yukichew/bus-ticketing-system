@@ -18,7 +18,7 @@ namespace server.Models
         [Required]
         public int Rate { get; set; }
         [Required]
-        public string PostedById { get; set; }
+        public Guid PostedById { get; set; }
         [ForeignKey("PostedById")]
         [Required]
         public DateTime PostedAt { get; set; }

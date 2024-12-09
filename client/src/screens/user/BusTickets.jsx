@@ -9,9 +9,16 @@ import Container from '../../components/Container';
 
 const BusTickets = () => {
   const location = useLocation();
-  const [formState, setFormState] = useState(location.state);
   const [busSchedules, setBusSchedules] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const [formState, setFormState] = useState({
+    originState: new URLSearchParams(location.search).get('originState') || '',
+    destinationState:
+      new URLSearchParams(location.search).get('destinationState') || '',
+    travelDate: new URLSearchParams(location.search).get('travelDate') || null,
+    returnDate: new URLSearchParams(location.search).get('returnDate') || null,
+  });
 
   useEffect(() => {
     const fetchSchedules = async () => {
