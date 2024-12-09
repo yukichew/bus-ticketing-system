@@ -6,14 +6,37 @@ import OTPVerification from '../screens/auth/OTPVerification';
 import UserRegistration from '../screens/auth/UserRegistration';
 import BORegistration from '../screens/auth/BORegistration';
 import ResetPassword from '../screens/auth/ResetPassword';
+import ChangePassword from '../screens/auth/ChangePassword';
 
 const AuthRoutes = [
-  <Route path='/login' element={<Login />} />,
-  <Route path='/email-verification' element={<EmailVerification />} />,
-  <Route path='/otp-verification' element={<OTPVerification />} />,
-  <Route path='/user-registration' element={<UserRegistration />} />,
-  <Route path='/bus-operator-registration' element={<BORegistration />} />,
-  <Route path='/reset-password' element={<ResetPassword />} />,
+  <Route
+    path='/login'
+    element={<Login />}
+  />,
+  <Route
+    path='/email-verification'
+    element={<EmailVerification />}
+  />,
+  <Route
+    path='/otp-verification'
+    element={<OTPVerification />}
+  />,
+  <Route
+    path='/user-registration'
+    element={<UserRegistration />}
+  />,
+  <Route
+    path='/bus-operator-registration'
+    element={<BORegistration />}
+  />,
+  <Route
+    path='/reset-password'
+    element={<ResetPassword />}
+  />,
+  <Route
+    path='/change-password'
+    element={<ChangePassword />}
+  />,
 ];
 
 export default AuthRoutes;
