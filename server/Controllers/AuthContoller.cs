@@ -139,7 +139,7 @@ namespace server.Controllers
 
             var token = GenerateJwtToken(user);
 
-            return Ok(new { Token = token });
+            return Ok(new { Token = token, role = roles.FirstOrDefault() });
         }
         #endregion
 
@@ -232,9 +232,8 @@ namespace server.Controllers
                 return Unauthorized(new { message = "User is not authenticated." });
             }
             var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault();
 
-            return Ok(new { user, role });
+            return Ok(user);
         }
         #endregion
 

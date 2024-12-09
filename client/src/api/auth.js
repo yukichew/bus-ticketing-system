@@ -5,6 +5,7 @@ export const login = async (email, password) => {
   try {
     const { data } = await api.post('/Auth/login', { email, password });
     sessionStorage.setItem('token', data.token);
+    sessionStorage.setItem('role', data.role);
     return data;
   } catch (err) {
     return catchError(err);
@@ -90,11 +91,32 @@ export const resetPassword = async (email, newPassword) => {
 
 export const changePassword = async (oldPassword, newPassword) => {
   try {
+    const token = sessionStorage.getItem('token');
     const { data } = await api.post(
       '/Auth/change-password',
       {
         oldPassword,
         newPassword,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const editProfile = async (fullname, phoneNumber, token) => {
+  try {
+    const { data } = await api.put(
+      '/Auth/edit-profile',
+      {
+        fullname,
+        phoneNumber,
       },
       {
         headers: {
