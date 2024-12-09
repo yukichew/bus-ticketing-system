@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using server.Helper;
 using server.Dto.Auth;
+using Microsoft.AspNetCore.Authorization;
 
 namespace server.Controllers
 {
@@ -149,6 +150,7 @@ namespace server.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, _userManager.GetRolesAsync(user).Result.FirstOrDefault()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
@@ -194,9 +196,9 @@ namespace server.Controllers
 
         #region Validate OTP API
         [HttpPost("validate-otp")]
-        public async Task<IActionResult> ValidateOtp([FromBody] ValidateEmailDto validateEmailDto)
+        public async Task<IActionResult> ValidateOtp([FromBody] ValidateOTPDto validateOTPDto)
         {
-            var isValid = await _otpService.ValidateOTPAsync(validateEmailDto.Email, validateEmailDto.OTP);
+            var isValid = await _otpService.ValidateOTPAsync(validateOTPDto.Email, validateOTPDto.OTP);
             if (!isValid)
             {
                 return BadRequest(new { message = "Invalid or expired OTP." });
@@ -204,8 +206,8 @@ namespace server.Controllers
 
             var user = new User
             {
-                Email = validateEmailDto.Email,
-                UserName = validateEmailDto.Email,
+                Email = validateOTPDto.Email,
+                UserName = validateOTPDto.Email,
                 EmailConfirmed = true,
             };
 
@@ -219,28 +221,126 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Get User Profile API
+        #region Get Profile API
+        [Authorize]
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (userId == null)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
                 return Unauthorized(new { message = "User is not authenticated." });
             }
-
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found." });
-            }
-
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
 
             return Ok(new { user, role });
+        }
+        #endregion
+
+        #region Change Password API
+        [Authorize]
+        [Authorize(Roles = "Member,BusOperator")]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = result.Errors.Select(e => e.Description) });
+            }
+
+            return Ok(new { message = "Password changed successfully." });
+        }
+        #endregion
+
+        #region Forgot Password API
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] VerifyEmailDto verifyEmailDto)
+        {
+            var user = await _userManager.FindByEmailAsync(verifyEmailDto.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "User not found." });
+            }
+
+            var otp = await _otpService.GenerateOtpAsync(verifyEmailDto.Email);
+            await _otpService.SaveOTPAsync(verifyEmailDto.Email, otp);
+            await SendOtpEmail(user.UserName, verifyEmailDto.Email, otp);
+            return Ok(new { message = "OTP email sent successfully." });
+        }
+        #endregion
+
+        #region Verify OTP Reset Password API
+        [Authorize]
+        [HttpPost("verify-otp-reset-password")]
+        public async Task<IActionResult> VerifyOTPForResetPassword([FromBody] ValidateOTPDto validateOTPDto)
+        {
+            var user = await _userManager.FindByEmailAsync(validateOTPDto.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "User not found." });
+            }
+
+            var isValid = await _otpService.ValidateOTPAsync(validateOTPDto.Email, validateOTPDto.OTP);
+            if (!isValid)
+            {
+                return BadRequest(new { message = "Invalid or expired OTP." });
+            }
+
+            return Ok(new { message = "OTP validated successfully." });
+        }
+        #endregion
+
+        #region Reset Password API
+        [Authorize]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "User not found." });
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = await _userManager.ResetPasswordAsync(user, token, resetPasswordDto.NewPassword);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(new { message = "Password reset successfully." });
+        }
+        #endregion
+
+        #region Edit User Profile API
+        [Authorize(Policy = "MemberOnly")]
+        [HttpPut("edit-profile")]
+        public async Task<IActionResult> EditProfile([FromBody] EditProfileDto editProfileDto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            user.UserName = editProfileDto.Fullname;
+            user.PhoneNumber = editProfileDto.PhoneNumber;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = "Failed to update profile.", errors = result.Errors });
+            }
+
+            return Ok(new { message = "Profile updated successfully." });
         }
         #endregion
     }

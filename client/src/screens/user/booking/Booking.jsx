@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import CustomButton from "../../../components/common/CustomButton";
-import Container from "../../../components/Container";
-import PassengerForm from "./PassengerForm";
-import { format } from "date-fns";
-import { buyTicket } from "../../../api/booking";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import CustomButton from '../../../components/common/CustomButton';
+import Container from '../../../components/Container';
+import PassengerForm from './PassengerForm';
+import { format } from 'date-fns';
+import { buyTicket } from '../../../api/booking';
+import { toast } from 'react-toastify';
 
 const Booking = () => {
   const location = useLocation();
@@ -13,7 +13,7 @@ const Booking = () => {
   const [passengerDetails, setPassengerDetails] = useState([]);
   const navigate = useNavigate();
 
-  const date = format(new Date(schedule.travelDate), "yyyy-MM-dd");
+  const date = format(new Date(schedule.travelDate), 'yyyy-MM-dd');
   const amountPaid = selectedSeats.length * schedule.routes.price;
 
   const handlePassengerChange = (index, details) => {
@@ -34,19 +34,17 @@ const Booking = () => {
 
     const response = await buyTicket(bookingDetails);
     if (response?.error) {
-      return toast.error(response.message, {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 5000,
-      });
+      return toast.error(response.message);
     }
 
-    navigate("/payment", {
+    navigate('/payment', {
       state: {
         bookingID: response.bookingID,
         amountPaid,
         seats: selectedSeats,
         fullname: passengerDetails[0].fullname,
         schedule,
+        email: passengerDetails[0].email,
       },
     });
   };
@@ -101,9 +99,9 @@ const Booking = () => {
         </div>
 
         <CustomButton
-          title={"PROCEED TO PAYMENT"}
-          type={"submit"}
-          className={"w-1/5 ml-auto"}
+          title={'PROCEED TO PAYMENT'}
+          type={'submit'}
+          className={'w-1/5 ml-auto'}
           onClick={handleSubmit}
         />
       </div>

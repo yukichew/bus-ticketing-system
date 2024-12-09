@@ -1,24 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "../../components/common/Table";
 import { useNavigate } from "react-router-dom";
-import { policyData } from "../../constants/Dummy";
 import { FaRegEdit, FaRegTrashAlt, FaExchangeAlt } from "react-icons/fa";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { IoFilter } from "react-icons/io5";
+import { getAllTerms, deleteTerm } from "../../api/tac";
 import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
 import PolicyCreateForm from "../../components/admin/modal/PolicyCreateForm";
 import PolicyEditForm from "../../components/admin/modal/PolicyEditForm";
+import DeleteConfirmation from "./modal/DeleteConfirmation";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManagePolicy = () => {
   const navigate = useNavigate();
-  const columns = ["Policy Title", "Terms"];
-  const columnKeys = ["policy_title", "terms"];
+  const columns = ["Policy Title", "Terms & Conditions"];
+  const columnKeys = ["policyTitle", "terms"];
+  const [policies, setPolicies] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false); // state for edit modal
   const [showCreateModal, setShowCreateModal] = useState(false); // state for create modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState(null);
   const [isFilterShow, setIsFilterShow] = useState(true);
   const [filters, setFilters] = useState({
@@ -45,17 +50,45 @@ const ManagePolicy = () => {
     }));
   };
 
-  const filteredData = policyData
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      try {
+        const data = await getAllTerms();
+        setPolicies(data);
+      } catch (error) {
+        console.error("Failed to fetch terms and conditions:", error);
+      }
+    };
+
+    fetchPolicies();
+  }, []);
+
+  const handleConfirmDelete = async () => {
+    try {
+      console.log("Deleting TAC ID:", selectedPolicy?.tacId);
+      await deleteTerm(selectedPolicy?.tacId);
+
+      const remainingData = policies.filter(
+        (tac) => tac.tacId !== selectedPolicy?.tacId
+      );
+      setPolicies(remainingData);
+      setShowDeleteModal(false);
+      toast.success("Terms & Conditions deleted successfully.");
+    } catch (error) {
+      console.error("Error during delete", error);
+      toast.error("An error occurred while deleting the FAQ.");
+    }
+  };
+
+  const filteredData = policies
     .filter((item) => {
       const matchesPolicyTitle = filters.policyTitle
-        ? item.policy_title
+        ? item.policyTitle
             .toLowerCase()
             .includes(filters.policyTitle.toLowerCase())
         : true;
       const matchesTerms = filters.terms
-        ? item.terms.some((term) =>
-            term.toLowerCase().includes(filters.terms.toLowerCase())
-          )
+        ? item.terms.toLowerCase().includes(filters.terms.toLowerCase())
         : true;
       const matchesStatus = filters.status
         ? item.status.toLowerCase() === filters.status.toLowerCase()
@@ -65,7 +98,6 @@ const ManagePolicy = () => {
     })
     .map((item) => ({
       ...item,
-      terms: item.terms.join(", "),
       status: <Status status={item.status} />,
       originalStatus: item.status,
     }));
@@ -94,7 +126,17 @@ const ManagePolicy = () => {
 
       {/* Delete Button */}
       <div className="relative group">
-        <button className="text-grey-500 hover:text-grey-600">
+        <button
+          onClick={() => {
+            console.log("TAC ID:", row.tacId);
+            setSelectedPolicy({
+              ...row,
+              tacId: row.tacId,
+            });
+            setShowDeleteModal(true);
+          }}
+          className="text-grey-500 hover:text-grey-600"
+        >
           <FaRegTrashAlt className="text-xl text-gray-500 cursor-pointer" />
         </button>
         <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -106,6 +148,7 @@ const ManagePolicy = () => {
 
   return (
     <>
+      <ToastContainer />
       {isFilterShow && (
         <div className="mb-8 mt-5">
           <Card>
@@ -200,7 +243,9 @@ const ManagePolicy = () => {
           <span className="text-gray-400 mx-2">|</span>
 
           <button
-            onClick={() => navigate("/policies")}
+            onClick={() =>
+              navigate("/policies", { state: { fromAdmin: true } })
+            }
             className="ml-auto flex items-center font-medium hover:text-primary pr-1"
           >
             <FaExchangeAlt size={16} />
@@ -232,7 +277,7 @@ const ManagePolicy = () => {
       {/* modal for edit */}
       <Modal isVisible={showEditModal} onClose={() => setShowEditModal(false)}>
         <PolicyEditForm
-          policy={selectedPolicy}
+          operator={selectedPolicy}
           onClose={() => setShowEditModal(false)}
         />
       </Modal>
@@ -244,6 +289,20 @@ const ManagePolicy = () => {
       >
         <PolicyCreateForm onClose={() => setShowCreateModal(false)} />
       </Modal>
+
+      {/* Modal for delete confirmation */}
+      {showDeleteModal && (
+        <Modal
+          isVisible={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeleteConfirmation
+            operator={setSelectedPolicy}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={handleConfirmDelete}
+          />
+        </Modal>
+      )}
     </>
   );
 };

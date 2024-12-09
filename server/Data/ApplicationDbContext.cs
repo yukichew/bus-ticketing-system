@@ -21,6 +21,8 @@ namespace server.Data
         public DbSet<BusSchedule> BusSchedules { get; set; }
         public DbSet<Seat> Seats { get; set; }
         public DbSet<RatesAndReviews> RatesAndReviews { get; set; }
+        public DbSet<Faq> Faqs { get; set; }
+        public DbSet<TermsAndConditions> TermsAndConditions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,6 +54,9 @@ namespace server.Data
                 .WithMany()
                 .HasForeignKey(r => r.ArrivalLocationID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TermsAndConditions>()
+                .HasKey(tc => tc.TACId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

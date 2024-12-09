@@ -2,8 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
+using server.Helper;
 using server.Models;
 using Stripe;
+using System;
 
 namespace server.Controllers
 {
@@ -13,11 +15,13 @@ namespace server.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _config;
+        private readonly EmailService _emailService;
 
-        public TransactionsController(ApplicationDbContext context, IConfiguration config)
+        public TransactionsController(ApplicationDbContext context, IConfiguration config, EmailService emailService)
         {
             _context = context;
             _config = config;
+            _emailService = emailService;
         }
 
 
@@ -46,6 +50,7 @@ namespace server.Controllers
                 {
                     Amount = (long)(transactionDto.Amount * 100),
                     Currency = "myr",
+                    ReceiptEmail = transactionDto.Email,
                     Metadata = new Dictionary<string, string>
             {
                 { "BookingID", booking.BookingID.ToString() }
@@ -105,6 +110,18 @@ namespace server.Controllers
                     seat.Status = "Occupied";
                     _context.Seats.Update(seat);
                 }
+                
+                // send payment receipt email
+                var passenger = seats.FirstOrDefault().Passenger;
+                var receiptMessage = $"Dear {passenger.Fullname},\n\n" +
+                                     $"Thank you for choosing RideNGo. Here are your receipt details:\n\n" +
+                                     $"Your booking has been confirmed.\n" +
+                                     $"Amount: RM {transaction.Amount}\n" +
+                                     $"Transaction ID: {transaction.PaymentIntentID}\n\n" +
+                                     $"We appreciate your booking with RideNGo. Have a great trip!\n\n" +
+                                     $"Regards,\nRideNGo Team";
+
+                await _emailService.SendEmailAsync(passenger.Fullname, passenger.Email, "RideNGo Payment Receipt", receiptMessage);
             }
             else
             {
