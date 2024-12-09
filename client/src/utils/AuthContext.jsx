@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { getUserProfile } from '../api/auth';
 import Loader from '../components/common/Loader';
 
 export const AuthProvider = ({ children }) => {
@@ -8,20 +7,13 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
+    const role = sessionStorage.getItem('role');
     if (!token) {
       setLoading(false);
       return;
     }
-
-    const fetchUserProfile = async () => {
-      const profile = await getUserProfile(token);
-      if (profile) {
-        setAuth(profile);
-      }
-      setLoading(false);
-    };
-
-    fetchUserProfile();
+    setAuth({ token, role });
+    setLoading(false);
   }, []);
 
   return (

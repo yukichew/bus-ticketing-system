@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import Logo from "../../assets/Logo";
-import { busOperatorLinks, userLinks } from "../../constants/NavbarItems";
-import { useAuth } from "../../utils/AuthContext";
+import React, { useEffect, useState } from 'react';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import Logo from '../../assets/Logo';
+import { busOperatorLinks, userLinks } from '../../constants/NavbarItems';
+import { useAuth } from '../../utils/AuthContext';
+import { getUserProfile } from '../../api/auth';
 
 const NavbarLinks = ({ role }) => {
   const links =
-    role === "BusOperator"
+    role === 'BusOperator'
       ? busOperatorLinks
       : userLinks.filter(
           (link) =>
-            !link.isLoginRequired || (link.isLoginRequired && role === "Member")
+            !link.isLoginRequired || (link.isLoginRequired && role === 'Member')
         );
 
   return (
@@ -33,15 +34,25 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [toggleMenu, setToggleMenu] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [profile, setProfile] = useState(null);
   const { auth } = useAuth();
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const profile = await getUserProfile(auth.token);
+      setProfile(profile);
+    };
+    fetchProfile();
+  }, []);
+
+  console.log(profile);
   const handleLogout = () => {
     sessionStorage.clear();
     window.location.reload();
   };
 
   const navigateToLogin = () => {
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
@@ -63,7 +74,7 @@ const Navbar = () => {
                 onClick={() => setDropdownVisible(!dropdownVisible)}
                 className='text-slate-600 hover:text-primary transition duration-200 font-medium'
               >
-                {auth.user.userName}
+                {profile?.userName}
               </button>
 
               {dropdownVisible && (
@@ -125,7 +136,7 @@ const Navbar = () => {
                   onClick={() => setDropdownVisible(!dropdownVisible)}
                   className='text-slate-600 hover:text-primary'
                 >
-                  {auth.user.userName}
+                  {profile?.userName}
                 </button>
 
                 {dropdownVisible && (
