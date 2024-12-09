@@ -1,10 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
 import Stars from '../../../components/common/Stars';
 import { format } from 'date-fns';
+import * as yup from 'yup';
+import { validateField } from '../../../utils/validate';
+import { addRating } from '../../../api/rating';
+import { toast } from 'react-toastify';
 
-const Rating = ({ booking }) => {
+const Rating = ({ booking, user, onSuccess }) => {
+  const [comment, setComment] = useState('');
+  const [rating, setRating] = useState(0);
+  const [errors, setErrors] = useState({});
+
+  const ratingSchema = yup.object().shape({
+    rating: yup.number().required('Rating is required'),
+    comment: yup.string().required('Review is required'),
+  });
+
+  const handleChange = (field, value) => {
+    if (field === 'comment') setComment(value);
+    if (field === 'rating') setRating(value);
+    validateField(field, value, setErrors, ratingSchema);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const ratingDetails = {
+      bookingId: booking.bookingID,
+      rate: rating,
+      comment,
+      status: 'Active',
+    };
+
+    const response = await addRating(ratingDetails, user.token);
+
+    if (response?.error) {
+      return toast.error(response.message);
+    }
+
+    toast.success('Rating added successfully');
+    onSuccess();
+  };
+  
   return (
     <>
       {/* header */}
@@ -69,6 +108,7 @@ const Rating = ({ booking }) => {
             <Stars
               isClickable
               size={24}
+              onRatingChange={(value) => handleChange('rating', value)}
             />
             <p>1 star = Terrible, 5 stars = Excellent</p>
           </div>
@@ -80,11 +120,13 @@ const Rating = ({ booking }) => {
             type={'text'}
             multiline
             required
+            onChange={(e) => handleChange('comment', e.target.value)}
+            error={errors.comment}
           />
           <CustomButton
             title='SUBMIT'
             type='submit'
-            className=''
+            onClick={handleSubmit}
           />
         </div>
       </div>

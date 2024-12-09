@@ -65,7 +65,15 @@ const Login = () => {
     }
 
     toast.success('Login successful');
-    navigate('/');
+
+    if (response.role === 'Admin') {
+      setIsAdmin(true);
+      navigate('/admin-dashboard');
+    } else if (response.role === 'BusOperator') {
+      navigate('/bo/dashboard');
+    } else {
+      navigate('/');
+    }
   };
 
   return (

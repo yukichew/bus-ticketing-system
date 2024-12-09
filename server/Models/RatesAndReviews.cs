@@ -10,17 +10,16 @@ namespace server.Models
         public Guid ID { get; set; }
         [Required]
         [StringLength(450)]
-        public string BusOperatorID { get; set; }
-        [ForeignKey("BusOperatorID")]
-        public virtual BusOperator BusOperator { get; set; }
+        public Guid BookingID { get; set; }
+        [ForeignKey("BookingID")]
+        public virtual Booking? Booking { get; set; }
         [StringLength(450)]
         public string Comment { get; set; }
         [Required]
         public int Rate { get; set; }
         [Required]
-        public Guid PostedById { get; set; }
+        public string PostedById { get; set; }
         [ForeignKey("PostedById")]
-        public virtual Passenger PostedBy { get; set; }
         [Required]
         public DateTime PostedAt { get; set; }
         [Required]
