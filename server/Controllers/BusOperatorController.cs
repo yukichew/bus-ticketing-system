@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
+using server.Dto.Auth;
+using server.Helper;
 using server.Models;
 
 namespace server.Controllers
@@ -11,75 +13,93 @@ namespace server.Controllers
     public class BusOperatorController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<BusOperator> _userManager;
+        private readonly UserManager<User> _userManager;
+        private readonly EmailService _emailService;
 
-        public BusOperatorController(ApplicationDbContext context, UserManager<BusOperator> userManager)
+        public BusOperatorController(ApplicationDbContext context, UserManager<User> userManager, EmailService emailService)
         {
             _context = context;
             _userManager = userManager;
+            _emailService = emailService;
         }
 
-        // GET: api/BusOperator
-        [HttpGet]
-        public async Task<ActionResult> GetAllBusOperator()
-        {
-            var busOperators = await _context.Set<BusOperator>().ToListAsync();
-            return Ok(busOperators);
-        }
 
-        // GET: api/BusOperator/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetBusOperator(string id)
+        #region Update BusOperator Status API
+        [HttpPut("update-status/{id}")]
+        public async Task<IActionResult> UpdateBusOperatorStatus(string id, [FromBody] string status)
         {
-            var busOperator = await _context.BusOperators
-                .FirstOrDefaultAsync(b => b.Id == id);
+            if (string.IsNullOrEmpty(status))
+            {
+                return BadRequest(new { message = "Status cannot be empty." });
+            }
+
+            var busOperatorRoleId = await _context.Roles
+                .Where(r => r.Name == "BusOperator")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (busOperatorRoleId == null)
+            {
+                return BadRequest(new { message = "BusOperator role not found." });
+            }
+
+            var busOperator = await (from user in _context.Users
+                                     join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                                     where userRole.RoleId == busOperatorRoleId && user.Id == id
+                                     select user).OfType<BusOperator>()
+                                      .FirstOrDefaultAsync();
 
             if (busOperator == null)
             {
-                return NotFound(new { message = $"Bus Operator with ID {id} not found." });
-            }
-
-            return Ok(busOperator);
-        }
-
-        // PUT: api/BusOperator/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBusOperator(string id, [FromBody] BusOperator busOperator)
-        {
-            if (id != busOperator.Id)
-                return BadRequest(new { message = "BusOperator ID mismatch" });
-
-            var existingBusOperator = await _context.BusOperators.FindAsync(id);
-            if (existingBusOperator == null)
                 return NotFound(new { message = $"Bus operator with ID {id} not found." });
+            }
 
-            existingBusOperator.Address = busOperator.Address ?? existingBusOperator.Address;
-            existingBusOperator.CompanyLogo = busOperator.CompanyLogo ?? existingBusOperator.CompanyLogo;
-            existingBusOperator.BusImages = busOperator.BusImages ?? existingBusOperator.BusImages;
-            existingBusOperator.Bio = busOperator.Bio ?? existingBusOperator.Bio;
-            existingBusOperator.IsRefundable = busOperator.IsRefundable ?? existingBusOperator.IsRefundable;
-            existingBusOperator.Status = busOperator.Status ?? existingBusOperator.Status;
+            busOperator.Status = status;
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = $"Bus operator with ID {id} has been updated successfully." });
+            return Ok(new { message = $"Status of bus operator with ID {id} has been updated to {status}." });
         }
+        #endregion
 
-        // DELETE: api/BusOperator/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBusOperator(string id)
+        #region Generate Return Message for Rejected Application Method
+        private async Task SendRejectEmail(string name, string email)
         {
-            var busOperator = await _context.BusOperators.FindAsync(id);
+            var subject = "Your Bus Operator Application Status";
+            var message = $"Dear {name},\n\nWe regret to inform you that your bus operator application has been rejected.\n\nThank you for your interest.\n\nBest regards,\nTeam RideNGo";
+            await _emailService.SendEmailAsync(email, email, subject, message);
+            
+        }
+        #endregion
+
+        #region Reject Bus Operator Application API
+        [HttpPut("reject-application/{id}")]
+        public async Task<IActionResult> RejectApplication(string id)
+        {
+            var busOperator = await _context.Users
+                .Where(user => user.Id == id)
+                .OfType<BusOperator>()
+                .FirstOrDefaultAsync();
 
             if (busOperator == null)
             {
-                return NotFound($"Bus operator with ID {id} not found.");
+                return NotFound(new { message = $"Bus operator with ID {id} not found." });
             }
 
-            _context.BusOperators.Remove(busOperator);
+            busOperator.Status = "Inactive";
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = $"Bus operator with ID {id} has been deleted successfully." });
+            try
+            {
+                await SendRejectEmail(busOperator.UserName, busOperator.Email);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to send rejection email.", error = ex.Message });
+            }
+
+            return Ok(new { message = $"Application has been rejected for Bus operator with ID {id}." });
         }
+        #endregion
     }
 }

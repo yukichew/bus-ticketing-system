@@ -32,8 +32,8 @@ export const getUserProfile = async () => {
 
 export const refreshTokenApi = async (refreshToken) => {
   try {
-    const { data } = await api.post('/Auth/refresh-token', { refreshToken });
-    sessionStorage.setItem('token', data.token);
+    const { data } = await api.post("/Auth/refresh-token", { refreshToken });
+    sessionStorage.setItem("token", data.token);
     return data;
   } catch (err) {
     return catchError(err);
@@ -42,9 +42,9 @@ export const refreshTokenApi = async (refreshToken) => {
 
 export const logout = async () => {
   try {
-    const { data } = await api.post('/Auth/logout');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('role');
+    const { data } = await api.post("/Auth/logout");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("role");
     return data;
   } catch (err) {
     return catchError(err);
@@ -121,16 +121,6 @@ export const editProfile = async (fullname, phoneNumber) => {
       fullname,
       phoneNumber,
     });
-    return data;
-  } catch (err) {
-    return catchError(err);
-  }
-};
-
-export const getAllBo = async () => {
-  try {
-    const { data } = await api.get("/Auth/get-busoperators");
-    console.log("Fetching data", data);
     return data;
   } catch (err) {
     return catchError(err);
