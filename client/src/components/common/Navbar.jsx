@@ -2,18 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../assets/Logo';
-import { busOperatorLinks, userLinks } from '../../constants/NavbarItems';
+import {
+  busOperatorLinks,
+  memberLinks,
+  userLinks,
+} from '../../constants/NavbarItems';
 import { useAuth } from '../../utils/AuthContext';
 import { getUserProfile, logout } from '../../api/auth';
+import { toast } from 'react-toastify';
 
 const NavbarLinks = ({ role }) => {
   const links =
     role === 'BusOperator'
       ? busOperatorLinks
-      : userLinks.filter(
-          (link) =>
-            !link.isLoginRequired || (link.isLoginRequired && role === 'Member')
-        );
+      : role === 'Member'
+      ? [...userLinks, ...memberLinks]
+      : userLinks;
 
   return (
     <>
@@ -30,12 +34,11 @@ const NavbarLinks = ({ role }) => {
   );
 };
 
-const Navbar = () => {
+const Navbar = ({ auth }) => {
   const navigate = useNavigate();
   const [toggleMenu, setToggleMenu] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profile, setProfile] = useState(null);
-  const { auth } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -45,14 +48,17 @@ const Navbar = () => {
       }
     };
     fetchProfile();
-  }, []);
+  }, [auth]);
 
-  const handleLogout = () => {
-    const logout = async () => {
-      const result = await logout();
-      return result;
-    };
+  const handleLogout = async () => {
+    const result = await logout();
     window.location.reload();
+
+    if (result?.error) {
+      return toast.error(result.message);
+    }
+
+    return result;
   };
 
   const navigateToLogin = () => {
@@ -78,7 +84,7 @@ const Navbar = () => {
                 onClick={() => setDropdownVisible(!dropdownVisible)}
                 className='text-slate-600 hover:text-primary transition duration-200 font-medium'
               >
-                {profile?.userName}
+                {profile?.fullname}
               </button>
 
               {dropdownVisible && (
@@ -140,7 +146,7 @@ const Navbar = () => {
                   onClick={() => setDropdownVisible(!dropdownVisible)}
                   className='text-slate-600 hover:text-primary'
                 >
-                  {profile?.userName}
+                  {profile?.fullname}
                 </button>
 
                 {dropdownVisible && (

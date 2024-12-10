@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { IoEye, IoEyeOff, IoKeyOutline } from 'react-icons/io5';
 import CustomButton from '../../components/common/CustomButton';
 import CustomInput from '../../components/common/CustomInput';
 import * as yup from 'yup';
 import { validateField } from '../../utils/validate';
+import { resetPassword } from '../../api/auth';
+import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const location = useLocation();
+  const { email } = location.state || {};
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
   };
 
   const resetPasswordSchema = yup.object().shape({
-    password: yup
+    newPassword: yup
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
@@ -30,12 +34,28 @@ const ResetPassword = () => {
   });
 
   const handleChange = (field, value) => {
-    if (field === 'password') setPassword(value);
+    if (field === 'newPassword') setNewPassword(value);
     validateField(field, value, setErrors, resetPasswordSchema);
   };
 
-  const handleSubmit = () => {
-    navigate('/login');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await resetPasswordSchema.validate({ newPassword }, { abortEarly: false });
+
+    try {
+      const response = await resetPassword(email, newPassword);
+      if (response?.error) {
+        return toast.error(response.message);
+      }
+      toast.success(response.message);
+      navigate('/login');
+    } catch (err) {
+      const validationErrors = {};
+      err.inner.forEach((error) => {
+        validationErrors[error.path] = error.message;
+      });
+      setErrors(validationErrors);
+    }
   };
 
   return (
@@ -70,8 +90,8 @@ const ResetPassword = () => {
                   type={isPasswordVisible ? 'text' : 'newpassword'}
                   required
                   icon={IoKeyOutline}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  error={errors.password}
+                  onChange={(e) => handleChange('newPassword', e.target.value)}
+                  error={errors.newPassword}
                 />
                 <div
                   className='absolute inset-y-0 right-2 pr-3 flex items-center cursor-pointer'
