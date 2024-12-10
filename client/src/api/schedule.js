@@ -44,6 +44,23 @@ export const searchSchedule = async (filters, token) => {
   try {
     const queryParams = new URLSearchParams(filters).toString();
     const { data } = await api.get(
+      `/BusSchedule/FilterBusSchedule?${queryParams}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const searchScheduleByBusOperatorID = async (filters, token) => {
+  try {
+    const queryParams = new URLSearchParams(filters).toString();
+    const { data } = await api.get(
       `/BusSchedule/BusOperator/FilterBusSchedule?${queryParams}`,
       {
         headers: {

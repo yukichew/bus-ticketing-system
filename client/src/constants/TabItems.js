@@ -8,6 +8,8 @@ import ManageBusOperator from "../components/admin/ManageBusOperators";
 import ManageUser from "../components/admin/ManageUser";
 import ManagePolicy from "../components/admin/ManagePolicy";
 import ManageFaq from "../components/admin/ManageFaq";
+import ViewBusRoutes from "../components/admin/modal/ViewBusRoutes";
+import BusScheduleInfo from "../screens/admin/modal/BusScheduleInfo";
 
 export const busInfoTabs = [
   { label: "Notes", content: <Notes /> },
@@ -35,4 +37,8 @@ export const manageUserTabs = [
 export const manageContentTabs = [
   { label: "FAQs", content: <ManageFaq /> },
   { label: "Terms and Conditions", content: <ManagePolicy /> },
+];
+
+export const busScheduleInfoTabs = [
+  { label: "Schedule Info", content: <BusScheduleInfo /> },
 ];
