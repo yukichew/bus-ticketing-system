@@ -138,9 +138,10 @@ namespace server.Controllers
                 return Unauthorized(new { message = "Invalid credentials." });
             }
 
-            var token = GenerateJwtToken(user);
+            var accessToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshJwtToken(user);
 
-            return Ok(new { Token = token, role = roles.FirstOrDefault() });
+            return Ok(new { Token = accessToken, RefreshToken = refreshToken, role = roles.FirstOrDefault() });
         }
         #endregion
 
@@ -161,13 +162,28 @@ namespace server.Controllers
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: DateTime.Now.AddDays(5),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         #endregion
+
+        private string GenerateRefreshJwtToken(IdentityUser user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, user.Id) }),
+                Expires = DateTime.UtcNow.AddDays(5),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
 
         #region Send OTP Email Method
         private async Task SendOtpEmail(string name, string email, string otp)
@@ -370,7 +386,8 @@ namespace server.Controllers
 
             // Generate a new JWT token
             var newJwtToken = GenerateJwtToken(user);
-            return Ok(new { Token = newJwtToken });
+            var newRefreshToken = GenerateRefreshJwtToken(user);
+            return Ok(new { Token = newJwtToken, RefreshToken = newRefreshToken });
         }
         #endregion
 
