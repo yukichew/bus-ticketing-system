@@ -8,6 +8,7 @@ import Payment from '../screens/user/Payment';
 import BusTickets from '../screens/user/BusTickets';
 import FaqUserView from '../components/admin/FaqUserView';
 import PolicyUserView from '../components/admin/PolicyUserView';
+import PaymentSuccess from '../screens/user/PaymentSuccess';
 
 const UserRoutes = [
   <Route
@@ -25,6 +26,10 @@ const UserRoutes = [
   <Route
     path='/payment'
     element={<Payment />}
+  />,
+  <Route
+    path='/payment-success'
+    element={<PaymentSuccess />}
   />,
   <Route
     path='/bus-tickets'

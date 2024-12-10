@@ -59,7 +59,7 @@ const Payment = () => {
 
     if (!isConfirmed.error) {
       alert('Payment successful!');
-      navigate('/trips');
+      navigate('/payment-success');
     }
     setLoading(false);
   };
