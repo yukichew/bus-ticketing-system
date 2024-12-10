@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
 using server.Models;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -68,13 +69,26 @@ namespace server.Controllers
         #endregion
 
         #region GetRatesAndReviewsByBusOperatorID
-        // GET: api/RatesAndReviews/BusOperator/{busOperatorID}
-        [HttpGet("BusOperator/{busOperatorID}")]
-        public async Task<ActionResult> GetRatesAndReviewsByBusOperatorID(string busOperatorID)
+        // GET: api/RatesAndReviews/BusOperator
+        [Authorize(Policy = "BusOperatorOnly")]
+        [HttpGet("BusOperator")]
+        public async Task<ActionResult> GetRatesAndReviewsByBusOperatorID()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
             var ratesAndReviews = await _context.Set<RatesAndReviews>()
                 .Include(b => b.Booking)
-                .Where(r => r.Booking.BusSchedule.PostedBy.Id == busOperatorID)
+                .Where(r => r.Status == "Active" && r.Booking.BusSchedule.PostedBy.Id == busOperator.Id)
                 .OrderByDescending(r => r.PostedAt)
                 .ToListAsync();
 
@@ -92,27 +106,6 @@ namespace server.Controllers
             };
 
             return Ok(response);
-        }
-        #endregion
-
-        #region GetActiveRatesAndReviewsByBusOperatorID
-        // GET: api/RatesAndReviews/BusOperator/Active/{busOperatorID}
-        [HttpGet("Active/{busOperatorID}")]
-        public async Task<ActionResult> GetActiveRatesAndReviewsByBusOperatorID(string busOperatorID)
-        {
-            var activeRatesAndReviews = await _context.Set<RatesAndReviews>()
-                .Include(r => r.Booking)
-                .ThenInclude(b => b.BusSchedule)
-                .Where(r => r.Status == "Active" && r.Booking.BusSchedule.PostedBy.Id == busOperatorID)
-                .OrderByDescending(r => r.PostedAt)
-                .ToListAsync();
-
-            if (!activeRatesAndReviews.Any())
-            {
-                return NotFound(new { message = "No active rates and reviews found for the specified bus operator." });
-            }
-
-            return Ok(activeRatesAndReviews);
         }
         #endregion
 
@@ -210,9 +203,22 @@ namespace server.Controllers
 
         #region ReportRateAndReview
         // PUT: api/RatesAndReviews/UpdateReportedStatus/{id}
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpPut("UpdateReportedStatus/{id}")]
         public async Task<IActionResult> UpdateReportedStatus(Guid id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
             var ratesAndReviews = await _context.Set<RatesAndReviews>()
                 .FirstOrDefaultAsync(r => r.ID == id);
 

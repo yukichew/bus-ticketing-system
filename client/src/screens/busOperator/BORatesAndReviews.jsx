@@ -1,21 +1,10 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/common/Navbar";
 import Footer from "../../components/Footer";
-import Table from "../../components/common/Table";
-import Card from "../../components/common/Card";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { IoFilter } from "react-icons/io5";
-import { FaStar, FaLongArrowAltRight, FaExchangeAlt } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import Stars from "../../components/common/Stars";
-import Review from "../../components/user/Review";
-import {
-  OneStarReviews,
-  TwoStarsReviews,
-  ThreeStarsReviews,
-  FourStarsReviews,
-  FiveStarsReviews,
-} from "../../constants/Dummy";
+import BOReview from "../../components/busOperator/BOReview";
+import { getRatesAndReviewsByBusOperatorID } from "../../api/rating";
 
 const RatingBar = ({ rating, percentage }) => {
   return (
@@ -36,82 +25,113 @@ const RatingBar = ({ rating, percentage }) => {
 };
 
 const BORatesAndReviews = () => {
-  const [dateRange, setDateRange] = useState("January 2024 - Now");
+  const token = sessionStorage.getItem('token');
+  const [totalReviews, setTotalReviews] = useState("");
+  const [averageRating, setAverageRating] = useState("");
+  const [ratingOne, setRatingOne] = useState("");
+  const [ratingTwo, setRatingTwo] = useState("");
+  const [ratingThree, setRatingThree] = useState("");
+  const [ratingFour, setRatingFour] = useState("");
+  const [ratingFive, setRatingFive] = useState("");
+  const [oneStarReviews, setOneStarReviews] = useState([]);
+  const [twoStarReviews, setTwoStarReviews] = useState([]);
+  const [threeStarReviews, setThreeStarReviews] = useState([]);
+  const [fourStarReviews, setFourStarReviews] = useState([]);
+  const [fiveStarReviews, setFiveStarReviews] = useState([]);
   const [selectedReview, setSelectedReview] = useState("overview");
-  const [isStartMonthOpen, setIsStartMonthOpen] = useState(false);
-  const [selectedStartMonth, setSelectedStartMonth] =
-    useState("Select Start Month");
-  const [isEndMonthOpen, setIsEndMonthOpen] = useState(false);
-  const [selectedEndMonth, setSelectedEndMonth] = useState("Select End Month");
-  const [selectedStartYear, setSelectedStartYear] =
-    useState("Select Start Year");
-  const [isStartYearOpen, setIsStartYearOpen] = useState(false);
-  const [selectedEndYear, setSelectedEndYear] = useState("Select End Year");
-  const [isEndYearOpen, setIsEndYearOpen] = useState(false);
-  const [isFilterShow, setIsFilterShow] = useState(false);
 
-  // To detect admin state
-  const location = useLocation();
-  const navigate = useNavigate();
-  const fromAdmin = location.state?.fromAdmin;
+  const fetchRatesAndReviewData = async () => {
+    const results = await getRatesAndReviewsByBusOperatorID(token);
+  
+    const totalReviews = results?.totalRatesAndReviews || 0;
+    const ratesAndReviews = results?.ratesAndReviews || [];
+  
+    const oneStar = [];
+    const twoStar = [];
+    const threeStar = [];
+    const fourStar = [];
+    const fiveStar = [];
+  
+    const ratingCounts = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+  
+    ratesAndReviews.forEach((review) => {
+      const rate = review.rate;
+      if (rate >= 1 && rate <= 5) {
+        ratingCounts[rate]++;
+        switch (rate) {
+          case 1:
+            oneStar.push(review);
+            break;
+          case 2:
+            twoStar.push(review);
+            break;
+          case 3:
+            threeStar.push(review);
+            break;
+          case 4:
+            fourStar.push(review);
+            break;
+          case 5:
+            fiveStar.push(review);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  
+    const sumOfRatings = ratesAndReviews.reduce((sum, review) => sum + review.rate, 0);
+    const averageRating = totalReviews ? sumOfRatings / totalReviews : 0;
+    const formattedAverageRating = parseFloat(averageRating.toFixed(2));
+    const percentage = (count) => {
+      const result = totalReviews ? (count / totalReviews) * 100 : 0;
+      return parseFloat(result.toFixed(2));
+    };
+  
+    setTotalReviews(totalReviews);
+    setAverageRating(formattedAverageRating);
+    setRatingOne(percentage(ratingCounts[1]));
+    setRatingTwo(percentage(ratingCounts[2]));
+    setRatingThree(percentage(ratingCounts[3]));
+    setRatingFour(percentage(ratingCounts[4]));
+    setRatingFive(percentage(ratingCounts[5]));
+    setOneStarReviews(oneStar);
+    setTwoStarReviews(twoStar);
+    setThreeStarReviews(threeStar);
+    setFourStarReviews(fourStar);
+    setFiveStarReviews(fiveStar);
+  };  
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const years = [2024, 2023, 2022, 2021, 2020];
+  useEffect(() => {
+    fetchRatesAndReviewData();
+  }, []);
 
   const handleReviewClick = (reviewType) => {
     setSelectedReview(reviewType);
-  };
-
-  const handleSelectStartMonth = (option) => {
-    setSelectedStartMonth(option);
-    setIsStartMonthOpen(false);
-  };
-
-  const handleSelectEndMonth = (option) => {
-    setSelectedEndMonth(option);
-    setIsEndMonthOpen(false);
-  };
-
-  const handleSelectStartYear = (year) => {
-    setSelectedStartYear(year);
-    setIsStartYearOpen(false);
-  };
-
-  const handleSelectEndYear = (year) => {
-    setSelectedEndYear(year);
-    setIsEndYearOpen(false);
   };
 
   const reviewTypes = [
     {
       type: "overview",
       label: "Overview",
-      count:
-        OneStarReviews.length +
-        TwoStarsReviews.length +
-        ThreeStarsReviews.length +
-        FourStarsReviews.length +
-        FiveStarsReviews.length,
+      count: 
+        oneStarReviews.length +
+        twoStarReviews.length +
+        threeStarReviews.length +
+        fourStarReviews.length +
+        fiveStarReviews.length,
     },
-    { type: "five", label: "5 Stars", count: FiveStarsReviews.length },
-    { type: "four", label: "4 Stars", count: FourStarsReviews.length },
-    { type: "three", label: "3 Stars", count: ThreeStarsReviews.length },
-    { type: "two", label: "2 Stars", count: TwoStarsReviews.length },
-    { type: "one", label: "1 Star", count: OneStarReviews.length },
+    { type: "five", label: "5 Stars", count: fiveStarReviews.length },
+    { type: "four", label: "4 Stars", count: fourStarReviews.length },
+    { type: "three", label: "3 Stars", count: threeStarReviews.length },
+    { type: "two", label: "2 Stars", count: twoStarReviews.length },
+    { type: "one", label: "1 Star", count: oneStarReviews.length },
   ];
 
   return (
@@ -119,168 +139,9 @@ const BORatesAndReviews = () => {
       <Navbar />
 
       <div className="w-4/5 mt-8 mb-8 mx-auto">
-        <div className="mb-6">
-          {/* Render "Return to Admin View" Button when path is "fromAdmin" */}
-          {fromAdmin && (
-            <button
-              onClick={() => navigate("/manage-reviews")}
-              className="ml-auto flex items-center font-medium hover:text-primary pr-1"
-            >
-              <FaExchangeAlt size={16} />
-              <p className="mx-1"> Return to Admin View</p>
-            </button>
-          )}
-        </div>
         <div className="flex items-center justify-between">
           <h2 className="font-poppins font-bold text-2xl">Rates & Reviews</h2>
-          <button
-            className="flex items-center border-2 border-gray-100 text-black text-sm font-poppins font-medium rounded-lg px-4 py-2"
-            onClick={() => setIsFilterShow((prev) => !prev)}
-          >
-            <IoFilter size={16} className="mr-2" />
-            {dateRange}
-          </button>
         </div>
-
-        {isFilterShow && (
-          <div className="mt-5 mb-7">
-            <Card>
-              <div className="flex items-center justify-between gap-4">
-                <div className="relative inline-block text-left w-1/2">
-                  <label
-                    htmlFor="startMonth"
-                    className="block text-md font-poppins font-medium text-gray-700"
-                  >
-                    Start Month
-                  </label>
-                  <button
-                    onClick={() => setIsStartMonthOpen(!isStartMonthOpen)}
-                    className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-                  >
-                    {selectedStartMonth}
-                    <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                  </button>
-
-                  {isStartMonthOpen && (
-                    <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                      <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                        {months.map((option, index) => (
-                          <li
-                            key={index}
-                            onClick={() => handleSelectStartMonth(option)}
-                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                          >
-                            {option}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                <div className="relative inline-block text-left w-1/4">
-                  <label
-                    htmlFor="startYear"
-                    className="block text-md font-poppins font-medium text-gray-700"
-                  >
-                    Start Year
-                  </label>
-                  <button
-                    onClick={() => setIsStartYearOpen(!isStartYearOpen)}
-                    className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-                  >
-                    {selectedStartYear}
-                    <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                  </button>
-
-                  {isStartYearOpen && (
-                    <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                      <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                        {years.map((year, index) => (
-                          <li
-                            key={index}
-                            onClick={() => handleSelectStartYear(year)}
-                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                          >
-                            {year}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-center w-auto mt-8">
-                  <FaLongArrowAltRight className="text-xl text-gray-500" />
-                </div>
-
-                <div className="relative inline-block text-left w-1/2">
-                  <label
-                    htmlFor="endMonth"
-                    className="block text-md font-poppins font-medium text-gray-700"
-                  >
-                    End Month
-                  </label>
-                  <button
-                    onClick={() => setIsEndMonthOpen(!isEndMonthOpen)}
-                    className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-                  >
-                    {selectedEndMonth}
-                    <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                  </button>
-
-                  {isEndMonthOpen && (
-                    <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                      <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                        {months.map((option, index) => (
-                          <li
-                            key={index}
-                            onClick={() => handleSelectEndMonth(option)}
-                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                          >
-                            {option}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                <div className="relative inline-block text-left w-1/4">
-                  <label
-                    htmlFor="endYear"
-                    className="block text-md font-poppins font-medium text-gray-700"
-                  >
-                    End Year
-                  </label>
-                  <button
-                    onClick={() => setIsEndYearOpen(!isEndYearOpen)}
-                    className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 mt-2 bg-white text-sm font-poppins font-small text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-                  >
-                    {selectedEndYear}
-                    <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                  </button>
-
-                  {isEndYearOpen && (
-                    <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                      <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                        {years.map((year, index) => (
-                          <li
-                            key={index}
-                            onClick={() => handleSelectEndYear(year)}
-                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                          >
-                            {year}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
 
         <div className="mt-5 flex flex-col md:flex-row justify-between">
           <div className="w-full md:w-1/3 flex flex-col">
@@ -290,7 +151,7 @@ const BORatesAndReviews = () => {
               </p>
               <div className="flex items-center justify-center md:justify-start">
                 <p className="font-poppins font-semibold text-4xl text-primary">
-                  3,856
+                  {totalReviews}
                 </p>
                 <p className="font-poppins font-semibold text-sm text-primary mt-3 ml-1">
                   comments
@@ -304,9 +165,9 @@ const BORatesAndReviews = () => {
               </p>
               <div className="flex items-center justify-center md:justify-start">
                 <p className="font-poppins font-semibold text-4xl text-primary mr-3">
-                  4.0
+                  {averageRating}.0
                 </p>
-                <Stars rating={4} />
+                <Stars rating={averageRating} />
               </div>
               <p className="font-poppins text-sm text-gray-400">
                 Average rating on this year
@@ -322,11 +183,11 @@ const BORatesAndReviews = () => {
                 Rating Summary
               </p>
               <div className="space-y-2">
-                <RatingBar rating="5.0" percentage={66} />
-                <RatingBar rating="4.0" percentage={33} />
-                <RatingBar rating="3.0" percentage={16} />
-                <RatingBar rating="2.0" percentage={8} />
-                <RatingBar rating="1.0" percentage={0} />
+                <RatingBar rating="5.0" percentage={ratingFive} />
+                <RatingBar rating="4.0" percentage={ratingFour} />
+                <RatingBar rating="3.0" percentage={ratingThree} />
+                <RatingBar rating="2.0" percentage={ratingTwo} />
+                <RatingBar rating="1.0" percentage={ratingOne} />
               </div>
             </div>
           </div>
@@ -362,33 +223,33 @@ const BORatesAndReviews = () => {
 
           <div>
             {selectedReview === "five" &&
-              FiveStarsReviews.map((review) => (
-                <Review key={review.id} review={review} />
+              fiveStarReviews.map((review) => (
+                <BOReview key={review.id} review={review} fetchRatesAndReviewData={fetchRatesAndReviewData}/>
               ))}
             {selectedReview === "four" &&
-              FourStarsReviews.map((review) => (
-                <Review key={review.id} review={review} />
+              fourStarReviews.map((review) => (
+                <BOReview key={review.id} review={review} fetchRatesAndReviewData={fetchRatesAndReviewData}/>
               ))}
             {selectedReview === "three" &&
-              ThreeStarsReviews.map((review) => (
-                <Review key={review.id} review={review} />
+              threeStarReviews.map((review) => (
+                <BOReview key={review.id} review={review} fetchRatesAndReviewData={fetchRatesAndReviewData}/>
               ))}
             {selectedReview === "two" &&
-              TwoStarsReviews.map((review) => (
-                <Review key={review.id} review={review} />
+              twoStarReviews.map((review) => (
+                <BOReview key={review.id} review={review} fetchRatesAndReviewData={fetchRatesAndReviewData}/>
               ))}
             {selectedReview === "one" &&
-              OneStarReviews.map((review) => (
-                <Review key={review.id} review={review} />
+              oneStarReviews.map((review) => (
+                <BOReview key={review.id} review={review} fetchRatesAndReviewData={fetchRatesAndReviewData}/>
               ))}
             {selectedReview === "overview" &&
               [
-                ...OneStarReviews,
-                ...TwoStarsReviews,
-                ...ThreeStarsReviews,
-                ...FourStarsReviews,
-                ...FiveStarsReviews,
-              ].map((review) => <Review key={review.id} review={review} />)}
+                ...oneStarReviews,
+                ...twoStarReviews,
+                ...threeStarReviews,
+                ...fourStarReviews,
+                ...fiveStarReviews,
+              ].map((review) => <BOReview key={review.id} review={review} fetchRatesAndReviewData={fetchRatesAndReviewData}/>)}
           </div>
         </div>
       </div>
