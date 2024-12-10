@@ -8,32 +8,51 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
+    const refreshToken = sessionStorage.getItem('refreshToken');
     const role = sessionStorage.getItem('role');
-    if (!token) {
+
+    if (!token || !refreshToken) {
       setLoading(false);
       return;
     }
 
-    try {
-      const decodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
 
-      if (decodedToken.exp < currentTime) {
+    if (decodedToken.exp < currentTime) {
+      refreshTokenAPI(refreshToken);
+    } else {
+      setAuth({ token, refreshToken, role });
+      setLoading(false);
+    }
+  }, []);
+
+  const refreshTokenAPI = async (refreshToken) => {
+    try {
+      const response = await refreshToken(refreshToken);
+      const data = await response.json();
+
+      if (response.ok) {
+        const newToken = data.Token;
+        sessionStorage.setItem('token', newToken);
+        setAuth({
+          token: newToken,
+          refreshToken: sessionStorage.getItem('refreshToken'),
+          role: sessionStorage.getItem('role'),
+        });
+      } else {
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('refreshToken');
         sessionStorage.removeItem('role');
         setAuth(null);
-      } else {
-        setAuth({ token, role });
       }
     } catch (error) {
-      console.error('Invalid token:', error);
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('role');
+      console.error('Refresh token error:', error);
       setAuth(null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

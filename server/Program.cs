@@ -59,6 +59,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddSingleton<OTPService>();
+builder.Services.AddHostedService<BookingExpirationService>();
 
 var jwtSettings = builder.Configuration.GetSection("JWTSettings");
 

@@ -10,6 +10,7 @@ using server.Dto.Auth;
 using Microsoft.AspNetCore.Authorization;
 using server.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace server.Controllers
 {
@@ -164,7 +165,7 @@ namespace server.Controllers
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddDays(7),
                 signingCredentials: creds
             );
 
@@ -395,6 +396,71 @@ namespace server.Controllers
 
 
             return Ok(members);
+
+        #region Refresh Token API
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto refreshTokenRequestDto)
+        {
+            var refreshToken = refreshTokenRequestDto.RefreshToken;
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return BadRequest(new { message = "Refresh token is required." });
+            }
+
+            // Validate the refresh token
+            var principal = GetPrincipalFromExpiredToken(refreshToken);
+            if (principal == null)
+            {
+                return Unauthorized(new { message = "Invalid refresh token." });
+            }
+
+            var userId = principal.Identity.Name;
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "User not found." });
+            }
+
+            // Generate a new JWT token
+            var newJwtToken = GenerateJwtToken(user);
+            return Ok(new { Token = newJwtToken });
+        }
+        #endregion
+
+        #region Get Principal From Expired Token Method
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = false,
+                    ValidIssuer = _configuration["JwtSettings:Issuer"],
+                    ValidAudience = _configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = securityKey,
+                };
+
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        #endregion
+
+        #region Logout API
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok(new { message = "Logged out successfully." });
         }
         #endregion
     }
