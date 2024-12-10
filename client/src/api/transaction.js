@@ -1,9 +1,9 @@
-import api from '.';
-import { catchError } from '../utils/error';
+import api from ".";
+import { catchError } from "../utils/error";
 
 export const initiatePayment = async (paymentDetails) => {
   try {
-    const { data } = await api.post('/Transactions', paymentDetails);
+    const { data } = await api.post("/Transactions", paymentDetails);
     return data;
   } catch (err) {
     return catchError(err);
@@ -12,7 +12,7 @@ export const initiatePayment = async (paymentDetails) => {
 
 export const confirmTransaction = async (transactionID, status) => {
   try {
-    const { data } = await api.post('/Transactions/ConfirmTransaction', {
+    const { data } = await api.post("/Transactions/ConfirmTransaction", {
       transactionID,
       status,
     });
@@ -22,15 +22,11 @@ export const confirmTransaction = async (transactionID, status) => {
   }
 };
 
-export const getTotalSalesRevenue = async (token) => {
+export const fetchTransactions = async () => {
   try {
-    const { data } = await api.get(`/Transactions/BusOperator`, {
-      headers: {
-          'Authorization': `Bearer ${token}`
-      }
-    });
+    const { data } = await axios.get("/api/Transactions");
     return data;
-  } catch (err) {
-    return catchError(err);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
   }
 };
