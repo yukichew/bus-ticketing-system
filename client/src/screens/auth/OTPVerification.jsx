@@ -5,7 +5,7 @@ import CustomButton from '../../components/common/CustomButton';
 import CustomInput from '../../components/common/CustomInput';
 import * as yup from 'yup';
 import { validateField } from '../../utils/validate';
-import { validateOTP } from '../../api/auth';
+import { validateOTP, validateOTPForResetPassword } from '../../api/auth';
 import { toast } from 'react-toastify';
 
 const OTPVerification = () => {
@@ -17,10 +17,10 @@ const OTPVerification = () => {
 
   const verifyOTP = async (e) => {
     e.preventDefault();
+    await verifyOTPSchema.validate({ otp }, { abortEarly: false });
 
-    if (source === 'register' && type === 'user') {
-      await verifyOTPSchema.validate({ otp }, { abortEarly: false });
-      if (source === 'register') {
+    try {
+      if (source === 'register' && type === 'user') {
         const response = await validateOTP(email, otp);
         if (response?.error) {
           return toast.error(response.message);
@@ -30,8 +30,21 @@ const OTPVerification = () => {
           state: { email },
         });
       } else if (source === 'forgot-password') {
-        navigate('/reset-password');
+        const response = await validateOTPForResetPassword(email, otp);
+        if (response?.error) {
+          return toast.error(response.message);
+        }
+        toast.success(response.message);
+        navigate('/reset-password', {
+          state: { email },
+        });
       }
+    } catch (err) {
+      const validationErrors = {};
+      err.inner.forEach((error) => {
+        validationErrors[error.path] = error.message;
+      });
+      setErrors(validationErrors);
     }
   };
 
