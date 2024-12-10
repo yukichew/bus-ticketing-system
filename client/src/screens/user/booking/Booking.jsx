@@ -44,7 +44,7 @@ const Booking = () => {
     if (response?.error) {
       return toast.error(response.message);
     }
-
+    
     localStorage.setItem('selectedTrip', JSON.stringify(schedule));
 
     navigate(`/payment`, {
