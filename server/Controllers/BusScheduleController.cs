@@ -97,7 +97,8 @@ namespace server.Controllers
             string originState = null,
             string destinationState = null,
             string scheduleStatus = null,
-            DateTime? travelDate = null)
+            DateTime? travelDate = null
+            )
         {
             var query = _context.BusSchedules.AsQueryable();
 

@@ -89,6 +89,7 @@ const BusTickets = () => {
               <BusCard
                 key={schedule.id}
                 schedule={schedule}
+                formState={formState}
               />
             ))}
         </div>

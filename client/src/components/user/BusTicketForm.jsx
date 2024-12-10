@@ -59,7 +59,7 @@ const BusTicketForm = ({
       <DatePickerField
         id={'returnDate'}
         name={'returnDate'}
-        placeholder={'Return Date'}
+        placeholder={'Return Date (Optional)'}
         selectedDate={returnDate}
         setSelectedDate={(date) => handleChange('returnDate', date)}
         minDate={travelDate}
