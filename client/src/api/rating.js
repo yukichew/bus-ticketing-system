@@ -22,3 +22,29 @@ export const getActiveRatings = async (id) => {
     return catchError(err);
   }
 };
+
+export const getRatesAndReviewsByBusOperatorID = async (token) => {
+  try {
+    const { data } = await api.get(`/RatesAndReviews/BusOperator`, {
+      headers: {
+          'Authorization': `Bearer ${token}`
+      }
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const updateReportedStatus = async (reviewID, token) => {
+  try {
+    const { data } = await api.put(`/RatesAndReviews/UpdateReportedStatus${reviewID}`, {
+      headers: {
+          'Authorization': `Bearer ${token}`
+      }
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};

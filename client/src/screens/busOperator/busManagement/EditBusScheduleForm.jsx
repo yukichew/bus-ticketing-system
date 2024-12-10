@@ -95,6 +95,11 @@ const EditBusScheduleForm = () => {
             recurringStatus: results.recurringOptions.status,
         })
 
+        const recurringOption = results.recurringOptions.options;
+        if(recurringOption == "Monthly"){
+            const fetchedSelectDays = results.recurringOptions.selectDays;
+            setSelectedDays(fetchedSelectDays);
+        }
         setSelectedBusPlateOption(results.busInfo.busPlate);
         setSelectedScheduleStatusOption(results.scheduleStatus);
         setSelectedStatusOption(results.status);
@@ -156,15 +161,6 @@ const EditBusScheduleForm = () => {
 
     const handleNavigate = () => {
         navigate('/bo/bus/bus-schedule/passenger-lists');
-    };
-
-    const toggleDaySelection = (day) => {
-        const dayName = day.fullDay;
-        if (selectedDays.includes(dayName)) {
-            setSelectedDays(selectedDays.filter((selectedDay) => selectedDay !== dayName));
-        } else {
-            setSelectedDays([...selectedDays, dayName]);
-        }
     };
 
     const handleSubmit = async () => {
@@ -584,11 +580,11 @@ const EditBusScheduleForm = () => {
                                     {daysOfWeek.map((day, index) => (
                                         <button
                                             key={index}
-                                            onClick={() => toggleDaySelection(day)}
-                                            className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition duration-200 ease-in-out transform hover:scale-105 ${
+                                            disabled
+                                            className={`w-10 h-10 flex items-center justify-center rounded-full border-2 ${
                                                 selectedDays.includes(day.fullDay)
                                                     ? 'bg-primary text-white ring-1 ring-offset-2 ring-primary font-semibold'
-                                                    : 'border-gray-300 text-gray-700 hover:bg-gray-200'
+                                                    : 'border-gray-300 text-gray-700'
                                             }`}
                                         >
                                             {day.label}

@@ -10,10 +10,11 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { Link } from 'react-router-dom';
 import Table from '../../components/common/Table';
 import Card from '../../components/common/Card';
-import DatePickerField from '../../components/common/DatePickerField';
 import { getBusSchedulesForToday, searchTodaySchedule } from '../../api/schedule';
 import { GetAllBusByBusOperatorID } from '../../api/busInfo';
 import { GetAllLocations } from '../../api/location';
+import { getRatesAndReviewsByBusOperatorID } from '../../api/rating';
+import { getTotalSalesRevenue } from '../../api/transaction';
 import Container from '../../components/Container';
 import moment from 'moment';
 
@@ -59,9 +60,28 @@ const BODashboard = () => {
 
     const fetchBusData = async () => {
       const results = await GetAllBusByBusOperatorID(token);
-      const busesCount = results?.totalBuses || [];
+      const busesCount = results?.totalBuses || 0 ;
       setTotalBuses(busesCount);
     };
+
+    const fetchTransactionData = async () => {
+        const results = await getTotalSalesRevenue(token);
+    
+        let totalAmount = 0;
+
+        results.forEach(transaction => {
+            totalAmount += transaction.amount;
+        });
+        const formattedTotalAmount = totalAmount.toFixed(2);
+    
+        setTotalRevenue(formattedTotalAmount);
+    };
+
+    const fetchRatesAndReviewData = async () => {
+        const results = await getRatesAndReviewsByBusOperatorID(token);
+        const reviewsCount = results?.totalRatesAndReviews || 0 ;
+        setTotalRatesAndReview(reviewsCount);
+    };  
 
     const fetchBusScheduleData = async () => {
       try {
@@ -112,6 +132,8 @@ const BODashboard = () => {
 
     useEffect(() => {
         fetchBusData();
+        fetchTransactionData();
+        fetchRatesAndReviewData();
         fetchBusScheduleData();
         fetchLocationData();
     }, []);
@@ -337,11 +359,10 @@ const BODashboard = () => {
                           </div>
                           <div>
                               <h2 className="font-poppins font-bold text-md text-black mb-1">Total Revenue</h2>
-                              <p className="font-poppins font-medium text-xl text-primary">RM 218,986.00</p>
+                              <p className="font-poppins font-medium text-xl text-primary">RM {totalRevenue}</p>
                           </div>
                       </div>
                       <Link
-                          to='/bo/bus'
                           className='flex items-center gap-1 font-poppins text-sm text-gray-500 underline hover:text-primary'
                       >
                           <MdViewCompact className="text-3xl" />
@@ -360,7 +381,7 @@ const BODashboard = () => {
                         Total Rates & Reviews
                       </h2>
                       <p className='font-poppins font-medium text-xl text-primary'>
-                        3,856
+                        {totalRatesAndReview}
                       </p>
                     </div>
                   </div>
