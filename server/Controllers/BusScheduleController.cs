@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
@@ -94,7 +95,6 @@ namespace server.Controllers
             int? noOfSeats = null,
             string originState = null,
             string destinationState = null,
-            string driverFullname = null,
             string scheduleStatus = null,
             DateTime? travelDate = null)
         {
@@ -155,13 +155,199 @@ namespace server.Controllers
         #endregion
 
         #region FilterBusScheduleForToday
-        // GET: api/BusScheduke/FilterBusScheduleForToday
+        // GET: api/BusSchedule/FilterBusScheduleForToday
         [HttpGet("FilterBusScheduleForToday")]
         public async Task<ActionResult> FilterBusScheduleForToday(
             string originState = null,
             string destinationState = null,
             string busPlate = null,
-            string driverFullname = null,
+            string scheduleStatus = null)
+        {
+            var today = DateTime.Today;
+            var query = _context.BusSchedules.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.BusInfo.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(originState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.BoardingLocation.State, $"%{originState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(destinationState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(scheduleStatus))
+            {
+                query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
+            }
+
+            var busSchedules = await query
+                .Include(b => b.BusInfo)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .Where(bs => bs.TravelDate == today)
+                .OrderBy(bs => bs.ETD)
+                .ToListAsync();
+
+            if (busSchedules.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busSchedules);
+        }
+        #endregion
+
+        #region GetAllBusSchedulesByBusOperatorID
+        // GET: api/BusSchedule/BusOperator
+        [HttpGet("BusOperator")]
+        public async Task<ActionResult> GetAllBusSchedulesByBusOperatorID()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
+            var busSchedules = await _context.Set<BusSchedule>()
+                        .Where(b => b.PostedBy.Id == busOperator.Id)
+                        .Include(b => b.BusInfo)
+                        .Include(b => b.RecurringOptions)
+                        .Include(b => b.Routes)
+                            .ThenInclude(r => r.BoardingLocation)
+                        .Include(b => b.Routes)
+                            .ThenInclude(r => r.ArrivalLocation)
+                        .OrderBy(bs => bs.TravelDate)
+                        .ThenBy(bs => bs.ETD)
+                        .ToListAsync();
+
+            return Ok(busSchedules);
+        }
+        #endregion
+
+        #region GetBusSchedulesForTodayByBusOperatorID
+        // GET: api/BusSchedule/BusOperator/Today
+        [HttpGet("BusOperator/Today")]
+        public async Task<ActionResult> GetBusSchedulesForTodayByBusOperatorID()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
+            var today = DateTime.Today;
+
+            var busSchedulesForToday = await _context.Set<BusSchedule>()
+                .Where(b => b.PostedBy.Id == busOperator.Id)
+                .Include(b => b.BusInfo)
+                .Include(b => b.RecurringOptions)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .Where(bs => bs.TravelDate == today)
+                .OrderBy(bs => bs.ETD)
+                .ToListAsync();
+
+            return Ok(busSchedulesForToday);
+        }
+        #endregion
+
+        #region FilterBusScheduleByBusOperatorID
+        // GET: api/BusSchedule/BusOperator/FilterBusSchedule
+        [HttpGet("BusOperator/FilterBusSchedule")]
+        public async Task<ActionResult> FilterBusScheduleByBusOperatorID(
+            string busPlate = null,
+            string busType = null,
+            int? noOfSeats = null,
+            string originState = null,
+            string destinationState = null,
+            string scheduleStatus = null,
+            DateTime? travelDate = null)
+        {
+            var query = _context.BusSchedules.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.BusInfo.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(busType))
+            {
+                query = query.Where(bs => bs.BusInfo.BusType.Types == busType);
+            }
+
+            if (noOfSeats.HasValue)
+            {
+                query = query.Where(bs => bs.BusInfo.BusType.NoOfSeats == noOfSeats.Value);
+            }
+
+            if (!string.IsNullOrEmpty(originState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.BoardingLocation.State, $"%{originState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(destinationState))
+            {
+                query = query.Where(bs => EF.Functions.Like(bs.Routes.ArrivalLocation.State, $"%{destinationState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(scheduleStatus))
+            {
+                query = query.Where(bs => bs.ScheduleStatus == scheduleStatus);
+            }
+
+            if (travelDate.HasValue)
+            {
+                query = query.Where(bs => bs.TravelDate.Date == travelDate.Value.Date);
+            }
+
+            var busSchedules = await query
+                .Include(b => b.BusInfo)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.BoardingLocation)
+                .Include(b => b.Routes)
+                    .ThenInclude(r => r.ArrivalLocation)
+                .OrderBy(bs => bs.TravelDate)
+                .ThenBy(bs => bs.ETD)
+                .ToListAsync();
+
+            if (busSchedules.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busSchedules);
+        }
+        #endregion
+
+        #region FilterBusScheduleForTodayByBusOperatorID
+        // GET: api/BusSchedule/BusOperator/FilterBusScheduleForToday
+        [HttpGet("BusOperator/FilterBusScheduleForToday")]
+        public async Task<ActionResult> FilterBusScheduleForTodayByBusOperatorID(
+            string originState = null,
+            string destinationState = null,
+            string busPlate = null,
             string scheduleStatus = null)
         {
             var today = DateTime.Today;
@@ -211,6 +397,18 @@ namespace server.Controllers
         [HttpPost]
         public async Task<ActionResult<List<BusSchedule>>> PostBusSchedule([FromBody] BusScheduleDTO busScheduleDTO)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
             if (busScheduleDTO.Routes == null)
             {
                 return BadRequest(new { message = "Routes information is required." });
@@ -282,6 +480,7 @@ namespace server.Controllers
                 }
             }
 
+
             var route = new Routes
             {
                 BoardingLocationID = busScheduleDTO.Routes.BoardingLocationID,
@@ -325,7 +524,7 @@ namespace server.Controllers
                     if (recurringOptions.Date == null)
                         return BadRequest(new { message = "Date is required when RecurringOptions is 'None'." });
 
-                    var busSchedule = CreateBusSchedule(busScheduleDTO, recurringOptions.Date.Value, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
+                    var busSchedule = CreateBusSchedule(busScheduleDTO, recurringOptions.Date.Value, etd, eta, route.RouteID, recurringOption?.RecurringOptionID, busOperator);
                     busSchedules.Add(busSchedule);
                 }
                 else if (recurringOptions.Options == "Daily")
@@ -342,7 +541,7 @@ namespace server.Controllers
 
                     for (var date = recurringOptions.FromDate.Value; date <= recurringOptions.ToDate.Value; date = date.AddDays(1))
                     {
-                        var busSchedule = CreateBusSchedule(busScheduleDTO, date, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
+                        var busSchedule = CreateBusSchedule(busScheduleDTO, date, etd, eta, route.RouteID, recurringOption?.RecurringOptionID, busOperator);
                         busSchedules.Add(busSchedule);
                     }
                 }
@@ -363,7 +562,7 @@ namespace server.Controllers
                     {
                         if (daysOfWeek.Contains(date.DayOfWeek))
                         {
-                            var busSchedule = CreateBusSchedule(busScheduleDTO, date, etd, eta, route.RouteID, recurringOption?.RecurringOptionID);
+                            var busSchedule = CreateBusSchedule(busScheduleDTO, date, etd, eta, route.RouteID, recurringOption?.RecurringOptionID, busOperator);
                             busSchedules.Add(busSchedule);
                         }
                     }
@@ -390,7 +589,8 @@ namespace server.Controllers
             TimeSpan etd,
             TimeSpan eta,
             Guid routeID,
-            Guid? recurringOptionID)
+            Guid? recurringOptionID,
+            BusOperator postedBy)
         {
             return new BusSchedule
             {
@@ -402,7 +602,8 @@ namespace server.Controllers
                 BusID = dto.BusID,
                 RouteID = routeID,
                 ScheduleStatus = dto.ScheduleStatus,
-                Status = string.IsNullOrWhiteSpace(dto.Status) ? "Scheduled" : dto.Status
+                Status = string.IsNullOrWhiteSpace(dto.Status) ? "Scheduled" : dto.Status,
+                PostedBy = postedBy
             };
         }
 
@@ -444,6 +645,18 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBusSchedule(Guid id, BusScheduleDTO busScheduleDTO)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
             var existingBusSchedule = await _context.BusSchedules
                 .Include(bs => bs.Routes)
                 .Include(bs => bs.RecurringOptions)
@@ -508,6 +721,18 @@ namespace server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusSchedule(int id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
             var busSchedule = await _context.Set<BusSchedule>().FindAsync(id);
             if (busSchedule == null)
             {
