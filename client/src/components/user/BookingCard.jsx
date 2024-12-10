@@ -3,19 +3,35 @@ import { SlOptionsVertical } from 'react-icons/sl';
 import Rating from '../../screens/user/modal/Rating';
 import Modal from '../common/Modal';
 import Ticket from './Ticket';
+import { format } from 'date-fns';
 
 const BookingCard = ({ booking, seatNumber, user }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewPdf, setViewPdf] = useState(false);
   const [ratingView, setRatingView] = useState(false);
 
+  const handleViewPdf = () => {
+    setViewPdf(true);
+    setDropdownVisible(false);
+  };
+
+  const handleRateReview = () => {
+    setRatingView(true);
+    setDropdownVisible(false);
+  };
+
   return (
     <div className='rounded-lg font-poppins shadow-md mb-4 mx-auto bg-slate-50 border'>
       <div className='grid grid-cols-1 md:grid-cols-10 p-6 gap-2 items-center'>
         {/* trip date and time */}
         <div className=''>
-          <p className='font-extrabold text-xl md:text-2xl text-primary'>15</p>
-          <p className='text-gray-600 text-sm md:text-base'>October 2024</p>
+          <p className='font-extrabold text-xl md:text-2xl text-primary'>
+            {' '}
+            {format(new Date(booking.busSchedule.travelDate), 'dd')}
+          </p>
+          <p className='text-gray-600 text-sm md:text-base'>
+            {format(new Date(booking.busSchedule.travelDate), 'MMM yyyy')}
+          </p>
         </div>
 
         {/* departure and arrival */}
@@ -25,7 +41,7 @@ const BookingCard = ({ booking, seatNumber, user }) => {
             {booking.busSchedule.routes.arrivalLocation.state}
           </p>
           <p className='text-gray-600 text-sm'>
-            {booking.busSchedule.postedBy.userName}
+            {booking.busSchedule.postedBy.fullname}
           </p>
         </div>
 
@@ -59,13 +75,13 @@ const BookingCard = ({ booking, seatNumber, user }) => {
           {dropdownVisible && (
             <div className='absolute mt-6 w-48 bg-white border border-gray-200 rounded-md shadow-lg text-gray-700 font-medium'>
               <button
-                onClick={() => setViewPdf(!viewPdf)}
+                onClick={handleViewPdf}
                 className='block w-full py-3 hover:bg-gray-100'
               >
                 Ticket Details
               </button>
               <button
-                onClick={() => setRatingView(!ratingView)}
+                onClick={handleRateReview}
                 className='block w-full py-3 hover:bg-gray-100'
               >
                 Rate and Review
