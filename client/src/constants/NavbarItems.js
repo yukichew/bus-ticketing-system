@@ -1,6 +1,6 @@
 export const userLinks = [
   { key: 1, name: 'Home', href: '/' },
-  { key: 2, name: 'About', href: '/about' },
+  { key: 2, name: 'Contact', href: '/contact-us' },
 ];
 
 export const busOperatorLinks = [

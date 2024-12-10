@@ -7,7 +7,6 @@ import {
   memberLinks,
   userLinks,
 } from '../../constants/NavbarItems';
-import { useAuth } from '../../utils/AuthContext';
 import { getUserProfile, logout } from '../../api/auth';
 import { toast } from 'react-toastify';
 
@@ -66,7 +65,7 @@ const Navbar = ({ auth }) => {
   };
 
   return (
-    <nav className='w-full px-6 md:px-5 py-7 bg-white shadow-lg'>
+    <nav className='w-full px-6 md:px-5 py-7 bg-white shadow-lg relative z-50'>
       <div className='container flex items-center justify-between mx-auto text-slate-800 max-w-screen-xl'>
         {/* logo */}
         <Logo />
