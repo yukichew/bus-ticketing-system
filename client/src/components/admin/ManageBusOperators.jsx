@@ -11,6 +11,9 @@ import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
 import PromptConfirmation from "./modal/PromptConfirmation";
 import { getAllBoDetails } from "../../api/auth";
+import { deactivateBo } from "../../api/busOperator";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const mapBusOperatorsData = (response) => {
   return response.map((item) => ({
@@ -59,6 +62,29 @@ const ManageBusOperators = () => {
 
     fetchBusOperators();
   }, []);
+
+  const handleDeactivate = async () => {
+    if (!selectedOperator) {
+      toast.error("No operator selected.");
+      return;
+    }
+    try {
+      const response = await deactivateBo(selectedOperator.id);
+
+      if (response?.error) {
+        console.error("API error: ", response.message);
+      } else {
+        toast.success("Bus operator has been deactivated");
+        setShowDeactivateModal(false);
+
+        setBusOperators((prev) =>
+          prev.filter((operator) => operator.id !== selectedOperator.id)
+        );
+      }
+    } catch (error) {
+      console.error("Unexpected error occurred: ", error);
+    }
+  };
 
   const applyFilters = () => {
     return busOperators
@@ -122,6 +148,7 @@ const ManageBusOperators = () => {
             <button
               onClick={() => {
                 setShowDeactivateModal(true);
+                setSelectedOperator(row);
               }}
               className="text-red-500 hover:text-red-600"
             >
@@ -138,6 +165,7 @@ const ManageBusOperators = () => {
 
   return (
     <>
+      <ToastContainer />
       {showFilters && (
         <Card>
           <div className="flex justify-between gap-4 mb-4">
@@ -288,7 +316,7 @@ const ManageBusOperators = () => {
             header="Are you sure you want to deactivate this user?"
             confirmTitle="Deactivate"
             onClose={() => setShowDeactivateModal(false)}
-            onConfirm={() => setShowDeactivateModal(false)}
+            onConfirm={handleDeactivate}
           />
         </Modal>
       )}

@@ -16,6 +16,21 @@ export const approveBo = async (id) => {
   }
 };
 
+export const deactivateBo = async (id) => {
+  try {
+    const status = "Inactive";
+    const { data } = await api.put(`/BusOperator/update-status/${id}`, status, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Fetched data:", data);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
 export const SendRejectApplicationEmail = async (id) => {
   try {
     const { data } = await api.put(`/BusOperator/reject-application/${id}`);
