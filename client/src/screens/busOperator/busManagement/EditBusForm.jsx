@@ -7,9 +7,10 @@ import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
 import { getBus, updateBus } from '../../../api/busInfo';
-import { getAllBusType, getBusType } from '../../../api/busType';
+import { GetAllBusTypesByBusOperatorID, getBusType } from '../../../api/busType';
 
 const EditBusForm = () => {
+    const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const { busID } = useParams();
     const [busTypeOptions, setBusTypeOptions] = useState([]);
@@ -26,7 +27,6 @@ const EditBusForm = () => {
 
     const fetchBusData = async () => {
         const result = await getBus(busID);
-        console.log(result);
         const busType = result?.busType || {};
     
         setBusDetails({
@@ -47,7 +47,7 @@ const EditBusForm = () => {
     };
 
     const fetchBusTypeData = async () => {
-        const results = await getAllBusType();
+        const results = await GetAllBusTypesByBusOperatorID(token);
 
         const formattedData = results.map((item) => ({
             busTypeID: item.busTypeID,
@@ -102,7 +102,7 @@ const EditBusForm = () => {
             status: selectedBusStatusOption,
         };
 
-        await updateBus(busID, updatedDetails);
+        await updateBus(busID, updatedDetails, token);
 
         alert("Bus updated successfully!");
         navigate('/bo/bus');
