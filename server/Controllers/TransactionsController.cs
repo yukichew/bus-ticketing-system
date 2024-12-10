@@ -188,5 +188,23 @@ namespace server.Controllers
             return Ok(new { message = "Transaction updated." });
         }
         #endregion
+
+        #region GET all Transaction Details API
+        [HttpGet("get-transaction-details")]
+        public async Task<IActionResult> GetAllTransactions()
+        {
+            var transactions = await (from transaction in _context.Transaction
+                                      select new
+                                      {
+                                          transaction.TransactionID,
+                                          transaction.BookingID,
+                                          transaction.Amount,
+                                          transaction.Status,
+                                          transaction.CreatedAt
+                                      }).ToListAsync();
+
+            return Ok(transactions);
+        }
+        #endregion
     }
 }

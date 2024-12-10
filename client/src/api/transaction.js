@@ -22,9 +22,22 @@ export const confirmTransaction = async (transactionID, status) => {
   }
 };
 
-export const fetchTransactions = async () => {
+export const getTotalSalesRevenue = async (token) => {
   try {
-    const { data } = await axios.get("/api/Transactions");
+    const { data } = await api.get(`/Transactions/BusOperator`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const getTransactionsDetails = async () => {
+  try {
+    const { data } = await api.get("/Transactions/get-transaction-details");
     return data;
   } catch (error) {
     console.error("Error fetching transactions:", error);
