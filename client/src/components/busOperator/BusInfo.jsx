@@ -7,8 +7,8 @@ import { GrPowerReset } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai";
 import Table from '../common/Table';
 import Card from '../common/Card';
-import { GetAllBusByBusOperatorID, searchBus, deleteBus } from '../../api/busInfo';
-import { GetAllBusTypesByBusOperatorID } from '../../api/busType';
+import { getAllBusByBusOperatorID, searchBus, deleteBus } from '../../api/busInfo';
+import { getAllBusTypesByBusOperatorID } from '../../api/busType';
 
 const BusInfo = () => {
     const token = sessionStorage.getItem('token');
@@ -47,7 +47,7 @@ const BusInfo = () => {
 
     const fetchBusData = async () => {
         try {
-            const results = await GetAllBusByBusOperatorID(token);
+            const results = await getAllBusByBusOperatorID(token);
             const busInfoArr = results?.busInfo || [];
             
             if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
@@ -70,7 +70,7 @@ const BusInfo = () => {
 
     const fetchBusTypeData = async () => {
         try {
-            const results = await GetAllBusTypesByBusOperatorID(token);
+            const results = await getAllBusTypesByBusOperatorID(token);
 
             if (Array.isArray(results) && results.length > 0) {
                 const formattedData = results.map((item) => ({

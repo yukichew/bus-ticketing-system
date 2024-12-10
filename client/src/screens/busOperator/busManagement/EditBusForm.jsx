@@ -6,22 +6,41 @@ import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
 import { getBus, updateBus } from '../../../api/busInfo';
-import { GetAllBusTypesByBusOperatorID, getBusType } from '../../../api/busType';
+import { getAllBusTypesByBusOperatorID, getBusType } from '../../../api/busType';
+import * as yup from "yup";
+import { validateField } from '../../../utils/validate';
 
 const EditBusForm = () => {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const { busID } = useParams();
+    const [busPlate, setBusPlate] = useState("");
+    const [busType, setBusType] = useState("");
+    const [status, setStatus] = useState("");
     const [busTypeOptions, setBusTypeOptions] = useState([]);
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
     const [selectedBusTypeOption, setSelectedBusTypeOption] = useState('Select a bus type');
     const [isBusStatusOpen, setIsBusStatusOpen] = useState(false);
     const [selectedBusStatusOption, setSelectedBusStatusOption] = useState('Select a status');
+    const [errors, setErrors] = useState({});
     const [busDetails, setBusDetails] = useState({
         busID: '',
         busPlate: '',
         busTypeID: '',
         status: '',
+    });
+
+    const editBusSchema = yup.object().shape({
+        busPlate: yup
+          .string()
+          .matches(/^[A-Z0-9 ]+$/, "Bus Plate must only contain uppercase letters and numbers.")
+          .required("Bus Plate is required"),
+        busType: yup
+          .string()
+          .required("Bus Type is required"),
+        status: yup
+          .string()
+          .required("Status is required")
     });
 
     const fetchBusData = async () => {
@@ -46,7 +65,7 @@ const EditBusForm = () => {
     };
 
     const fetchBusTypeData = async () => {
-        const results = await GetAllBusTypesByBusOperatorID(token);
+        const results = await getAllBusTypesByBusOperatorID(token);
 
         const formattedData = results.map((item) => ({
             busTypeID: item.busTypeID,
@@ -81,10 +100,15 @@ const EditBusForm = () => {
         }));
     };
 
-    const handleInputChange = (name, value) => {
+    const handleInputChange = (field, value) => {
+        if (field === "busPlate") setBusPlate(value);
+        if (field === "busType") setBusType(value);
+        if (field === "status") setStatus(value);
+        validateField(field, value, setErrors, editBusSchema);
+
         setBusDetails((prevData) => ({
             ...prevData,
-            [name]: value,
+            [field]: value,
         }));
     };
 
@@ -131,6 +155,7 @@ const EditBusForm = () => {
                                 placeholder="Enter Bus Plate"
                                 value={busDetails.busPlate}
                                 onChange={(e) => handleInputChange('busPlate', e.target.value)}
+                                error={errors.busPlate}
                             />
                         </div>
 

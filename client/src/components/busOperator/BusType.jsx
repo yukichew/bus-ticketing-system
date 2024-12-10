@@ -8,7 +8,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
 import Table from '../common/Table';
 import Card from '../common/Card';
-import { GetAllBusTypesByBusOperatorID, searchBusType, deleteBusType } from '../../api/busType';
+import { getAllBusTypesByBusOperatorID, searchBusType, deleteBusType } from '../../api/busType';
 
 const BusType = () => {
     const token = sessionStorage.getItem('token');
@@ -46,7 +46,7 @@ const BusType = () => {
 
     const fetchBusTypeData = async () => {
         try {
-            const results = await GetAllBusTypesByBusOperatorID(token);
+            const results = await getAllBusTypesByBusOperatorID(token);
         
             if (Array.isArray(results) && results.length > 0) {
                 const formattedData = results.map((item) => ({

@@ -9,7 +9,7 @@ import Table from '../common/Table';
 import Card from '../common/Card';
 import DatePickerField from '../common/DatePickerField';
 import { getAllBusSchedulesByBusOperatorID, searchScheduleByBusOperatorID } from '../../api/schedule';
-import { GetAllLocations } from '../../api/location';
+import { getAllLocations } from '../../api/location';
 import moment from 'moment';
 
 const BusScheduling = () => {
@@ -80,7 +80,7 @@ const BusScheduling = () => {
     };
 
     const fetchLocationData = async () => {
-        const results = await GetAllLocations();
+        const results = await getAllLocations();
 
         const formattedData = results.map((item) => ({
             locationID: item.locationID,

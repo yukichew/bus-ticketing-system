@@ -8,7 +8,7 @@ import CustomButton from '../../../components/common/CustomButton';
 import DatePickerField from '../../../components/common/DatePickerField';
 import CustomInput from '../../../components/common/CustomInput';
 import { getBusSchedule, updateBusSchedule } from '../../../api/schedule';
-import { GetAllBusByBusOperatorID } from '../../../api/busInfo';
+import { getAllBusByBusOperatorID } from '../../../api/busInfo';
 
 const EditBusScheduleForm = () => {
     const token = sessionStorage.getItem('token');
@@ -106,7 +106,7 @@ const EditBusScheduleForm = () => {
 
     const fetchBusData = async () => {
         try {
-            const results = await GetAllBusByBusOperatorID(token);
+            const results = await getAllBusByBusOperatorID(token);
             const busInfoArr = results?.busInfo || [];
             
             if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {

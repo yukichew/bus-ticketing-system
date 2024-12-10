@@ -6,8 +6,8 @@ import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import DatePickerField from '../../../components/common/DatePickerField';
 import CustomInput from '../../../components/common/CustomInput';
-import { GetAllBusByBusOperatorID } from '../../../api/busInfo';
-import { GetAllLocations } from '../../../api/location';
+import { getAllBusByBusOperatorID } from '../../../api/busInfo';
+import { getAllLocations } from '../../../api/location';
 import { createBusSchedule } from '../../../api/schedule';
 
 const NewBusScheduleForm = () => {
@@ -38,14 +38,12 @@ const NewBusScheduleForm = () => {
         eta: '',
         scheduleStatus: 'Scheduled',
         status: 'Active',
-    
         // Bus information
         busID: '',
         busPlate: '',
         numSeats: '',
         busType: '',
         busStatus: '',
-    
         // Route information
         boardingLocationID: '',
         departureTime: '',
@@ -53,7 +51,6 @@ const NewBusScheduleForm = () => {
         arrivalTime: '',
         routeStatus: 'Active',
         price: '',
-    
         // Recurring information
         isRecurring: '',
         options: '',
@@ -64,7 +61,7 @@ const NewBusScheduleForm = () => {
 
     const fetchBusData = async () => {
         try {
-            const results = await GetAllBusByBusOperatorID(token);
+            const results = await getAllBusByBusOperatorID(token);
             const busInfoArr = results?.busInfo || [];
             
             if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
@@ -86,7 +83,7 @@ const NewBusScheduleForm = () => {
     };
 
     const fetchLocationData = async () => {
-        const results = await GetAllLocations();
+        const results = await getAllLocations();
 
         const formattedData = results.map((item) => ({
             locationID: item.locationID,
