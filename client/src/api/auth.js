@@ -25,13 +25,30 @@ export const register = async (email, password, confirmPassword) => {
   }
 };
 
-export const getUserProfile = async (token) => {
+export const getUserProfile = async () => {
   try {
-    const { data } = await api.get('/Auth/profile', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const { data } = await api.get('/Auth/profile');
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const refreshTokenApi = async (refreshToken) => {
+  try {
+    const { data } = await api.post('/Auth/refresh-token', { refreshToken });
+    sessionStorage.setItem('token', data.token);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const logout = async () => {
+  try {
+    const { data } = await api.post('/Auth/logout');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('role');
     return data;
   } catch (err) {
     return catchError(err);
@@ -112,39 +129,22 @@ export const resetPassword = async (email, newPassword) => {
 
 export const changePassword = async (oldPassword, newPassword) => {
   try {
-    const token = sessionStorage.getItem('token');
-    const { data } = await api.post(
-      '/Auth/change-password',
-      {
-        oldPassword,
-        newPassword,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const { data } = await api.post('/Auth/change-password', {
+      oldPassword,
+      newPassword,
+    });
     return data;
   } catch (err) {
     return catchError(err);
   }
 };
 
-export const editProfile = async (fullname, phoneNumber, token) => {
+export const editProfile = async (fullname, phoneNumber) => {
   try {
-    const { data } = await api.put(
-      '/Auth/edit-profile',
-      {
-        fullname,
-        phoneNumber,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const { data } = await api.put('/Auth/edit-profile', {
+      fullname,
+      phoneNumber,
+    });
     return data;
   } catch (err) {
     return catchError(err);
