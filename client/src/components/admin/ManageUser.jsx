@@ -19,14 +19,14 @@ const ManageUser = () => {
   const [members, setMembers] = useState([]);
   const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
-    userName: "",
+    fullName: "",
     email: "",
     phoneNumber: "",
     status: "",
   });
 
   const initialFilters = {
-    userName: "",
+    fullName: "",
     email: "",
     phoneNumber: "",
     status: "",
@@ -49,8 +49,8 @@ const ManageUser = () => {
     setFilters(initialFilters);
   };
 
-  const columns = ["User Name", "Email", "Phone Number"];
-  const columnKeys = ["userName", "email", "phoneNumber"];
+  const columns = ["Full Name", "Email", "Phone Number"];
+  const columnKeys = ["fullname", "email", "phoneNumber"];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -126,17 +126,17 @@ const ManageUser = () => {
           <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/2">
               <label
-                htmlFor="userName"
+                htmlFor="fullname"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                User Name
+                Full Name
               </label>
               <CustomInput
-                placeholder="Filter by User Name"
-                id="userName"
-                name="userName"
+                placeholder="Filter by Full Name"
+                id="fullname"
+                name="fullname"
                 type="text"
-                value={filters.companyName}
+                value={filters.fullname}
                 onChange={handleFilterChange}
               />
             </div>
@@ -152,7 +152,7 @@ const ManageUser = () => {
                 id="email"
                 name="email"
                 type="text"
-                value={filters.companyEmail}
+                value={filters.email}
                 onChange={handleFilterChange}
               />
             </div>
@@ -171,7 +171,7 @@ const ManageUser = () => {
                 id="phoneNumber"
                 name="phoneNumber"
                 type="text"
-                value={filters.contactNumber}
+                value={filters.phoneNumber}
                 onChange={handleFilterChange}
               />
             </div>
