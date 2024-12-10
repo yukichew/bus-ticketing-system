@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FaChevronRight } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import BusTicketForm from './user/BusTicketForm';
 
 const Hero = () => {
@@ -41,13 +40,6 @@ const Hero = () => {
                 RideNGo stands as Malaysia's leading online platform for bus
                 ticketing, earning the trust of millions of global travellers.
               </p>
-              <Link
-                href='/'
-                aria-label=''
-                className='font-poppins text-white inline-flex items-center font-semibold tracking-wider transition-colors duration-200'
-              >
-                Learn more <FaChevronRight className='inline-block w-3 ml-2' />
-              </Link>
             </div>
 
             <div className='w-full max-w-xl xl:px-6 xl:w-5/12'>
