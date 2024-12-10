@@ -8,6 +8,7 @@ import { login } from '../../api/auth';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { validateField } from '../../utils/validate';
+import { useAuth } from '../../utils/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const { setAuth } = useAuth();
 
   const handleNavigation = (action) => {
     if (action === 'register-user') {
@@ -63,6 +65,10 @@ const Login = () => {
       return toast.error(response.message);
     }
     toast.success('Login successful');
+    setAuth({
+      token: response.token,
+      role: response.role,
+    });
     setIsAdmin(response.role === 'Admin');
     navigate(
       response.role === 'Admin'
@@ -71,6 +77,7 @@ const Login = () => {
         ? '/bo/dashboard'
         : '/'
     );
+    // window.location.reload();
   };
 
   return (

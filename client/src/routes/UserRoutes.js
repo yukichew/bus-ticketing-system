@@ -20,6 +20,10 @@ const UserRoutes = [
     element={<Home />}
   />,
   <Route
+    path='/home'
+    element={<Home />}
+  />,
+  <Route
     path='/booking'
     element={<Booking />}
   />,
