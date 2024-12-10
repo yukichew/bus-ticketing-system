@@ -8,7 +8,6 @@ using System.Text;
 using server.Helper;
 using server.Dto.Auth;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Cryptography;
 
 namespace server.Controllers
 {
@@ -170,6 +169,7 @@ namespace server.Controllers
         }
         #endregion
 
+        #region Generate Refresh Token API
         private string GenerateRefreshJwtToken(IdentityUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -184,6 +184,7 @@ namespace server.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        #endregion
 
         #region Send OTP Email Method
         private async Task SendOtpEmail(string name, string email, string otp)

@@ -55,27 +55,6 @@ export const logout = async () => {
   }
 };
 
-export const refreshToken = async (refreshToken) => {
-  try {
-    const { data } = await api.post('/Auth/refresh-token', { refreshToken });
-    sessionStorage.setItem('token', data.token);
-    return data;
-  } catch (err) {
-    return catchError(err);
-  }
-};
-
-export const logout = async () => {
-  try {
-    const { data } = await api.post('/Auth/logout');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('role');
-    return data;
-  } catch (err) {
-    return catchError(err);
-  }
-};
-
 export const verifyEmail = async (email) => {
   try {
     const token = sessionStorage.getItem('token');
