@@ -7,10 +7,11 @@ import { GrPowerReset } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai";
 import Table from '../common/Table';
 import Card from '../common/Card';
-import { getAllBus, searchBus, deleteBus } from '../../api/busInfo';
-import { getAllBusType } from '../../api/busType';
+import { GetAllBusByBusOperatorID, searchBus, deleteBus } from '../../api/busInfo';
+import { GetAllBusTypesByBusOperatorID } from '../../api/busType';
 
 const BusInfo = () => {
+    const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const [busData, setBusData] = useState([]);
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
@@ -45,35 +46,53 @@ const BusInfo = () => {
     };   
 
     const fetchBusData = async () => {
-        const results = await getAllBus();
-        const busInfoArr = results?.busInfo || [];
-
-        const formattedData = busInfoArr.map((item) => ({
-            busID: item.busID,
-            busPlate: item.busPlate,
-            busType: item.busType.types,
-            noOfSeats: `${item.busType.noOfSeats} seats`,
-            status: item.status,
-        }));
-
-        setBusData(formattedData);
+        try {
+            const results = await GetAllBusByBusOperatorID(token);
+            const busInfoArr = results?.busInfo || [];
+            
+            if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
+                const formattedData = busInfoArr.map((item) => ({
+                    busID: item.busID,
+                    busPlate: item.busPlate,
+                    busType: item.busType.types,
+                    noOfSeats: `${item.busType.noOfSeats} seats`,
+                    status: item.status,
+                }));
+        
+                setBusData(formattedData);
+            } else {
+                setBusData([]);
+            }
+        } catch(error) {
+            setBusData([]);
+        }
     };
 
     const fetchBusTypeData = async () => {
-        const results = await getAllBusType();
+        try {
+            const results = await GetAllBusTypesByBusOperatorID(token);
 
-        const formattedData = results.map((item) => ({
-            busTypeID: item.busTypeID,
-            types: item.types,
-            noOfSeats: `${item.noOfSeats} seats`,
-            status: item.status,
-        }));
-
-        const busTypeOptions = [...new Set(formattedData.map((item) => item.types))];
-        const numSeatsOptions = [...new Set(formattedData.map((item) => item.noOfSeats))];
-
-        setBusTypeOptions(busTypeOptions);
-        setNumSeatsOptions(numSeatsOptions);
+            if (Array.isArray(results) && results.length > 0) {
+                const formattedData = results.map((item) => ({
+                    busTypeID: item.busTypeID,
+                    types: item.types,
+                    noOfSeats: `${item.noOfSeats} seats`,
+                    status: item.status,
+                }));
+        
+                const busTypeOptions = [...new Set(formattedData.map((item) => item.types))];
+                const numSeatsOptions = [...new Set(formattedData.map((item) => item.noOfSeats))];
+        
+                setBusTypeOptions(busTypeOptions);
+                setNumSeatsOptions(numSeatsOptions);
+            } else {
+                setBusTypeOptions([]);
+                setNumSeatsOptions([]);
+            }
+        } catch(error) {
+            setBusTypeOptions([]);
+            setNumSeatsOptions([]);
+        }
     };
 
     useEffect(() => {
@@ -168,16 +187,26 @@ const BusInfo = () => {
             Object.entries(filters).filter(([_, value]) => value !== '')
         );
 
-        const results = await searchBus(activeFilters);
-        const formattedData = results.map((item) => ({
-            busID: item.busID,
-            busPlate: item.busPlate,
-            busType: item.busType.types,
-            noOfSeats: `${item.busType.noOfSeats} seats`,
-            status: item.status,
-        }));
-
-        setBusData(formattedData);
+        try {
+            const results = await searchBus(activeFilters);
+            const busInfoArr = results?.busInfo || [];
+            
+            if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
+                const formattedData = busInfoArr.map((item) => ({
+                    busID: item.busID,
+                    busPlate: item.busPlate,
+                    busType: item.busType.types,
+                    noOfSeats: `${item.busType.noOfSeats} seats`,
+                    status: item.status,
+                }));
+        
+                setBusData(formattedData);
+            } else {
+                setBusData([]);
+            }
+        } catch(error) {
+            setBusData([]);
+        }
     }
 
     const handleReset = () => {
@@ -196,7 +225,7 @@ const BusInfo = () => {
     }
 
     const handleDelete = async (busID) => {
-        const response = await deleteBus(busID);
+        const response = await deleteBus(busID, token);
 
         if(response){
             alert("Bus deleted successfully!");
@@ -360,9 +389,17 @@ const BusInfo = () => {
                 </div>
             </div>
 
-            <div className='mt-3 mx-auto'>
-                <Table data={enhancedData} columns={columns} columnKeys={columnKeys} showActionColumn={true} actions={actionIcons}/>
-            </div>
+            {busData.length > 0 ? (
+                <>
+                    <div className='mt-3 mb-8 mx-auto'>
+                        <Table data={enhancedData} columns={columns} columnKeys={columnKeys} showActionColumn={true} actions={actionIcons} />
+                    </div>
+                </>
+            ) : (
+                <div className="mt-3 text-center text-gray-500 font-poppins">
+                    <span>No results found.</span>
+                </div>
+            )}
         </>
     );
 };

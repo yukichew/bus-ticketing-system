@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Navbar from '../../../components/common/Navbar';
 import Footer from '../../../components/Footer';
@@ -6,139 +7,186 @@ import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import DatePickerField from '../../../components/common/DatePickerField';
 import CustomInput from '../../../components/common/CustomInput';
+import { GetAllBusByBusOperatorID } from '../../../api/busInfo';
+import { GetAllLocations } from '../../../api/location';
+import { createBusSchedule } from '../../../api/schedule';
 
 const NewBusScheduleForm = () => {
-    const [isBusPlateOpen, setIsBusPlateOpen] = useState(false);
+    const token = sessionStorage.getItem('token');
+    const navigate = useNavigate();
+    const [busData, setBusData] = useState([]);
+    const [locationOptions, setLocationOptions] = useState([]);
+    const [stationOptions, setStationOptions] = useState([]);
+    const [filteredStations, setFilteredStations] = useState([]);
     const [selectedBusPlateOption, setSelectedBusPlateOption] = useState('Select a bus plate');
-    const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
-    const [isBusStatusOpen, setIsBusStatusOpen] = useState(false);
-    const [isOriginOpen, setIsOriginOpen] = useState(false);
     const [selectedOriginOption, setSelectedOriginOption] = useState('Select an origin');
-    const [isBoardingLocationOpen, setIsBoardingLocationOpen] = useState(false);
-    const [selectedBoardingLocationOption, setSelectedBoardingLocationOption] = useState('Select a boarding location');
-    const [isDestinationOpen, setIsDestinationOpen] = useState(false);
     const [selectedDestinationOption, setSelectedDestinationOption] = useState('Select a destination');
-    const [isArrivalLocationOpen, setIsArrivalLocationOpen] = useState(false);
-    const [selectedArrivalLocationOption, setSelectedArrivalLocationOption] = useState('Select an arrival location');
+    const [selectedBoardingStationOption, setSelectedBoardingStationOption] = useState('Select a boarding station');
+    const [selectedArrivalStationOption, setSelectedArrivalStationOption] = useState('Select an arrival station');
+    const [selectedRecurringOption, setSelectedRecurringOption] = useState('Select an option');
+    const [isBusPlateOpen, setIsBusPlateOpen] = useState(false);
+    const [isOriginOpen, setIsOriginOpen] = useState(false);
+    const [isDestinationOpen, setIsDestinationOpen] = useState(false);
+    const [isBoardingStationOpen, setIsBoardingStationOpen] = useState(false);
+    const [isArrivalStationOpen, setIsArrivalStationOpen] = useState(false);
     const [isRecurringOptionOpen, setIsRecurringOptionOpen] = useState(false);
-    const [selectedRecurringOption, setSelectedRecurringOption] = useState('None');
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [selectedDays, setSelectedDays] = useState([]);
     const [formData, setFormData] = useState({
-        // bus information
+        // Schedule information
+        etd: '',
+        eta: '',
+        scheduleStatus: 'Scheduled',
+        status: 'Active',
+    
+        // Bus information
+        busID: '',
         busPlate: '',
         numSeats: '',
-        busTypes: '',
-        status: '',
-
-        // driver information
-        fullname: '',
-        icNo: '',
-        contactNo: '',
-        licenseExpiryDate: '',
-
-        // route information
-        origin: '',
-        boardingLocation: '',
-        etd: '',
-        destination: '',
-        arrivalLocation: '',
-        eta: '',
-
-        // recurring information
-        recurringOption: '',
-        from: '',
-        to: '',
-        days: '',
+        busType: '',
+        busStatus: '',
+    
+        // Route information
+        boardingLocationID: '',
+        departureTime: '',
+        arrivalLocationID: '',
+        arrivalTime: '',
+        routeStatus: 'Active',
+        price: '',
+    
+        // Recurring information
+        isRecurring: '',
+        options: '',
+        date: '',
+        fromDate: '',
+        toDate: '',
     });
 
-    const busTypeOptions = ['2+1', '2+2'];
+    const fetchBusData = async () => {
+        try {
+            const results = await GetAllBusByBusOperatorID(token);
+            const busInfoArr = results?.busInfo || [];
+            
+            if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
+                const formattedData = busInfoArr.map((item) => ({
+                    busID: item.busID,
+                    busPlate: item.busPlate,
+                    busType: item.busType.types,
+                    noOfSeats: `${item.busType.noOfSeats} seats`,
+                    status: item.status,
+                }));
+        
+                setBusData(formattedData);
+            } else {
+                setBusData([]);
+            }
+        } catch(error) {
+            setBusData([]);
+        }
+    };
 
-    const busStatusOptions = ['Active', 'Inactive'];
+    const fetchLocationData = async () => {
+        const results = await GetAllLocations();
 
-    const originOptions = ['Kuala Lumpur', 'Johor Bahru', 'Penang', 'Shah Alam', 'Putrajaya'];
+        const formattedData = results.map((item) => ({
+            locationID: item.locationID,
+            stationName: item.name,
+            state: item.state,
+            status: item.status,
+        }));
 
-    const boardingLocationOptions = ['Downtown Bus Terminal', 'Terminal Bersepadu Selatan'];
+        const locationOptions = [...new Set(formattedData.map((item) => item.state))];
 
-    const destinationOptions = ['Melaka', 'Ipoh', 'Kuantan', 'Butterworth', 'Klang'];
+        setLocationOptions(locationOptions);
+        setStationOptions(formattedData);
+    };
 
-    const arrivalLocationOptions = ['Airport Terminal 1', 'Airport Terminal 2', 'Railway Crossing Stop'];
+    const filterStationsByState = (state) => {
+        const filtered = stationOptions.filter((station) => station.state === state);
+        setFilteredStations(filtered.map((station) => station.stationName));
+    };
 
-    const recurringOptions = ['None', 'Daily', 'Monthly'];
+    const findLocationIDByStation = (stationName) => {
+        const station = stationOptions.find((option) => option.stationName === stationName);
+        return station ? station.locationID : null;
+    };
 
-    const daysOfWeek = [
-        { label: 'M', fullDay: 'Monday' },
-        { label: 'T', fullDay: 'Tuesday' },
-        { label: 'W', fullDay: 'Wednesday' },
-        { label: 'T', fullDay: 'Thursday' },
-        { label: 'F', fullDay: 'Friday' },
-        { label: 'S', fullDay: 'Saturday' },
-        { label: 'S', fullDay: 'Sunday' }
-    ];
-
-    const [busData, setBusData] = useState([
-        { id: "1", busPlate: "SMP5792", seats: '30', busType: '2+1', status: 'Active' },
-        { id: "2", busPlate: "SB8204H", seats: '40', busType: '2+1', status: 'Inactive' },
-        { id: "3", busPlate: "QPD1151", seats: '56', busType: '2+2', status: 'Inactive' },
-        { id: "4", busPlate: "WXY2345", seats: '45', busType: '2+1', status: 'Active' }
-    ]);
+    useEffect(() => {
+        fetchBusData();
+        fetchLocationData();
+    }, []);
 
     const handleSelectBusPlate = (option) => {
         setSelectedBusPlateOption(option);
         setIsBusPlateOpen(false);
-
+    
         const selectedBus = busData.find(bus => bus.busPlate === option);
-
+    
         if (selectedBus) {
             setFormData({
+                ...formData,
+                busID: selectedBus.busID,
                 busPlate: selectedBus.busPlate,
-                numSeats: selectedBus.seats,
-                busTypes: selectedBus.busType,
-                status: selectedBus.status
+                numSeats: selectedBus.noOfSeats,
+                busType: selectedBus.busType,
+                busStatus: selectedBus.status,
             });
         } else {
-            // display toast error message
+            setFormData({
+                ...formData,
+                busPlate: '',
+                numSeats: '',
+                busType: '',
+                busStatus: '',
+            });
         }
     };
 
-    const handleSelectBusType = (option) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            busTypes: option
-        }));
-        setIsBusTypeOpen(false);
-    };
-
-    const handleSelectBusStatus = (option) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            status: option
-        }));
-        setIsBusStatusOpen(false);
-    };
-
-    const handleSelectOrigin = (option) => {
-        setSelectedOriginOption(option);
+    const handleSelectOrigin = (state) => {
+        setSelectedOriginOption(state);
+        filterStationsByState(state);
         setIsOriginOpen(false);
     };
 
-    const handleSelectBoardingLocation = (option) => {
-        setSelectedBoardingLocationOption(option);
-        setIsBoardingLocationOpen(false);
+    const handleSelectBoardingStation = (stationName) => {
+        const locationID = findLocationIDByStation(stationName);
+        setSelectedBoardingStationOption(stationName);
+        setFormData((prev) => ({ 
+            ...prev, 
+            boardingLocationID: locationID 
+        }));
+        setIsBoardingStationOpen(false);
     };
 
-    const handleSelectDestination = (option) => {
-        setSelectedDestinationOption(option);
+    const handleSelectDestination = (state) => {
+        setSelectedDestinationOption(state);
+        filterStationsByState(state);
         setIsDestinationOpen(false);
     };
 
-    const handleSelectArrivalLocation = (option) => {
-        setSelectedArrivalLocationOption(option);
-        setIsArrivalLocationOpen(false);
+    const handleSelectArrivalStation = (stationName) => {
+        const locationID = findLocationIDByStation(stationName);
+        setSelectedArrivalStationOption(stationName);
+        setFormData((prev) => ({ 
+            ...prev, 
+            arrivalLocationID: locationID 
+        }));
+        setIsArrivalStationOpen(false);
     };
-
+    
     const handleSelectRecurringOption = (option) => {
+        const isRecurringValue = option === 'None' ? false : true;
+    
+        setFormData((prev) => ({
+            ...prev,
+            isRecurring: isRecurringValue,
+            options: option,
+            fromDate: '',
+            toDate: '',
+            selectDays: '',
+        }));
+    
         setSelectedRecurringOption(option);
         setIsRecurringOptionOpen(false);
         setFromDate('');
@@ -155,165 +203,133 @@ const NewBusScheduleForm = () => {
         }
     };
 
+    const handleSubmit = async () => {
+        const formatTime = (time) => {
+            const [hours, minutes] = time.split(':');
+            return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
+        };
+    
+        const formattedETD = formatTime(formData.etd);
+        const formattedETA = formatTime(formData.eta);
+
+        const scheduleDetails = {
+            BusID: formData.busID,
+            IsRecurring: formData.isRecurring,
+            ETD: formattedETD,
+            ETA: formattedETA,
+            Routes: {
+                BoardingLocationID: formData.boardingLocationID,
+                DepartureTime: formattedETD,
+                ArrivalLocationID: formData.arrivalLocationID,
+                ArrivalTime: formattedETA,
+                Status: formData.routeStatus,
+                Price: parseFloat(formData.price),
+            },
+            RecurringOptions: {
+                Options: formData.options,
+                FromDate: formData.fromDate,
+                ToDate: formData.toDate,
+                SelectDays: selectedDays,
+                Status: "Active",
+            },
+            ScheduleStatus: "Scheduled",
+            Status: "Active",
+        };
+    
+        const response = await createBusSchedule(scheduleDetails, token);
+
+        if (response) {
+            alert("Schedule created successfully!");
+            navigate('/bo/bus');
+        } else {
+            alert("Schedule created failed!");
+        }
+    };
+
+    const recurringOptions = ['None', 'Daily', 'Monthly'];
+
+    const daysOfWeek = [
+        { label: 'M', fullDay: 'Monday' },
+        { label: 'T', fullDay: 'Tuesday' },
+        { label: 'W', fullDay: 'Wednesday' },
+        { label: 'T', fullDay: 'Thursday' },
+        { label: 'F', fullDay: 'Friday' },
+        { label: 'S', fullDay: 'Saturday' },
+        { label: 'S', fullDay: 'Sunday' }
+    ];
+
     return(
         <>
             <Navbar />
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
-                    <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
+                    <h2 className='font-poppins font-bold text-2xl'>New Schedule</h2>
                 </div>
 
-                {/* bus & driver */}
-                <div className='flex justify-between w-full gap-12'>
-                    <div className='flex w-full gap-12'>
-                        <div className='w-1/2'>
-                            <Card header="Bus Information">
-                                <div className="relative inline-block text-left w-full mt-2">
-                                    <label htmlFor="busPlate" className="block text-sm font-poppins font-medium text-gray-700">Bus Plate</label>
-                                    <button
-                                        onClick={() => setIsBusPlateOpen(!isBusPlateOpen)}
-                                        className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedBusPlateOption === 'Select a bus plate' ? 'text-gray-400' : 'text-black'}`}
-                                    >
-                                        {selectedBusPlateOption}
-                                        <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                                    </button>
+                {/* bus */}
+                <div>
+                    <Card header="Bus Information">
+                        <div className="relative inline-block text-left w-full mt-2">
+                            <label htmlFor="busPlate" className="block text-sm font-poppins font-medium text-gray-700">Bus Plate</label>
+                            <button
+                                onClick={() => setIsBusPlateOpen(!isBusPlateOpen)}
+                                className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedBusPlateOption === 'Select a bus plate' ? 'text-gray-400' : 'text-black'}`}
+                            >
+                                {selectedBusPlateOption}
+                                <RiArrowDropDownLine className="ml-2 h-5 w-5" />
+                            </button>
 
-                                    {isBusPlateOpen && (
-                                        <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                                            <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                                {busData.map((bus, index) => (
-                                                    <li
-                                                        key={index}
-                                                        onClick={() => handleSelectBusPlate(bus.busPlate)}
-                                                        className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                                                    >
-                                                        {bus.busPlate}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
+                            {isBusPlateOpen && (
+                                <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                                    <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                                        {busData.map((bus, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() => handleSelectBusPlate(bus.busPlate)}
+                                                className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
+                                            >
+                                                {bus.busPlate}
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-
-                                <div>
-                                    <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700 mb-2">No. of Seats</label>
-                                    <CustomInput
-                                        id={'numSeats'}
-                                        name={'numSeats'}
-                                        placeholder={'Seats Number'}
-                                        type={'number'}
-                                        required
-                                        value={formData.numSeats}
-                                    />
-                                </div>
-
-                                <div className="relative inline-block text-left w-full">
-                                    <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
-                                    <button
-                                        onClick={() => setIsBusTypeOpen(!isBusTypeOpen)}
-                                        className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${!formData.busTypes || formData.busTypes === 'Select a bus type' ? 'text-gray-400' : 'text-black'}`}
-                                    >
-                                        {formData.busTypes || 'Select a bus type'}
-                                        <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                                    </button>
-
-                                    {isBusTypeOpen && (
-                                        <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                                            <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                                {busTypeOptions.map((option, index) => (
-                                                    <li
-                                                        key={index}
-                                                        onClick={() => handleSelectBusType(option)}
-                                                        className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                                                    >
-                                                        {option}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="relative inline-block text-left w-full">
-                                    <label htmlFor="status" className="block text-sm font-poppins font-medium text-gray-700">Bus Status</label>
-                                    <button
-                                        onClick={() => setIsBusStatusOpen(!isBusStatusOpen)}
-                                        className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${!formData.status || formData.status === 'Select a bus status' ? 'text-gray-400' : 'text-black'}`}
-                                    >
-                                        {formData.status || 'Select a bus status'}
-                                        <RiArrowDropDownLine className="ml-2 h-5 w-5" />
-                                    </button>
-
-                                    {isBusStatusOpen && (
-                                        <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                                            <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                                {busStatusOptions.map((option, index) => (
-                                                    <li
-                                                        key={index}
-                                                        onClick={() => handleSelectBusStatus(option)}
-                                                        className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
-                                                    >
-                                                        {option}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
-                            </Card>
+                            )}
                         </div>
 
-                        <div className='w-1/2'>
-                            <Card header="Driver Information">
-                                <div className='mt-2'>
-                                    <label htmlFor="fullname" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Full Name</label>
-                                    <CustomInput
-                                        id={'fullname'}
-                                        name={'fullname'}
-                                        placeholder={'Full Name'}
-                                        type={'text'}
-                                        required
-                                        value={formData.fullname}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="icNo" className="block text-sm font-poppins font-medium text-gray-700 mb-2">IC Number</label>
-                                    <CustomInput
-                                        id={'icNo'}
-                                        name={'icNo'}
-                                        placeholder={'IC Number (E.g. xxxxxx-xx-xxxx)'}
-                                        type={'text'}
-                                        required
-                                        value={formData.icNo}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="contactNo" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Contact No.</label>
-                                    <CustomInput
-                                        id={'contactNo'}
-                                        name={'contactNo'}
-                                        placeholder={'Contact No.'}
-                                        type={'text'}
-                                        required
-                                        value={formData.contactNo}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="licenseExpiryDate" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Driving License Expiry Date</label>
-                                    <DatePickerField
-                                        id={'licenseExpiryDate'}
-                                        name={'licenseExpiryDate'}
-                                        placeholder={'Select a date'}
-                                        required
-                                    />
-                                </div>
-                            </Card>
+                        <div>
+                            <label htmlFor="numSeats" className="block text-sm font-poppins font-medium text-gray-700 mb-2">No. of Seats</label>
+                            <CustomInput
+                                id={'numSeats'}
+                                name={'numSeats'}
+                                placeholder={'Seats Number'}
+                                value={formData.numSeats}
+                                disabled={true}
+                            />
                         </div>
-                    </div>
+
+                        <div className="relative inline-block text-left w-full">
+                            <label htmlFor="busType" className="block text-sm font-poppins font-medium text-gray-700">Bus Type</label>
+                            <CustomInput
+                                id={'busType'}
+                                name={'busType'}
+                                placeholder={'Bus Type'}
+                                value={formData.busType}
+                                disabled={true}
+                            />
+                        </div>
+
+                        <div className="relative inline-block text-left w-full">
+                            <label htmlFor="busStatus" className="block text-sm font-poppins font-medium text-gray-700">Bus Status</label>
+                            <CustomInput
+                                id={'busStatus'}
+                                name={'busStatus'}
+                                placeholder={'Bus Status'}
+                                value={formData.busStatus}
+                                disabled={true}
+                            />
+                        </div>
+                    </Card>
                 </div>
 
                 {/* route */}
@@ -321,7 +337,7 @@ const NewBusScheduleForm = () => {
                     <Card header="Route Information">
                         <div className="flex items-center justify-between gap-4">
                             <div className="relative inline-block text-left w-1/3">
-                                <label htmlFor="origin" className="block text-md font-poppins font-medium text-gray-700">Origin</label>
+                                <label htmlFor="origin" className="block text-sm font-poppins font-medium text-gray-700">Origin</label>
                                 <button
                                     onClick={() => setIsOriginOpen(!isOriginOpen)}
                                     className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedOriginOption === 'Select an origin' ? 'text-gray-400' : 'text-black'}`}
@@ -332,7 +348,7 @@ const NewBusScheduleForm = () => {
                                 {isOriginOpen && (
                                     <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                         <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                            {originOptions.map((option, index) => (
+                                            {locationOptions.map((option, index) => (
                                                 <li
                                                     key={index}
                                                     onClick={() => handleSelectOrigin(option)}
@@ -347,21 +363,21 @@ const NewBusScheduleForm = () => {
                             </div>
 
                             <div className="relative inline-block text-left w-1/3">
-                                <label htmlFor="boardingLocation" className="block text-md font-poppins font-medium text-gray-700">Boarding Location</label>
+                                <label htmlFor="boardingStation" className="block text-sm font-poppins font-medium text-gray-700">Boarding Station</label>
                                 <button
-                                    onClick={() => setIsBoardingLocationOpen(!isBoardingLocationOpen)}
-                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedBoardingLocationOption === 'Select a boarding location' ? 'text-gray-400' : 'text-black'}`}
+                                    onClick={() => setIsBoardingStationOpen(!isBoardingStationOpen)}
+                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedBoardingStationOption === 'Select a boarding station' ? 'text-gray-400' : 'text-black'}`}
                                 >
-                                    {selectedBoardingLocationOption}
+                                    {selectedBoardingStationOption}
                                     <RiArrowDropDownLine className="ml-2 h-5 w-5" />
                                 </button>
-                                {isBoardingLocationOpen && (
+                                {isBoardingStationOpen && (
                                     <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                         <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                            {boardingLocationOptions.map((option, index) => (
+                                            {filteredStations.map((option, index) => (
                                                 <li
                                                     key={index}
-                                                    onClick={() => handleSelectBoardingLocation(option)}
+                                                    onClick={() => handleSelectBoardingStation(option)}
                                                     className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
                                                 >
                                                     {option}
@@ -373,18 +389,27 @@ const NewBusScheduleForm = () => {
                             </div>
 
                             <div className="relative inline-block w-1/3">
-                                <label htmlFor="etd" className="block text-md font-poppins font-medium text-gray-700 mb-1">ETD</label>
+                                <label htmlFor="etd" className="block text-sm font-poppins font-medium text-gray-700">ETD</label>
                                 <CustomInput
                                     type="time"
                                     id="etd"
+                                    value={formData.etd}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            etd: value,
+                                            departureTime: value,
+                                        }));
+                                    }}
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between gap-4 mt-4">
+                        <div className="flex items-center justify-between gap-4 mt-2">
                             <div className="relative inline-block text-left w-1/3">
-                                <label htmlFor="destination" className="block text-md font-poppins font-medium text-gray-700">Destination</label>
+                                <label htmlFor="destination" className="block text-sm font-poppins font-medium text-gray-700">Destination</label>
                                 <button
                                     onClick={() => setIsDestinationOpen(!isDestinationOpen)}
                                     className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedDestinationOption === 'Select a destination' ? 'text-gray-400' : 'text-black'}`}
@@ -395,7 +420,7 @@ const NewBusScheduleForm = () => {
                                 {isDestinationOpen && (
                                     <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                         <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                            {destinationOptions.map((option, index) => (
+                                            {locationOptions.map((option, index) => (
                                                 <li
                                                     key={index}
                                                     onClick={() => handleSelectDestination(option)}
@@ -410,21 +435,21 @@ const NewBusScheduleForm = () => {
                             </div>
 
                             <div className="relative inline-block text-left w-1/3">
-                                <label htmlFor="arrivalLocation" className="block text-md font-poppins font-medium text-gray-700">Arrival Location</label>
+                                <label htmlFor="arrivalStation" className="block text-sm font-poppins font-medium text-gray-700">Arrival Station</label>
                                 <button
-                                    onClick={() => setIsArrivalLocationOpen(!isArrivalLocationOpen)}
-                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedArrivalLocationOption === 'Select an arrival location' ? 'text-gray-400' : 'text-black'}`}
+                                    onClick={() => setIsArrivalStationOpen(!isArrivalStationOpen)}
+                                    className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedArrivalStationOption === 'Select an arrival station' ? 'text-gray-400' : 'text-black'}`}
                                 >
-                                    {selectedArrivalLocationOption}
+                                    {selectedArrivalStationOption}
                                     <RiArrowDropDownLine className="ml-2 h-5 w-5" />
                                 </button>
-                                {isArrivalLocationOpen && (
+                                {isArrivalStationOpen && (
                                     <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                                         <ul className="max-h-56 rounded-md py-1 text-base font-poppins ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                                            {arrivalLocationOptions.map((option, index) => (
+                                            {filteredStations.map((option, index) => (
                                                 <li
                                                     key={index}
-                                                    onClick={() => handleSelectArrivalLocation(option)}
+                                                    onClick={() => handleSelectArrivalStation(option)}
                                                     className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
                                                 >
                                                     {option}
@@ -436,13 +461,39 @@ const NewBusScheduleForm = () => {
                             </div>
 
                             <div className="relative inline-block w-1/3">
-                                <label htmlFor="eta" className="block text-md font-poppins font-medium text-gray-700 mb-1">ETA</label>
+                                <label htmlFor="eta" className="block text-sm font-poppins font-medium text-gray-700">ETA</label>
                                 <CustomInput
                                     type="time"
                                     id="eta"
+                                    value={formData.eta}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            eta: value,
+                                            arrivalTime: value,
+                                        }));
+                                    }}
                                     required
                                 />
                             </div>
+                        </div>
+                        
+                        <div className="relative inline-block text-left w-full mt-2">
+                            <label htmlFor="price" className="block text-sm font-poppins font-medium text-gray-700">Price</label>
+                            <CustomInput
+                                type="text"
+                                id="price"
+                                placeholder="Enter Price"
+                                value={formData.price}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        price: value,
+                                    }));
+                                }}
+                            />
                         </div>
                     </Card>
                 </div>
@@ -454,7 +505,7 @@ const NewBusScheduleForm = () => {
                             <label htmlFor="recurringOption" className="block text-sm font-poppins font-medium text-gray-700">Options</label>
                             <button
                                 onClick={() => setIsRecurringOptionOpen(!isRecurringOptionOpen)}
-                                className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedRecurringOption === 'None' ? 'text-gray-400' : 'text-black'}`}
+                                className={`inline-flex justify-between items-center w-full h-12 rounded-md border border-gray-300 shadow-sm px-4 mt-2 bg-white text-sm font-poppins font-small focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ${selectedRecurringOption === 'Select an option' ? 'text-gray-400' : 'text-black'}`}
                             >
                                 {selectedRecurringOption}
                                 <RiArrowDropDownLine className="ml-2 h-5 w-5" />
@@ -481,12 +532,17 @@ const NewBusScheduleForm = () => {
                             <div className="mt-4">
                                 <label htmlFor="date" className="block text-sm font-poppins font-medium text-gray-700">Select Date</label>
                                 <DatePickerField
-                                    id={'date'}
-                                    type="date"
-                                    placeholder={'Select a date'}
-                                    value={fromDate}
-                                    onChange={(e) => setFromDate(e.target.value)}
-                                    className="mt-1 block w-full h-10 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    id="date"
+                                    placeholder="Select a date"
+                                    selectedDate={formData.date ? new Date(formData.date) : null}
+                                    setSelectedDate={(date) => {
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            date: date ? date.toISOString().split("T")[0] : "",
+                                            fromDate: '',
+                                            toDate: ''
+                                        }));
+                                    }}
                                 />
                             </div>
                         )}
@@ -497,24 +553,32 @@ const NewBusScheduleForm = () => {
                                     <div className="flex-1">
                                         <label htmlFor="fromDate" className="block text-sm font-poppins font-medium text-gray-700">From Date</label>
                                         <DatePickerField
-                                            id={'fromDate'}
-                                            type="date"
-                                            placeholder={'Select a date'}
-                                            value={fromDate}
-                                            onChange={(e) => setFromDate(e.target.value)}
-                                            className="mt-1 block w-full h-10 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            id='fromDate'
+                                            placeholder='Select a date'
+                                            selectedDate={formData.fromDate ? new Date(formData.fromDate) : null}
+                                            setSelectedDate={(date) => {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    fromDate: date ? date.toISOString().split("T")[0] : "",
+                                                    date: '',
+                                                }));
+                                            }}
                                         />
                                     </div>
 
                                     <div className="flex-1">
                                         <label htmlFor="toDate" className="block text-sm font-poppins font-medium text-gray-700">To Date</label>
                                         <DatePickerField
-                                            id={'toDate'}
-                                            type="date"
-                                            placeholder={'Select a date'}
-                                            value={toDate}
-                                            onChange={(e) => setToDate(e.target.value)}
-                                            className="mt-1 block w-full h-10 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            id='toDate'
+                                            placeholder='Select a date'
+                                            selectedDate={formData.toDate ? new Date(formData.toDate) : null}
+                                            setSelectedDate={(date) => {
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    toDate: date ? date.toISOString().split("T")[0] : "",
+                                                    date: '',
+                                                }));
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -523,7 +587,7 @@ const NewBusScheduleForm = () => {
 
                         {selectedRecurringOption === 'Monthly' && (
                             <div className="mt-4">
-                                <label className="block text-md font-poppins font-medium text-gray-700 mb-2">Select Days</label>
+                                <label htmlFor="selectDays" className="block text-sm font-poppins font-medium text-gray-700">Select Days</label>
                                 <div className="flex gap-4 mt-1">
                                     {daysOfWeek.map((day, index) => (
                                         <button
@@ -544,15 +608,8 @@ const NewBusScheduleForm = () => {
                     </Card>
                 </div>
 
-                {/* seats information */}
-                <div>
-                    <Card header="Seats Overview">
-
-                    </Card>
-                </div>
-
                 <div className='mt-8 mb-10'>
-                    <CustomButton title='Create' className='font-semibold' />
+                    <CustomButton title='Create' className='font-semibold' onClick={handleSubmit}/>
                 </div>
             </div>
 

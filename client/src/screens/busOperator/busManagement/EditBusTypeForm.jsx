@@ -9,6 +9,7 @@ import CustomInput from '../../../components/common/CustomInput';
 import { getBusType, updateBusType } from '../../../api/busType';
 
 const EditBusTypeForm = () => {
+    const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const { busTypeID } = useParams();
     const [isStatusOpen, setIsStatusOpen] = useState(false);
@@ -62,7 +63,7 @@ const EditBusTypeForm = () => {
             status: selectedStatusOption,
         };
 
-        await updateBusType(busTypeID, updatedDetails);
+        await updateBusType(busTypeID, updatedDetails, token);
 
         alert('Bus type updated successfully!');
         navigate('/bo/bus');

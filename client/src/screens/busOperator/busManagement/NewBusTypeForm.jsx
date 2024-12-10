@@ -9,6 +9,7 @@ import CustomInput from '../../../components/common/CustomInput';
 import { createBusType } from '../../../api/busType';
 
 const NewBusTypeForm = () => {
+    const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
@@ -38,7 +39,7 @@ const NewBusTypeForm = () => {
     };
     
     const handleSubmit = async () => {
-        const response = await createBusType(busTypeDetails);
+        const response = await createBusType(busTypeDetails, token);
 
         if(response){
             alert("Bus type added successfully!");
@@ -54,7 +55,7 @@ const NewBusTypeForm = () => {
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
-                    <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
+                    <h2 className='font-poppins font-bold text-2xl'>New Bus Type</h2>
                 </div>
 
                 <Card header="Bus Information">

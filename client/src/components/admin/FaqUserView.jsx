@@ -12,6 +12,7 @@ import { IoIosArrowRoundBack } from 'react-icons/io';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const FaqUserView = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [expandedQuestionId, setExpandedQuestionId] = useState(null);
   const [faqData, setFaqData] = useState([]);
