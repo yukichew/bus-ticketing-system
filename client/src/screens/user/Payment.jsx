@@ -12,6 +12,7 @@ import { confirmTransaction, initiatePayment } from '../../api/transaction';
 import PaymentCard from '../../components/user/PaymentCard';
 import Container from '../../components/Container';
 import { toast } from 'react-toastify';
+import Loader from '../../components/common/Loader';
 
 const Payment = () => {
   const stripe = useStripe();
@@ -81,6 +82,7 @@ const Payment = () => {
 
   return (
     <Container>
+      {loading && <Loader />}
       <div className='grid grid-cols-1 md:grid-cols-2 max-w-7xl mx-auto space-y-5 pt-10 pb-12 px-10'>
         <div className='md:col-span-2 border-t-4 border-t-primary rounded-lg p-4 shadow-md'>
           <h2 className='text-lg font-semibold'>Secure Payment Page</h2>
