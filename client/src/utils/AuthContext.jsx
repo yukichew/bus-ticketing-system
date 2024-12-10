@@ -1,19 +1,23 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import Loader from '../components/common/Loader';
-import { jwtDecode } from 'jwt-decode';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import Loader from "../components/common/Loader";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const refreshToken = sessionStorage.getItem('refreshToken');
-    const role = sessionStorage.getItem('role');
+    const token = sessionStorage.getItem("token");
+    const refreshToken = sessionStorage.getItem("refreshToken");
+    const role = sessionStorage.getItem("role");
 
     if (!token || !refreshToken) {
-      setLoading(false);
-      return;
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
     }
 
     const decodedToken = jwtDecode(token);
@@ -34,20 +38,27 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const newToken = data.Token;
-        sessionStorage.setItem('token', newToken);
+        sessionStorage.setItem("token", newToken);
         setAuth({
           token: newToken,
-          refreshToken: sessionStorage.getItem('refreshToken'),
-          role: sessionStorage.getItem('role'),
+          refreshToken: sessionStorage.getItem("refreshToken"),
+          role: sessionStorage.getItem("role"),
         });
       } else {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('refreshToken');
-        sessionStorage.removeItem('role');
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("role");
+      }
+      if (decodedToken.exp < currentTime) {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("role");
         setAuth(null);
       }
     } catch (error) {
-      console.error('Refresh token error:', error);
+      console.error("Refresh token error:", error);
+      console.error("Invalid token:", error);
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("role");
       setAuth(null);
     } finally {
       setLoading(false);
