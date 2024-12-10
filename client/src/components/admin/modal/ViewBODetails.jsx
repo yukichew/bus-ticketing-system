@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CustomInput from "../../common/CustomInput";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import Carousel from "../../common/Carousel";
 
 const ViewBoDetails = ({ operator }) => {
   const [showBusImages, setShowBusImages] = useState(false);
@@ -133,18 +134,10 @@ const ViewBoDetails = ({ operator }) => {
           <header className="font-poppins font-semibold text-lg text-primary mb-4">
             Bus Images
           </header>
-          <div className="flex flex-wrap gap-4">
+          <div className="relative mt-6">
             {Array.isArray(boDetails.busImage) &&
             boDetails.busImage.length > 0 ? (
-              boDetails.busImage.map((image, index) => (
-                <div
-                  key={index}
-                  className="w-[360px] h-[280px] bg-cover bg-center border rounded-lg"
-                  style={{
-                    backgroundImage: `url(${image})`,
-                  }}
-                ></div>
-              ))
+              <Carousel images={boDetails.busImage} />
             ) : (
               <p className="text-gray-600">No bus images available</p>
             )}
