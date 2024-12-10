@@ -59,21 +59,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await login(email, password);
-
     if (response?.error) {
       return toast.error(response.message);
     }
-
     toast.success('Login successful');
-
-    if (response.role === 'Admin') {
-      setIsAdmin(true);
-      navigate('/admin-dashboard');
-    } else if (response.role === 'BusOperator') {
-      navigate('/bo/dashboard');
-    } else {
-      navigate('/');
-    }
+    setIsAdmin(response.role === 'Admin');
+    navigate(
+      response.role === 'Admin'
+        ? '/admin-dashboard'
+        : response.role === 'BusOperator'
+        ? '/bo/dashboard'
+        : '/'
+    );
   };
 
   return (
@@ -84,10 +81,9 @@ const Login = () => {
           <h2 className='font-poppins text-3xl font-semibold text-gray-800'>
             Welcome to RideNGo!
           </h2>
-          <p className='mt-4 text-gray-600'>
+          <p className='mt-4 text-gray-600 lg:w-4/6 lg:mx-auto'>
             RideNGo stands as Malaysia's leading online platform for bus
-            ticketing, <br />
-            earning the trust of millions of global travellers.
+            ticketing, earning the trust of millions of global travellers.
           </p>
         </div>
       </div>
@@ -102,7 +98,7 @@ const Login = () => {
             Please enter your details
           </div>
           <form
-            className='mt-12'
+            className='mt-8'
             onSubmit={handleSubmit}
           >
             <CustomInput
@@ -154,25 +150,13 @@ const Login = () => {
               </button>
             </div>
 
-            <div className='mt-11'>
+            <div className='mt-9'>
               <CustomButton title={'Login'} />
             </div>
           </form>
 
-          <div className='font-poppins text-center text-sm text-gray-500 mt-5'>
-            - or sign in with -
-          </div>
-
-          <div className='flex justify-center mt-2'>
-            <img
-              src='https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg'
-              alt='Google Logo'
-              className='w-10 h-10 rounded-full'
-            />
-          </div>
-
           {!isAdmin && (
-            <div className='font-poppins text-center text-sm text-gray-500 mt-8'>
+            <div className='font-poppins text-center text-sm text-gray-500 mt-4'>
               Haven't registered yet? <br />
               <button
                 type='button'

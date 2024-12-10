@@ -8,9 +8,6 @@ using System.Text;
 using server.Helper;
 using server.Dto.Auth;
 using Microsoft.AspNetCore.Authorization;
-using server.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace server.Controllers
 {
@@ -52,7 +49,7 @@ namespace server.Controllers
                 return BadRequest(new { message = "Email verification is required before registration." });
             }
 
-            user.UserName = registerDto.Fullname;
+            user.Fullname = registerDto.Fullname;
             user.Status = "Active";
             user.PhoneNumber = registerDto.PhoneNumber;
 
@@ -92,7 +89,8 @@ namespace server.Controllers
             var busOperator = new BusOperator
             {
                 Email = registerDto.Email,
-                UserName = registerDto.Fullname,
+                Fullname = registerDto.Fullname,
+                UserName = registerDto.Email,
                 PhoneNumber = registerDto.PhoneNumber,
                 Address = registerDto.Address,
                 BusImages = registerDto.BusImages,
@@ -142,9 +140,10 @@ namespace server.Controllers
                 return Unauthorized(new { message = "Invalid credentials." });
             }
 
-            var token = GenerateJwtToken(user);
+            var accessToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshJwtToken(user);
 
-            return Ok(new { Token = token, role = roles.FirstOrDefault() });
+            return Ok(new { Token = accessToken, RefreshToken = refreshToken, role = roles.FirstOrDefault() });
         }
         #endregion
 
@@ -165,11 +164,28 @@ namespace server.Controllers
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: DateTime.Now.AddDays(5),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        #endregion
+
+        #region Generate Refresh Token API
+        private string GenerateRefreshJwtToken(IdentityUser user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, user.Id) }),
+                Expires = DateTime.UtcNow.AddDays(5),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
         #endregion
 
@@ -178,7 +194,7 @@ namespace server.Controllers
         {
             var subject = "Your Email Verification OTP";
             var message = $"Your OTP for email verification is: {otp}";
-            await _emailService.SendEmailAsync(email, email, subject, message);
+            await _emailService.SendEmailAsync(name, email, subject, message);
         }
         #endregion
 
@@ -189,13 +205,20 @@ namespace server.Controllers
             var user = await _userManager.FindByEmailAsync(verifyEmailDto.Email);
             if (user != null)
             {
-                return BadRequest("User already exists.");
+                return BadRequest(new { message = "User already exists." });
             }
 
-            var otp = await _otpService.GenerateOtpAsync(verifyEmailDto.Email);
-            await _otpService.SaveOTPAsync(verifyEmailDto.Email, otp);
-            await SendOtpEmail(verifyEmailDto.Email, verifyEmailDto.Email, otp);
-            return Ok($"OTP email sent to {verifyEmailDto.Email} successfully.");
+            try
+            {
+                var otp = await _otpService.GenerateOtpAsync(verifyEmailDto.Email);
+                await _otpService.SaveOTPAsync(verifyEmailDto.Email, otp);
+                await SendOtpEmail(verifyEmailDto.Email, verifyEmailDto.Email, otp);
+                return Ok($"OTP email sent to {verifyEmailDto.Email} successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Failed to send OTP email: {ex.Message}" });
+            }
         }
         #endregion
 
@@ -335,7 +358,7 @@ namespace server.Controllers
                 return Unauthorized(new { message = "User is not authenticated." });
             }
 
-            user.UserName = editProfileDto.Fullname;
+            user.Fullname = editProfileDto.Fullname;
             user.PhoneNumber = editProfileDto.PhoneNumber;
 
             var result = await _userManager.UpdateAsync(user);
@@ -401,7 +424,8 @@ namespace server.Controllers
 
             // Generate a new JWT token
             var newJwtToken = GenerateJwtToken(user);
-            return Ok(new { Token = newJwtToken });
+            var newRefreshToken = GenerateRefreshJwtToken(user);
+            return Ok(new { Token = newJwtToken, RefreshToken = newRefreshToken });
         }
         #endregion
 

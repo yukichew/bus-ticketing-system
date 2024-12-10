@@ -101,6 +101,102 @@ namespace server.Controllers
         }
         #endregion
 
+        #region GetAllBusByBusOperatorID
+        // GET: api/BusInfo/BusOperator
+        [HttpGet("BusOperator")]
+        public async Task<ActionResult> GetAllBusByBusOperatorID()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
+            var busInfo = await _context.Set<BusInfo>()
+                .Where(b => b.PostedBy.Id == busOperator.Id)
+                .Include(b => b.BusType)
+                .ToListAsync();
+
+            if (!busInfo.Any())
+            {
+                return Ok(new { message = "No buses available." });
+            }
+
+            var totalBuses = busInfo.Count;
+
+            var response = new
+            {
+                totalBuses,
+                busInfo
+            };
+
+            return Ok(response);
+        }
+        #endregion
+
+        #region GetFilteredBusInfoByBusOperatorID
+        // GET: api/BusInfo/BusOperator/FilterBusInfo
+        [HttpGet("BusOperator/FilterBusInfo")]
+        public async Task<ActionResult> GetFilteredBusInfoByBusOperatorID(
+            string busPlate = null,
+            string busType = null,
+            int? noOfSeats = null,
+            string status = null)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
+            var query = _context.BusInfo.AsQueryable();
+
+            if (!string.IsNullOrEmpty(busPlate))
+            {
+                query = query.Where(b => EF.Functions.Like(b.BusPlate, $"%{busPlate}%"));
+            }
+
+            if (!string.IsNullOrEmpty(busType))
+            {
+                query = query.Where(b => b.BusType.Types == busType);
+            }
+
+            if (noOfSeats.HasValue)
+            {
+                query = query.Where(b => b.BusType.NoOfSeats == noOfSeats.Value);
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(b => b.Status == status);
+            }
+
+            var busInfo = await query
+                                .Where(b => b.PostedBy.Id == busOperator.Id)
+                                .Include(b => b.BusType)
+                                .ToListAsync();
+
+            if (busInfo.Count == 0)
+            {
+                return Ok(new { message = "No relevant data found." });
+            }
+
+            return Ok(busInfo);
+        }
+        #endregion
+
         #region CreateBus
         // POST: api/BusInfo
         [HttpPost]
@@ -140,7 +236,7 @@ namespace server.Controllers
             _context.Set<BusInfo>().Add(busInfo);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBus), new { id = busInfo.BusID }, busInfo);
+            return Ok(new { message = "Bus successfully created." });
         }
         #endregion
 
@@ -149,6 +245,18 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBus(Guid id, [FromBody] BusInfo busInfo)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can create buses." });
+            }
+
             if (id != busInfo.BusID)
             {
                 return BadRequest(new { message = "Bus ID mismatch." });
@@ -172,15 +280,27 @@ namespace server.Controllers
                 }
             }
 
-            return Ok("The selected bus is successfully updated.");
+            return Ok(new { message = "The selected bus is successfully updated." });
         }
         #endregion
 
         #region DeleteBus
         // DELETE: api/BusInfo/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBus(int id)
+        public async Task<IActionResult> DeleteBus(Guid id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can create buses." });
+            }
+
             var busInfo = await _context.Set<BusInfo>().FindAsync(id);
             if (busInfo == null)
             {
@@ -190,7 +310,7 @@ namespace server.Controllers
             _context.Set<BusInfo>().Remove(busInfo);
             await _context.SaveChangesAsync();
 
-            return Ok("The selected bus is successfully deleted.");
+            return Ok(new { message = "The selected bus is successfully deleted." });
         }
         #endregion
 

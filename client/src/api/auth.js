@@ -12,33 +12,25 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (email, password, confirmPassword) => {
+export const register = async (registerDetails) => {
   try {
-    const { data } = await api.post("/Auth/register", {
-      email,
-      password,
-      confirmPassword,
-    });
+    const { data } = await api.post('/Auth/register', registerDetails);
     return data;
   } catch (err) {
     return catchError(err);
   }
 };
 
-export const getUserProfile = async (token) => {
+export const getUserProfile = async () => {
   try {
-    const { data } = await api.get("/Auth/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const { data } = await api.get('/Auth/profile');
     return data;
   } catch (err) {
     return catchError(err);
   }
 };
 
-export const refreshToken = async (refreshToken) => {
+export const refreshTokenApi = async (refreshToken) => {
   try {
     const { data } = await api.post('/Auth/refresh-token', { refreshToken });
     sessionStorage.setItem('token', data.token);
@@ -68,6 +60,7 @@ export const verifyEmail = async (email) => {
     return catchError(err);
   }
 };
+
 export const forgotPassword = async (email) => {
   try {
     const { data } = await api.post("/Auth/forgot-password", { email });
@@ -112,39 +105,22 @@ export const resetPassword = async (email, newPassword) => {
 
 export const changePassword = async (oldPassword, newPassword) => {
   try {
-    const token = sessionStorage.getItem("token");
-    const { data } = await api.post(
-      "/Auth/change-password",
-      {
-        oldPassword,
-        newPassword,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const { data } = await api.post('/Auth/change-password', {
+      oldPassword,
+      newPassword,
+    });
     return data;
   } catch (err) {
     return catchError(err);
   }
 };
 
-export const editProfile = async (fullname, phoneNumber, token) => {
+export const editProfile = async (fullname, phoneNumber) => {
   try {
-    const { data } = await api.put(
-      "/Auth/edit-profile",
-      {
-        fullname,
-        phoneNumber,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const { data } = await api.put('/Auth/edit-profile', {
+      fullname,
+      phoneNumber,
+    });
     return data;
   } catch (err) {
     return catchError(err);

@@ -5,11 +5,13 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiEdit, CiExport, CiSearch } from "react-icons/ci";
 import { GrPowerReset } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai";
+import { toast } from "react-toastify";
 import Table from '../common/Table';
 import Card from '../common/Card';
-import { getAllBusType, searchBusType, deleteBusType } from '../../api/busType';
+import { GetAllBusTypesByBusOperatorID, searchBusType, deleteBusType } from '../../api/busType';
 
 const BusType = () => {
+    const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const [busTypeData, setBusTypeData] = useState([]);
     const [isNumSeatsOpen, setIsNumSeatsOpen] = useState(false);
@@ -43,21 +45,29 @@ const BusType = () => {
     };
 
     const fetchBusTypeData = async () => {
-        const results = await getAllBusType();
+        try {
+            const results = await GetAllBusTypesByBusOperatorID(token);
         
-        const formattedData = results.map((item) => ({
-            busTypeID: item.busTypeID,
-            types: item.types,
-            noOfSeats: `${item.noOfSeats} seats`,
-            status: item.status,
-        }));
+            if (Array.isArray(results) && results.length > 0) {
+                const formattedData = results.map((item) => ({
+                    busTypeID: item.busTypeID,
+                    types: item.types,
+                    noOfSeats: `${item.noOfSeats} seats`,
+                    status: item.status,
+                }));
     
-        const busTypeOptions = [...new Set(formattedData.map((item) => item.types))];
-        const numSeatsOptions = [...new Set(formattedData.map((item) => item.noOfSeats))];
-
-        setBusTypeData(formattedData);
-        setBusTypeOptions(busTypeOptions);
-        setNumSeatsOptions(numSeatsOptions);
+                const busTypeOptions = [...new Set(formattedData.map((item) => item.types))];
+                const numSeatsOptions = [...new Set(formattedData.map((item) => item.noOfSeats))];
+    
+                setBusTypeData(formattedData);
+                setBusTypeOptions(busTypeOptions);
+                setNumSeatsOptions(numSeatsOptions);
+            } else {
+                setBusTypeData([]);
+            }
+        } catch (error) {
+            setBusTypeData([]);
+        }
     };
 
     useEffect(() => {
@@ -143,15 +153,29 @@ const BusType = () => {
             Object.entries(filters).filter(([_, value]) => value !== '')
         );
 
-        const results = await searchBusType(activeFilters);
-        const formattedData = results.map((item) => ({
-            busTypeID: item.busTypeID,
-            types: item.types,
-            noOfSeats: `${item.noOfSeats} seats`,
-            status: item.status,
-        }));
-
-        setBusTypeData(formattedData);
+        try {
+            const results = await searchBusType(activeFilters, token);
+        
+            if (Array.isArray(results) && results.length > 0) {
+                const formattedData = results.map((item) => ({
+                    busTypeID: item.busTypeID,
+                    types: item.types,
+                    noOfSeats: `${item.noOfSeats} seats`,
+                    status: item.status,
+                }));
+    
+                const busTypeOptions = [...new Set(formattedData.map((item) => item.types))];
+                const numSeatsOptions = [...new Set(formattedData.map((item) => item.noOfSeats))];
+    
+                setBusTypeData(formattedData);
+                setBusTypeOptions(busTypeOptions);
+                setNumSeatsOptions(numSeatsOptions);
+            } else {
+                setBusTypeData([]);
+            }
+        } catch (error) {
+            setBusTypeData([]);
+        }
     }
 
     const handleReset = () => {
@@ -169,7 +193,7 @@ const BusType = () => {
     };
 
     const handleDelete = async (busTypeID) => {
-        const response = await deleteBusType(busTypeID);
+        const response = await deleteBusType(busTypeID, token);
 
         if(response){
             alert("Bus type deleted successfully!");
@@ -321,9 +345,17 @@ const BusType = () => {
                 </div>
             </div>
 
-            <div className='mt-3 mx-auto'>
-                <Table data={enhancedData} columns={columns} columnKeys={columnKeys} showActionColumn={true} actions={actionIcons}/>
-            </div>
+            {busTypeData.length > 0 ? (
+                <>
+                    <div className='mt-3 mb-8 mx-auto'>
+                        <Table data={enhancedData} columns={columns} columnKeys={columnKeys} showActionColumn={true} actions={actionIcons} />
+                    </div>
+                </>
+            ) : (
+                <div className="mt-3 text-center text-gray-500 font-poppins">
+                    <span>No results found.</span>
+                </div>
+            )}
         </>
     );
 };

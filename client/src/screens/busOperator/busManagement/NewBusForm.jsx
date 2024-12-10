@@ -7,9 +7,10 @@ import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
 import { createBus } from '../../../api/busInfo';
-import { getAllBusType } from '../../../api/busType';
+import { GetAllBusTypesByBusOperatorID } from '../../../api/busType';
 
 const NewBusForm = () => {
+    const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const [busTypeOptions, setBusTypeOptions] = useState([]);
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
@@ -23,7 +24,7 @@ const NewBusForm = () => {
     });
 
     const fetchBusTypeData = async () => {
-        const results = await getAllBusType();
+        const results = await GetAllBusTypesByBusOperatorID(token);
 
         const formattedData = results.map((item) => ({
             busTypeID: item.busTypeID,
@@ -70,7 +71,7 @@ const NewBusForm = () => {
     };
 
     const handleSubmit = async () => {
-        const response = await createBus(busDetails);
+        const response = await createBus(busDetails, token);
 
         if (response) {
             alert("Bus added successfully!");
@@ -86,7 +87,7 @@ const NewBusForm = () => {
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
-                    <h2 className='font-poppins font-bold text-2xl'>Bus Management</h2>
+                    <h2 className='font-poppins font-bold text-2xl'>New Bus</h2>
                 </div>
 
                 <Card header="Bus Information">

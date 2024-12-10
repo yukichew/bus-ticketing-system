@@ -57,7 +57,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 1;
 });
 
-builder.Services.AddScoped<EmailService>();
+builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<OTPService>();
 builder.Services.AddHostedService<BookingExpirationService>();
 

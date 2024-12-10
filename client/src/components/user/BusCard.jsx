@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { FaStar } from "react-icons/fa";
-import { GoPeople } from "react-icons/go";
-import { LiaSquareFullSolid } from "react-icons/lia";
-import { busInfoTabs } from "../../constants/TabItems";
-import Modal from "../common/Modal";
-import Tabs from "../common/Tabs";
-import Seatmap from "./Seatmap";
+import React, { useState } from 'react';
+import { FaStar } from 'react-icons/fa';
+import { GoPeople } from 'react-icons/go';
+import { LiaSquareFullSolid } from 'react-icons/lia';
+import { busInfoTabs } from '../../constants/TabItems';
+import Modal from '../common/Modal';
+import Tabs from '../common/Tabs';
+import Seatmap from './Seatmap';
 
 const BusCard = ({ schedule }) => {
   const [showModal, setShowModal] = useState(false);
@@ -17,12 +17,12 @@ const BusCard = ({ schedule }) => {
         <div className='flex flex-row items-center'>
           <img
             src={schedule.postedBy.companyLogo}
-            alt={schedule.postedBy.companyName}
+            alt={schedule.postedBy.fullname}
             className='rounded-full w-10 h-10 md:w-14 md:h-14'
           />
           <div className='ml-2'>
             <p className='text-sm font-semibold md:text-base'>
-              {schedule.postedBy.companyName}
+              {schedule.postedBy.fullname}
               {schedule.name}
             </p>
             <p className='font-medium text-gray-600 text-xs md:text-sm'>
@@ -90,9 +90,9 @@ const BusCard = ({ schedule }) => {
           <div className='hidden md:block w-3/5'>
             <Seatmap
               layout={
-                schedule.busInfo.busType.types.includes("2+1")
-                  ? "2+1"
-                  : "Executive"
+                schedule.busInfo.busType.types.includes('2+1')
+                  ? '2+1'
+                  : 'Executive'
               }
               schedule={schedule}
             />
@@ -116,7 +116,7 @@ const BusCard = ({ schedule }) => {
           tabs={busInfoTabs.map((tab) => ({
             ...tab,
             content:
-              typeof tab.content === "function"
+              typeof tab.content === 'function'
                 ? tab.content({ schedule })
                 : React.cloneElement(tab.content, { schedule }),
           }))}

@@ -6,12 +6,10 @@ import Container from '../../components/Container';
 import CustomInput from '../../components/common/CustomInput';
 import * as yup from 'yup';
 import { validateField } from '../../utils/validate';
-import { useAuth } from '../../utils/AuthContext';
 import { editProfile, getUserProfile } from '../../api/auth';
 import { toast } from 'react-toastify';
 
 const Profile = () => {
-  const { auth } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
   const [details, setDetails] = useState({
@@ -33,9 +31,9 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const profile = await getUserProfile(auth.token);
+      const profile = await getUserProfile();
       setDetails({
-        name: profile.userName,
+        name: profile.fullname,
         phoneNumber: profile.phoneNumber,
         email: profile.email,
       });
@@ -53,11 +51,7 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await editProfile(
-      details.name,
-      details.phoneNumber,
-      auth.token
-    );
+    const response = await editProfile(details.name, details.phoneNumber);
 
     if (response?.error) {
       return toast.error(response.message);

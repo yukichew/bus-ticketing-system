@@ -1,9 +1,13 @@
 import api from ".";
 import { catchError } from "../utils/error";
 
-export const getAllBus = async () => {
+export const GetAllBusByBusOperatorID = async (token) => {
     try {
-      const { data } = await api.get(`/BusInfo`);
+      const { data } = await api.get(`/BusInfo/BusOperator`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
       return data;
     } catch (err) {
       return catchError(err);
@@ -19,11 +23,15 @@ export const getBus = async (busID) => {
     }
 };
 
-export const searchBus = async (filters) => {
+export const searchBus = async (filters, token) => {
     try {
         const queryParams = new URLSearchParams(filters).toString();
         const { data } = await api.get(
-          `/BusInfo/FilterBusInfo?${queryParams}`
+          `/BusInfo/BusOperator/FilterBusInfo?${queryParams}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         return data;
       } catch (err) {
@@ -31,27 +39,39 @@ export const searchBus = async (filters) => {
       }
 };
 
-export const createBus = async (busDetails) => {
+export const createBus = async (busDetails, token) => {
     try {
-      const { data } = await api.post(`/BusInfo`, busDetails);
+      const { data } = await api.post(`/BusInfo`, busDetails, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
       return data;
     } catch (err) {
       return catchError(err);
     }
 };
 
-export const updateBus = async (busID, busDetails) => {
+export const updateBus = async (busID, busDetails, token) => {
     try {
-      const { data } = await api.put(`/BusInfo/${busID}`, busDetails);
+      const { data } = await api.put(`/BusInfo/${busID}`, busDetails, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
       return data;
     } catch (err) {
       return catchError(err);
     }
 };
 
-export const deleteBus = async (busID) => {
+export const deleteBus = async (busID, token) => {
     try {
-      const { data } = await api.delete(`/BusInfo/${busID}`);
+      const { data } = await api.delete(`/BusInfo/${busID}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
       return data;
     } catch (err) {
       return catchError(err);
