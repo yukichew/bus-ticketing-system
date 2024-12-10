@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { IoMdCloseCircle } from 'react-icons/io';
-import { IoFilter } from 'react-icons/io5';
 import { TbArrowBigRightFilled } from 'react-icons/tb';
 import BusCard from '../../components/user/BusCard';
 import BusTicketForm from '../../components/user/BusTicketForm';
@@ -10,9 +9,16 @@ import Container from '../../components/Container';
 
 const BusTickets = () => {
   const location = useLocation();
-  const [formState, setFormState] = useState(location.state);
   const [busSchedules, setBusSchedules] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const [formState, setFormState] = useState({
+    originState: new URLSearchParams(location.search).get('originState') || '',
+    destinationState:
+      new URLSearchParams(location.search).get('destinationState') || '',
+    travelDate: new URLSearchParams(location.search).get('travelDate') || null,
+    returnDate: new URLSearchParams(location.search).get('returnDate') || null,
+  });
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -74,11 +80,6 @@ const BusTickets = () => {
             </span>{' '}
             buses found
           </p>
-
-          <button className='ml-auto flex items-center font-medium hover:text-primary pr-1'>
-            <IoFilter size={16} />
-            <p className='mx-1'>Filters</p>
-          </button>
         </div>
 
         {/* search results */}

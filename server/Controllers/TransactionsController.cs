@@ -43,6 +43,11 @@ namespace server.Controllers
                 return NotFound(new { message = "Booking not found." });
             }
 
+            if (booking.CreatedAt <= DateTime.Now.AddMinutes(-5))
+            {
+                return BadRequest(new { message = "The booking has expired. Please make a new booking." });
+            }
+
             try
             {
                 var stripeService = new PaymentIntentService();
@@ -99,18 +104,20 @@ namespace server.Controllers
             }
 
             var seats = _context.Seats.Where(s => s.BookingID == transaction.BookingID);
+            var passengers = seats.Select(s => s.Passenger).Distinct();
 
             if (statusDto.Status == "Succeeded")
             {
                 transaction.Status = "Succeeded";
                 booking.BookingStatus = "Confirmed";
+                booking.AmountPaid = transaction.Amount;
 
                 foreach (var seat in seats)
                 {
                     seat.Status = "Occupied";
                     _context.Seats.Update(seat);
                 }
-                
+
                 // send payment receipt email
                 var passenger = seats.FirstOrDefault().Passenger;
                 var receiptMessage = $"Dear {passenger.Fullname},\n\n" +
@@ -126,8 +133,18 @@ namespace server.Controllers
             else
             {
                 transaction.Status = "Failed";
-                _context.Seats.RemoveRange(seats);
                 booking.BookingStatus = "Cancelled";
+
+                // send payment failure email
+                var passenger = seats.FirstOrDefault().Passenger;
+                var failureMessage = $"Dear {passenger.Fullname},\n\n" +
+                                     $"We regret to inform you that your payment has failed.\n" +
+                                     $"Please try again or contact your bank for assistance.\n\n" +
+                                     $"Regards,\nRideNGo Team";
+                await _emailService.SendEmailAsync(passenger.Fullname, passenger.Email, "RideNGo Payment Failure", failureMessage);
+
+                _context.Seats.RemoveRange(seats);
+                _context.Passenger.RemoveRange(passengers);
             }
 
             _context.Transaction.Update(transaction);

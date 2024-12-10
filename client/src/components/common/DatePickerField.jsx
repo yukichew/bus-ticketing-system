@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { IoCalendarOutline } from "react-icons/io5";
+import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { IoCalendarOutline } from 'react-icons/io5';
 
 const DatePickerField = ({
   selectedDate,
@@ -12,7 +12,7 @@ const DatePickerField = ({
   name,
 }) => {
   return (
-    <div className='w-full relative flex items-center rounded ring-1 ring-gray-300 font-poppins text-sm bg-white'>
+    <div className='w-full relative flex items-center rounded-lg ring-1 ring-gray-300 font-poppins text-sm bg-white'>
       <IoCalendarOutline
         size={20}
         className='text-gray-400 pointer-events-none ml-3'

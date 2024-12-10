@@ -7,36 +7,36 @@ import { FaXTwitter } from 'react-icons/fa6';
 const Footer = () => {
   return (
     <footer className='bg-slate-100'>
-      <div className='mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8'>
+      <div className='mx-auto max-w-screen-xl px-4 py-10 sm:px-6 lg:px-8'>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <Logo />
 
-          <div className='justify-start md:justify-end flex text-gray-500 transition hover:opacity-75 text-sm'>
+          <div className='justify-start md:justify-end flex text-gray-600 text-sm'>
             <Link
               to='/contact-us'
-              className=''
+              className='transition hover:opacity-70'
             >
               Contact Us
             </Link>
 
             <Link
               to='/faq'
-              className='ml-8'
+              className='ml-8 transition hover:opacity-70'
             >
               FAQs
             </Link>
 
             <Link
               to='/policies'
-              className='ml-8'
+              className='ml-8 transition hover:opacity-70'
             >
               Terms & Conditions
             </Link>
           </div>
         </div>
 
-        <div className='mt-3 border-t border-gray-100'>
-          <div className='sm:flex sm:justify-between'>
+        <div className='mt-3 border-t border-gray-300'>
+          <div className='sm:flex sm:justify-between mt-3'>
             <p className='text-xs text-gray-500 items-center flex'>
               &copy; 2024. RideNGo. All rights reserved.
             </p>
