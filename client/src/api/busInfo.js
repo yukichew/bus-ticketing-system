@@ -14,9 +14,13 @@ export const GetAllBusByBusOperatorID = async (token) => {
     }
 };
 
-export const getBus = async (busID) => {
+export const getBus = async (busID, token) => {
     try {
-      const { data } = await api.get(`/BusInfo/${busID}`);
+      const { data } = await api.get(`/BusInfo/${busID}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+      });
       return data;
     } catch (err) {
       return catchError(err);

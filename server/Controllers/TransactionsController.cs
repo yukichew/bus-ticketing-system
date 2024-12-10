@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
@@ -6,6 +7,7 @@ using server.Helper;
 using server.Models;
 using Stripe;
 using System;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -31,6 +33,38 @@ namespace server.Controllers
         {
             return await _context.Transaction.ToListAsync();
         }
+
+        #region GetSalesRevenueByBusOperatorID
+        // GET: api/Transactions/BusOperator
+        [Authorize(Policy = "BusOperatorOnly")]
+        [HttpGet("/api/Transactions/BusOperator")]
+        public async Task<ActionResult<Transaction>> GetSalesRevenueByBusOperatorID()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
+            var transaction = await _context.Set<Transaction>()
+                                .Include(b => b.Booking)
+                                .Where(b => b.Booking.BusSchedule.PostedBy.Id == busOperator.Id)
+                                .ToListAsync();
+
+            if (transaction == null)
+            {
+                return NotFound(new { message = $"No transaction found." });
+            }
+
+            return Ok(transaction);
+        }
+        #endregion
 
         #region Check out using Stripe
         // POST: api/Transactions

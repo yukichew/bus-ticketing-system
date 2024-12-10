@@ -21,3 +21,16 @@ export const confirmTransaction = async (transactionID, status) => {
     return catchError(err);
   }
 };
+
+export const getTotalSalesRevenue = async (token) => {
+  try {
+    const { data } = await api.get(`/Transactions/BusOperator`, {
+      headers: {
+          'Authorization': `Bearer ${token}`
+      }
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};

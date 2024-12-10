@@ -89,6 +89,7 @@ namespace server.Controllers
 
         #region GetAllBusTypesByBusOperatorID
         // GET: api/BusType/BusOperator
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpGet("BusOperator")]
         public async Task<ActionResult> GetAllBusTypesByBusOperatorID()
         {
@@ -127,6 +128,7 @@ namespace server.Controllers
 
         #region GetFilteredBusTypeByBusOperatorID
         // GET: api/BusType/BusOperator/FilterBusType
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpGet("BusOperator/FilterBusType")]
         public async Task<ActionResult> GetFilteredBusTypeByBusOperatorID(
             int? noOfSeats = null,
@@ -177,6 +179,7 @@ namespace server.Controllers
 
         #region CreateBusType
         // POST: api/BusType
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpPost]
         public async Task<ActionResult<BusType>> CreateBusType([FromBody] BusType busType)
         {
@@ -208,6 +211,7 @@ namespace server.Controllers
 
         #region UpdateBusType
         // PUT: api/BusType/{id}
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBusType(Guid id, [FromBody] BusType busType)
         {
@@ -252,6 +256,7 @@ namespace server.Controllers
 
         #region DeleteBusType
         // DELETE: api/BusType/{id}
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusType(Guid id)
         {

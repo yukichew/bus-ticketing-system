@@ -189,10 +189,9 @@ const BusInfo = () => {
 
         try {
             const results = await searchBus(activeFilters);
-            const busInfoArr = results?.busInfo || [];
             
-            if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
-                const formattedData = busInfoArr.map((item) => ({
+            if (Array.isArray(results) && results.length > 0) {
+                const formattedData = results.map((item) => ({
                     busID: item.busID,
                     busPlate: item.busPlate,
                     busType: item.busType.types,

@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
@@ -207,6 +208,7 @@ namespace server.Controllers
 
         #region GetAllBusSchedulesByBusOperatorID
         // GET: api/BusSchedule/BusOperator
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpGet("BusOperator")]
         public async Task<ActionResult> GetAllBusSchedulesByBusOperatorID()
         {
@@ -240,6 +242,7 @@ namespace server.Controllers
 
         #region GetBusSchedulesForTodayByBusOperatorID
         // GET: api/BusSchedule/BusOperator/Today
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpGet("BusOperator/Today")]
         public async Task<ActionResult> GetBusSchedulesForTodayByBusOperatorID()
         {
@@ -275,6 +278,7 @@ namespace server.Controllers
 
         #region FilterBusScheduleByBusOperatorID
         // GET: api/BusSchedule/BusOperator/FilterBusSchedule
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpGet("BusOperator/FilterBusSchedule")]
         public async Task<ActionResult> FilterBusScheduleByBusOperatorID(
             string busPlate = null,
@@ -343,6 +347,7 @@ namespace server.Controllers
 
         #region FilterBusScheduleForTodayByBusOperatorID
         // GET: api/BusSchedule/BusOperator/FilterBusScheduleForToday
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpGet("BusOperator/FilterBusScheduleForToday")]
         public async Task<ActionResult> FilterBusScheduleForTodayByBusOperatorID(
             string originState = null,
@@ -394,6 +399,7 @@ namespace server.Controllers
 
         #region PostBusSchedule
         // POST: api/BusSchedule
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpPost]
         public async Task<ActionResult<List<BusSchedule>>> PostBusSchedule([FromBody] BusScheduleDTO busScheduleDTO)
         {
@@ -642,6 +648,7 @@ namespace server.Controllers
 
         #region UpdateBusSchedule
         // PUT: api/BusSchedule/{id}
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBusSchedule(Guid id, BusScheduleDTO busScheduleDTO)
         {
@@ -718,6 +725,7 @@ namespace server.Controllers
 
         #region DeleteBusSchedule
         // DELETE: api/BusSchedule/{id}
+        [Authorize(Policy = "BusOperatorOnly")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBusSchedule(int id)
         {

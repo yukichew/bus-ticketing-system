@@ -225,13 +225,29 @@ const NewBusScheduleForm = () => {
                 Status: formData.routeStatus,
                 Price: parseFloat(formData.price),
             },
-            RecurringOptions: {
-                Options: formData.options,
-                FromDate: formData.fromDate,
-                ToDate: formData.toDate,
-                SelectDays: selectedDays,
-                Status: "Active",
-            },
+            RecurringOptions:
+            formData.options === "None"
+                ? {
+                    Options: formData.options,
+                    Date: formData.date,
+                    Status: "Active",
+                }
+                : formData.options === "Daily"
+                ? {
+                    Options: formData.options,
+                    FromDate: formData.fromDate,
+                    ToDate: formData.toDate,
+                    Status: "Active",
+                }
+                : formData.options === "Monthly"
+                ? {
+                    Options: formData.options,
+                    FromDate: formData.fromDate,
+                    ToDate: formData.toDate,
+                    SelectDays: selectedDays,
+                    Status: "Active",
+                }
+                : null,
             ScheduleStatus: "Scheduled",
             Status: "Active",
         };
