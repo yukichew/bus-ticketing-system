@@ -134,6 +134,11 @@ namespace server.Controllers
                 return NotFound(new { message = "Booking not found." });
             }
 
+            if (!booking.BookingStatus.Equals("Confirmed"))
+            {
+                return BadRequest(new { message = "You can only review a completed booking." });
+            }
+
             var passenger = await _context.Passenger.FirstOrDefaultAsync(p => p.Email == user.Email);
             if (passenger == null)
             {
