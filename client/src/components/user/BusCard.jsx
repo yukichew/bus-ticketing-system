@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { GoPeople } from 'react-icons/go';
 import { LiaSquareFullSolid } from 'react-icons/lia';
@@ -6,9 +6,27 @@ import { busInfoTabs } from '../../constants/TabItems';
 import Modal from '../common/Modal';
 import Tabs from '../common/Tabs';
 import Seatmap from './Seatmap';
+import CustomButton from '../common/CustomButton';
+import { useNavigate } from 'react-router-dom';
 
 const BusCard = ({ schedule }) => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [showSeatmap, setShowSeatmap] = useState(false);
+
+  const handleSeatSelection = (seatNumber) => {
+    const updatedSeats = selectedSeats.includes(seatNumber)
+      ? selectedSeats.filter((seat) => seat !== seatNumber)
+      : [...selectedSeats, seatNumber];
+
+    setSelectedSeats(updatedSeats);
+    localStorage.setItem('selectedSeats', JSON.stringify(updatedSeats));
+  };
+
+  useEffect(() => {
+    sessionStorage.setItem('onwardTrip', JSON.stringify(schedule));
+  }, [schedule]);
 
   return (
     <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50 border'>
@@ -88,13 +106,11 @@ const BusCard = ({ schedule }) => {
 
         <div className='flex flex-col items-center'>
           <div className='hidden md:block w-3/5'>
-            <Seatmap
-              layout={
-                schedule.busInfo.busType.types.includes('2+1')
-                  ? '2+1'
-                  : 'Executive'
-              }
-              schedule={schedule}
+            <CustomButton
+              title='SELECT'
+              className='font-semibold'
+              type='button'
+              onClick={() => setShowSeatmap(true)}
             />
           </div>
           <button
@@ -106,7 +122,7 @@ const BusCard = ({ schedule }) => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* More info modal */}
       <Modal
         isVisible={showModal}
         onClose={() => setShowModal(false)}
@@ -121,6 +137,33 @@ const BusCard = ({ schedule }) => {
                 : React.cloneElement(tab.content, { schedule }),
           }))}
           orientation='vertical'
+        />
+      </Modal>
+
+      {/* Seatmap */}
+      <Modal
+        isVisible={showSeatmap}
+        onClose={() => setShowSeatmap(false)}
+        className='w-auto'
+      >
+        <h2 className='text-lg lg:text-xl font-semibold font-poppins'>
+          Select your seat
+        </h2>
+        <Seatmap
+          layout={
+            schedule.busInfo.busType.types.includes('2+1') ? '2+1' : 'Executive'
+          }
+          schedule={schedule}
+          selectedSeats={selectedSeats}
+          handleSelect={handleSeatSelection}
+        />
+        <CustomButton
+          title='Proceed to Book'
+          type='button'
+          onClick={() => {
+            navigate('/booking');
+          }}
+          className='mt-2'
         />
       </Modal>
     </div>
