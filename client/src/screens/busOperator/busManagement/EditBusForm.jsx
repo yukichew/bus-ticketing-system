@@ -26,7 +26,7 @@ const EditBusForm = () => {
     });
 
     const fetchBusData = async () => {
-        const result = await getBus(busID);
+        const result = await getBus(busID, token);
         const busType = result?.busType || {};
     
         setBusDetails({

@@ -8,7 +8,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import Table from '../common/Table';
 import Card from '../common/Card';
 import DatePickerField from '../common/DatePickerField';
-import { getAllBusSchedulesByBusOperatorID, searchSchedule } from '../../api/schedule';
+import { getAllBusSchedulesByBusOperatorID, searchScheduleByBusOperatorID } from '../../api/schedule';
 import { GetAllLocations } from '../../api/location';
 import moment from 'moment';
 
@@ -154,7 +154,7 @@ const BusScheduling = () => {
         );
 
         try {
-            const results = await searchSchedule(activeFilters, token);
+            const results = await searchScheduleByBusOperatorID(activeFilters, token);
     
             if (Array.isArray(results) && results.length > 0) {
                 const formattedData = results.map((item) => ({

@@ -155,7 +155,7 @@ const BusType = () => {
 
         try {
             const results = await searchBusType(activeFilters, token);
-        
+            
             if (Array.isArray(results) && results.length > 0) {
                 const formattedData = results.map((item) => ({
                     busTypeID: item.busTypeID,
@@ -164,12 +164,7 @@ const BusType = () => {
                     status: item.status,
                 }));
     
-                const busTypeOptions = [...new Set(formattedData.map((item) => item.types))];
-                const numSeatsOptions = [...new Set(formattedData.map((item) => item.noOfSeats))];
-    
                 setBusTypeData(formattedData);
-                setBusTypeOptions(busTypeOptions);
-                setNumSeatsOptions(numSeatsOptions);
             } else {
                 setBusTypeData([]);
             }
