@@ -18,7 +18,7 @@ const Trips = () => {
 
         if (profile) {
           const result = await getBookings(profile.email);
-          setBookings(result);
+          setBookings(Array.isArray(result) ? result : []);
         }
       }
     };

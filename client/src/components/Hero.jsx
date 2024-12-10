@@ -18,7 +18,6 @@ const Hero = () => {
       originState: formState.originState,
       destinationState: formState.destinationState,
       travelDate: formState.travelDate,
-      returnDate: formState.returnDate,
     }).toString();
     navigate(`/bus-tickets?${queryParams}`);
   };

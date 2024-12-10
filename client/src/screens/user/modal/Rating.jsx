@@ -43,14 +43,14 @@ const Rating = ({ booking, user, onSuccess }) => {
     toast.success('Rating added successfully');
     onSuccess();
   };
-  
+
   return (
     <>
       {/* header */}
       <div className='font-semibold text-center mb-5'>
         <h2 className='text-lg'>Rate and Review Your Trip</h2>
         <p className='text-primary'>
-          with {booking.busSchedule.postedBy.userName}
+          with {booking.busSchedule.postedBy.fullname}
         </p>
       </div>
 
@@ -96,8 +96,8 @@ const Rating = ({ booking, user, onSuccess }) => {
           </div>
 
           {/* bus operator */}
-          <div className='grid grid-cols-2 text-sm mt-3 items-center'>
-            <p>{booking.busSchedule.postedBy.userName}</p>
+          <div className='text-sm mt-3 items-center'>
+            <p>{booking.busSchedule.postedBy.fullname}</p>
           </div>
         </div>
 

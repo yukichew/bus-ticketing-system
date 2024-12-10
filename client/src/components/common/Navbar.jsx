@@ -51,13 +51,12 @@ const Navbar = ({ auth }) => {
 
   const handleLogout = async () => {
     const result = await logout();
-    window.location.reload();
 
     if (result?.error) {
       return toast.error(result.message);
     }
 
-    return result;
+    navigate('/');
   };
 
   const navigateToLogin = () => {

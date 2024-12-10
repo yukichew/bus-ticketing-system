@@ -25,7 +25,11 @@ const BusCard = ({ schedule }) => {
   };
 
   useEffect(() => {
-    sessionStorage.setItem('onwardTrip', JSON.stringify(schedule));
+    const timeout = setTimeout(() => {
+      localStorage.removeItem('selectedSeats');
+    }, 300000);
+
+    return () => clearTimeout(timeout);
   }, [schedule]);
 
   return (
@@ -49,7 +53,9 @@ const BusCard = ({ schedule }) => {
           </div>
         </div>
 
-        <p className='font-bold text-lg md:hidden'>{schedule.routes.price}</p>
+        <p className='font-bold text-lg md:hidden'>
+          RM {schedule.routes.price}
+        </p>
 
         {/* departure and arrival */}
         <div className='grid grid-cols-3 items-center col-span-3 text-center mt-4 mb-4 md:mt-0 md:mb-0'>
@@ -158,11 +164,9 @@ const BusCard = ({ schedule }) => {
           handleSelect={handleSeatSelection}
         />
         <CustomButton
-          title='Proceed to Book'
+          title={'Proceed'}
           type='button'
-          onClick={() => {
-            navigate('/booking');
-          }}
+          onClick={() => navigate('/booking', { state: { schedule } })}
           className='mt-2'
         />
       </Modal>
