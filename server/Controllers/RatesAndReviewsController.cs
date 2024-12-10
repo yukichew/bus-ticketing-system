@@ -116,7 +116,6 @@ namespace server.Controllers
         }
         #endregion
 
-
         #region Add rates and reviews api
         // POST: api/RatesAndReviews
         [Authorize(Policy = "MemberOnly")]
@@ -135,7 +134,7 @@ namespace server.Controllers
                 return NotFound(new { message = "Booking not found." });
             }
 
-            var passenger = await _context.Passenger.FindAsync(user.Email);
+            var passenger = await _context.Passenger.FirstOrDefaultAsync(p => p.Email == user.Email);
             if (passenger == null)
             {
                 return NotFound(new { message = "Passenger not found." });
