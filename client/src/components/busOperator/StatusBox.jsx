@@ -27,7 +27,7 @@ const StatusBox = ({ statuses, variant = {}, activeStatusProp, onStatusChange })
     const appliedStyles = variant[activeStatus.toLowerCase()] || '';
 
     return (
-        <div className={`relative inline-block w-40 ${appliedStyles} rounded-lg border-1 border-gray-50 shadow-md`}>
+        <div className={`relative inline-block w-32 ${appliedStyles} rounded-lg border-1 border-gray-50 shadow-md`}>
             <select
                 value={activeStatus}
                 onChange={handleStatusChange}
