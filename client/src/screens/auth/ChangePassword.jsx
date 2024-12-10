@@ -26,27 +26,20 @@ const ChangePassword = () => {
     setIsConfirmPasswordVisible((prevState) => !prevState);
   };
 
+  const passwordValidation = yup
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[0-9]/, 'Password must contain at least one number')
+    .matches(
+      /[^a-zA-Z0-9]/,
+      'Password must contain at least one special character (e.g., !, @, #)'
+    )
+    .required('Password is required');
+
   const resetPasswordSchema = yup.object().shape({
-    password: yup
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .matches(/[0-9]/, 'Password must contain at least one number')
-      .matches(
-        /[^a-zA-Z0-9]/,
-        'Password must contain at least one special character (e.g., !, @, #)'
-      )
-      .required('New password is required'),
-    oldPassword: yup
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .matches(/[0-9]/, 'Password must contain at least one number')
-      .matches(
-        /[^a-zA-Z0-9]/,
-        'Password must contain at least one special character (e.g., !, @, #)'
-      )
-      .required('Old password is required'),
+    password: passwordValidation,
+    oldPassword: passwordValidation,
   });
 
   const handleChange = (field, value) => {
@@ -57,13 +50,24 @@ const ChangePassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await changePassword(oldPassword, newPassword);
-
-    if (response?.error) {
-      return toast.error(response.message);
+    try {
+      await resetPasswordSchema.validate(
+        { oldPassword, password: newPassword },
+        { abortEarly: false }
+      );
+      const response = await changePassword(oldPassword, newPassword);
+      if (response?.error) {
+        return toast.error(response.message);
+      }
+      toast.success('Password changed successfully');
+      navigate('/profile');
+    } catch (err) {
+      const validationErrors = {};
+      err.inner.forEach((error) => {
+        validationErrors[error.path] = error.message;
+      });
+      setErrors(validationErrors);
     }
-
-    toast.success('Password changed successfully');
   };
 
   return (

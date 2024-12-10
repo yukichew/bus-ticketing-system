@@ -33,7 +33,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       const profile = await getUserProfile();
       setDetails({
-        name: profile.userName,
+        name: profile.fullname,
         phoneNumber: profile.phoneNumber,
         email: profile.email,
       });

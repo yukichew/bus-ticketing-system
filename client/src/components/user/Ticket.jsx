@@ -61,7 +61,7 @@ const Ticket = ({ booking, seatNumber, user }) => {
           })}
           {content({
             title: 'Bus Operator',
-            desc: booking.busSchedule.postedBy.userName,
+            desc: booking.busSchedule.postedBy.fullname,
           })}
           {content({
             title: 'Bus Type',
