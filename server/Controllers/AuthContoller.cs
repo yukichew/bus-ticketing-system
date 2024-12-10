@@ -47,7 +47,7 @@ namespace server.Controllers
                 return BadRequest(new { message = "Email verification is required before registration." });
             }
 
-            user.UserName = registerDto.Fullname;
+            user.Fullname = registerDto.Fullname;
             user.Status = "Active";
             user.PhoneNumber = registerDto.PhoneNumber;
 
@@ -87,7 +87,8 @@ namespace server.Controllers
             var busOperator = new BusOperator
             {
                 Email = registerDto.Email,
-                UserName = registerDto.Fullname,
+                Fullname = registerDto.Fullname,
+                UserName = registerDto.Email,
                 PhoneNumber = registerDto.PhoneNumber,
                 Address = registerDto.Address,
                 BusImages = registerDto.BusImages,
@@ -191,7 +192,7 @@ namespace server.Controllers
         {
             var subject = "Your Email Verification OTP";
             var message = $"Your OTP for email verification is: {otp}";
-            await _emailService.SendEmailAsync(email, email, subject, message);
+            await _emailService.SendEmailAsync(name, email, subject, message);
         }
         #endregion
 
@@ -202,13 +203,20 @@ namespace server.Controllers
             var user = await _userManager.FindByEmailAsync(verifyEmailDto.Email);
             if (user != null)
             {
-                return BadRequest("User already exists.");
+                return BadRequest(new { message = "User already exists." });
             }
 
-            var otp = await _otpService.GenerateOtpAsync(verifyEmailDto.Email);
-            await _otpService.SaveOTPAsync(verifyEmailDto.Email, otp);
-            await SendOtpEmail(verifyEmailDto.Email, verifyEmailDto.Email, otp);
-            return Ok($"OTP email sent to {verifyEmailDto.Email} successfully.");
+            try
+            {
+                var otp = await _otpService.GenerateOtpAsync(verifyEmailDto.Email);
+                await _otpService.SaveOTPAsync(verifyEmailDto.Email, otp);
+                await SendOtpEmail(verifyEmailDto.Email, verifyEmailDto.Email, otp);
+                return Ok($"OTP email sent to {verifyEmailDto.Email} successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Failed to send OTP email: {ex.Message}" });
+            }
         }
         #endregion
 
@@ -348,7 +356,7 @@ namespace server.Controllers
                 return Unauthorized(new { message = "User is not authenticated." });
             }
 
-            user.UserName = editProfileDto.Fullname;
+            user.Fullname = editProfileDto.Fullname;
             user.PhoneNumber = editProfileDto.PhoneNumber;
 
             var result = await _userManager.UpdateAsync(user);

@@ -5,6 +5,7 @@ import Logo from '../../assets/Logo';
 import { busOperatorLinks, userLinks } from '../../constants/NavbarItems';
 import { useAuth } from '../../utils/AuthContext';
 import { getUserProfile, logout } from '../../api/auth';
+import { toast } from 'react-toastify';
 
 const NavbarLinks = ({ role }) => {
   const links =
@@ -47,12 +48,15 @@ const Navbar = () => {
     fetchProfile();
   }, []);
 
-  const handleLogout = () => {
-    const logout = async () => {
-      const result = await logout();
-      return result;
-    };
+  const handleLogout = async () => {
+    const result = await logout();
     window.location.reload();
+
+    if (result?.error) {
+      return toast.error(result.message);
+    }
+
+    return result;
   };
 
   const navigateToLogin = () => {

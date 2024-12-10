@@ -12,13 +12,9 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (email, password, confirmPassword) => {
+export const register = async (registerDetails) => {
   try {
-    const { data } = await api.post('/Auth/register', {
-      email,
-      password,
-      confirmPassword,
-    });
+    const { data } = await api.post('/Auth/register', registerDetails);
     return data;
   } catch (err) {
     return catchError(err);
@@ -64,6 +60,7 @@ export const verifyEmail = async (email) => {
     return catchError(err);
   }
 };
+
 export const forgotPassword = async (email) => {
   try {
     const { data } = await api.post('/Auth/forgot-password', { email });
