@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
@@ -51,7 +50,7 @@ const NewBusTypeForm = () => {
 
     return(
         <>
-            <Navbar />
+            <Container>
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
@@ -118,7 +117,7 @@ const NewBusTypeForm = () => {
                 </div>
             </div>
 
-            <Footer />
+            </Container>
         </>
     );
 }

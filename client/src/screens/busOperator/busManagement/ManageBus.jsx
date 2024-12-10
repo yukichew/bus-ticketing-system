@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { busManagementTabs } from '../../../constants/TabItems';
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Tabs from '../../../components/common/Tabs';
 
 const ManageBus = () => {
@@ -19,7 +18,7 @@ const ManageBus = () => {
 
   return (
     <>
-      <Navbar />
+      <Container>
 
       <div className='w-4/5 mt-8 mx-auto'>
         <div className='flex items-center'>
@@ -31,7 +30,7 @@ const ManageBus = () => {
         </div>
       </div>
       
-      <Footer />
+      </Container>
     </>
   );
 };
