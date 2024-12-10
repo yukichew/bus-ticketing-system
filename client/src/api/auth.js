@@ -161,6 +161,16 @@ export const getAllBo = async () => {
   }
 };
 
+export const getAllBoDetails = async () => {
+  try {
+    const { data } = await api.get("/Auth/get-busoperators-details");
+    console.log("Fetching data", data);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
 export const getAllMembers = async () => {
   try {
     const { data } = await api.get("/Auth/get-members");

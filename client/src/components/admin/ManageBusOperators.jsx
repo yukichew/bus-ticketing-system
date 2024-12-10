@@ -10,13 +10,25 @@ import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
 import PromptConfirmation from "./modal/PromptConfirmation";
-import { getAllBo } from "../../api/auth";
+import { getAllBoDetails } from "../../api/auth";
+
+const mapBusOperatorsData = (response) => {
+  return response.map((item) => ({
+    id: item.id,
+    email: item.email,
+    userName: item.userName,
+    phoneNumber: item.phoneNumber,
+    address: item.address,
+    busImage: item.busImages[0],
+    status: item.status,
+  }));
+};
 
 const ManageBusOperators = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeactivate, setShowDeactivateModal] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
-  const [busOperators, setbusOperators] = useState([]);
+  const [busOperators, setBusOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [filters, setFilters] = useState({
     userName: "",
@@ -33,10 +45,15 @@ const ManageBusOperators = () => {
   useEffect(() => {
     const fetchBusOperators = async () => {
       try {
-        const response = await getAllBo();
-        setbusOperators(response || []);
+        const response = await getAllBoDetails();
+        if (response?.error) {
+          console.error("API error: ", response.message);
+        } else {
+          const mappedData = mapBusOperatorsData(response);
+          setBusOperators(mappedData);
+        }
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error("Unexpected error occurred: ", error);
       }
     };
 
@@ -69,8 +86,8 @@ const ManageBusOperators = () => {
     setFilters(initialFilters);
   };
 
-  const columns = ["User Name", "Email", "Phone Number"];
-  const columnKeys = ["userName", "email", "phoneNumber"];
+  const columns = ["User Name", "Email", "Phone Number", "Address"];
+  const columnKeys = ["userName", "email", "phoneNumber", "address"];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

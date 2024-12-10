@@ -348,31 +348,6 @@ namespace server.Controllers
         }
         #endregion
 
-        #region GET all Bus Operators API
-        [HttpGet("get-busoperators")]
-        public async Task<IActionResult> GetPendingApplication()
-        {
-            var busOperatorRoleId = await _context.Roles
-                .Where(r => r.Name == "BusOperator")
-                .Select(r => r.Id)
-                .FirstOrDefaultAsync();
-
-            if (busOperatorRoleId == null)
-            {
-                return BadRequest(new { message = "BusOperator role not found." });
-            }
-
-            var busOperators = await (from user in _context.Users
-                                             join userRole in _context.UserRoles
-                                             on user.Id equals userRole.UserId
-                                             where userRole.RoleId == busOperatorRoleId
-                                             select user)
-                                              .ToListAsync();
-
-            return Ok(busOperators);
-        }
-        #endregion
-
         #region GET all Members API
         [HttpGet("get-members")]
         public async Task<IActionResult> GetAllMembers()
@@ -396,9 +371,12 @@ namespace server.Controllers
 
 
             return Ok(members);
+        }
+        #endregion
 
         #region Refresh Token API
         [HttpPost("refresh-token")]
+
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto refreshTokenRequestDto)
         {
             var refreshToken = refreshTokenRequestDto.RefreshToken;
@@ -428,6 +406,7 @@ namespace server.Controllers
         #endregion
 
         #region Get Principal From Expired Token Method
+
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -457,10 +436,45 @@ namespace server.Controllers
         #region Logout API
         [Authorize]
         [HttpPost("logout")]
+
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return Ok(new { message = "Logged out successfully." });
+        }
+        #endregion
+
+        #region GET all Bus Operators Details API
+        [HttpGet("get-busoperators-details")]
+        public async Task<IActionResult> GetAllBusOperators()
+        {
+            var busOperatorRoleId = await _context.Roles
+                .Where(r => r.Name == "BusOperator")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (busOperatorRoleId == null)
+            {
+                return BadRequest(new { message = "BusOperator role not found." });
+            }
+
+            var busOperators = await (from user in _context.Users
+                                      join userRole in _context.UserRoles
+                                      on user.Id equals userRole.UserId
+                                      where userRole.RoleId == busOperatorRoleId
+                                      select new
+                                      {
+                                          user.Id,
+                                          user.Email,
+                                          user.UserName,
+                                          user.PhoneNumber,
+                                          ((BusOperator)user).Address,
+                                          ((BusOperator)user).BusImages,
+                                          ((BusOperator)user).IsRefundable,
+                                          ((BusOperator)user).Status
+                                      }).ToListAsync();
+
+            return Ok(busOperators);
         }
         #endregion
     }
