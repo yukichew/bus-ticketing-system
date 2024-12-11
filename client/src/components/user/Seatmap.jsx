@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { RiSteering2Line } from 'react-icons/ri';
 import Seat from './Seat';
 

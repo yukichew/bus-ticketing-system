@@ -21,6 +21,9 @@ const Payment = () => {
   const [loading, setLoading] = useState(false);
   const { email, fullname, amountPaid, bookingID } = location.state || {};
   const schedule = JSON.parse(localStorage.getItem('selectedSchedule'));
+  const returnSchedule = JSON.parse(
+    localStorage.getItem('selectedReturnSchedule')
+  );
   const seats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
   const navigate = useNavigate();
 
@@ -76,7 +79,12 @@ const Payment = () => {
 
     setLoading(false);
 
-    localStorage.removeItem('selectedSeats');
+    localStorage.removeItem('selectedSchedule');
+    localStorage.removeItem('selectedReturnSchedule');
+    localStorage.removeItem('onwardSelectedSeats');
+    localStorage.removeItem('returnSelectedSeats');
+    localStorage.removeItem('busSearch');
+    localStorage.removeItem('isRoundTrip');
     navigate('/payment-success');
   };
 
