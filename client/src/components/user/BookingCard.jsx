@@ -11,6 +11,7 @@ const BookingCard = ({ booking, seatNumber, user }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewPdf, setViewPdf] = useState(false);
   const [ratingView, setRatingView] = useState(false);
+  const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
 
   const handleViewPdf = () => {
     setViewPdf(true);
@@ -29,6 +30,8 @@ const BookingCard = ({ booking, seatNumber, user }) => {
         email: user.email,
         fullname: user.fullname,
         amountPaid: booking.amountPaid,
+        schedule: booking.busSchedule,
+        seats: selectedSeats,
       },
     });
   };
