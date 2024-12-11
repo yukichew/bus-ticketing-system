@@ -162,7 +162,7 @@ const EditBusScheduleForm = () => {
     };
 
     const handleNavigate = () => {
-        navigate('/bo/bus/bus-schedule/passenger-lists');
+        navigate(`/bo/bus/bus-schedule/passenger-lists/${busScheduleID}`);
     };
 
     const handleSubmit = async () => {
