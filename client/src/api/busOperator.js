@@ -39,3 +39,12 @@ export const SendRejectApplicationEmail = async (id) => {
     return catchError(err);
   }
 };
+
+export const fetchTotalBusOperators = async (status) => {
+  try {
+    const { data } = await api.get(`/BusOperator/count?status=${status}`);
+    return data;
+  } catch (err) {
+    console.error(`Error fetching ${status} bus operators count:`, err);
+  }
+};

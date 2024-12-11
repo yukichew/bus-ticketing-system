@@ -7,9 +7,10 @@ import {
   PointElement,
   Title,
   Tooltip,
-} from 'chart.js';
-import React, { useState } from 'react';
-import { Line } from 'react-chartjs-2';
+} from "chart.js";
+import React, { useState, useEffect } from "react";
+import { Line } from "react-chartjs-2";
+import { getTransactionsDetails } from "../../api/transaction";
 
 ChartJS.register(
   CategoryScale,
@@ -22,58 +23,93 @@ ChartJS.register(
 );
 
 const LineChart = () => {
-  // Set initial state for year only
-  const [selectedYear, setSelectedYear] = useState('2023');
+  const [selectedYear, setSelectedYear] = useState("2024");
+  const [transactionsData, setTransactionsData] = useState([]);
+  const [busTypeSalesData, setBusTypeSalesData] = useState({});
+  const [availableYears, setAvailableYears] = useState([2024]);
 
-  // Function to generate sample data based on the selected year
-  const getYearlyData = (year) => {
-    const yearData = {
-      2023: [100, 120, 180, 130, 200, 220, 250, 270, 290, 310, 330, 350],
-      2024: [80, 110, 170, 140, 180, 210, 230, 250, 270, 290, 310, 330],
-      2025: [90, 130, 190, 150, 210, 240, 260, 280, 300, 320, 340, 360],
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const { transactions } = await getTransactionsDetails();
+        setTransactionsData(transactions);
+
+        const years = [
+          ...new Set(
+            transactions.map((transaction) =>
+              new Date(transaction.createdAt).getFullYear()
+            )
+          ),
+        ];
+        setAvailableYears(years);
+
+        const busTypeMonthlySales = {};
+
+        transactions.forEach((transaction) => {
+          const transactionDate = new Date(transaction.createdAt);
+          const transactionYear = transactionDate.getFullYear();
+          if (transactionYear === parseInt(selectedYear)) {
+            const month = transactionDate.getMonth();
+
+            const busType = transaction.types;
+
+            if (busType) {
+              if (!busTypeMonthlySales[busType]) {
+                busTypeMonthlySales[busType] = new Array(12).fill(0);
+              }
+
+              busTypeMonthlySales[busType][month] += transaction.amount;
+            }
+          }
+        });
+
+        setBusTypeSalesData(busTypeMonthlySales);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
     };
-    return yearData[year] || [];
+
+    fetchTransactions();
+  }, [selectedYear]);
+
+  const getBusTypeColor = (busType, alpha = 1) => {
+    const colors = {
+      "Executive (2+1)": "#FF5733",
+      "Executive (2+2)": "#0A21C0",
+      "Double Deck": "#2c2E3A",
+    };
+    return `rgba(${hexToRgb(colors[busType] || "#000000")}, ${alpha})`;
   };
 
-  // Sample data for each bus type based on the selected year
+  const hexToRgb = (hex) => {
+    const match = /^#([a-fA-F0-9]{6})$/.exec(hex);
+    if (!match) return [0, 0, 0];
+    const [r, g, b] = match[1].match(/.{2}/g).map((x) => parseInt(x, 16));
+    return [r, g, b];
+  };
+
   const data = {
     labels: [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ],
-    datasets: [
-      {
-        label: 'Executive (24 Seats)',
-        data: getYearlyData(selectedYear),
-        borderColor: '#0A21C0',
-        backgroundColor: 'rgba(10, 33, 192, 0.2)',
-        tension: 0.3,
-      },
-      {
-        label: 'Executive (40 Seats)',
-        data: getYearlyData(selectedYear).map((val) => val + 20),
-        borderColor: '#2c2E3A',
-        backgroundColor: 'rgba(44, 46, 58, 0.2)',
-        tension: 0.3,
-      },
-      {
-        label: 'Double Deck (Upper Deck)',
-        data: getYearlyData(selectedYear).map((val) => val - 10),
-        borderColor: '#050A44',
-        backgroundColor: 'rgba(5, 10, 68, 0.2)',
-        tension: 0.3,
-      },
-    ],
+    datasets: Object.keys(busTypeSalesData).map((busType) => ({
+      label: busType,
+      data: busTypeSalesData[busType] || new Array(12).fill(0),
+      borderColor: getBusTypeColor(busType),
+      backgroundColor: getBusTypeColor(busType, 0.2),
+      tension: 0.3,
+    })),
   };
 
   // Chart options
@@ -81,39 +117,42 @@ const LineChart = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       title: {
         display: true,
-        text: `Ticket Sales in ${selectedYear}`,
+        text: `Total Ticket Sales by Bus Type in ${selectedYear}`,
       },
     },
     scales: {
       x: {
         title: {
           display: true,
-          text: 'Months',
+          text: "Months",
         },
       },
       y: {
         title: {
           display: true,
-          text: 'Tickets Sold',
+          text: "Total Ticket Sales",
+        },
+        ticks: {
+          beginAtZero: true,
         },
       },
     },
   };
 
   return (
-    <div className='w-full max-w-4xl mx-auto mt-10 relative font-poppins'>
-      <div className='absolute top-0 right-0 mt-4 mr-4'>
+    <div className="w-full max-w-4xl mx-auto mt-10 relative font-poppins">
+      <div className="absolute top-0 right-0 mt-4 mr-4">
         {/* Year Selector */}
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
-          className='p-2 border rounded'
+          className="p-2 border rounded"
         >
-          {['2023', '2024', '2025'].map((year) => (
+          {availableYears.map((year) => (
             <option key={year} value={year}>
               {year}
             </option>
@@ -121,7 +160,6 @@ const LineChart = () => {
         </select>
       </div>
 
-      {/* Render Line Chart */}
       <Line data={data} options={options} />
     </div>
   );

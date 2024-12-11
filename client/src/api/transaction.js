@@ -38,8 +38,29 @@ export const getTotalSalesRevenue = async (token) => {
 export const getTransactionsDetails = async () => {
   try {
     const { data } = await api.get("/Transactions/get-transaction-details");
-    return data;
+    console.log("API Response:", data);
+    const { transactions, totalAmount } = data;
+
+    if (!transactions || totalAmount === undefined) {
+      throw new Error("Missing 'transactions' or 'totalAmount'");
+    }
+
+    return { transactions, totalAmount };
   } catch (error) {
     console.error("Error fetching transactions:", error);
+    return { transactions: [], totalAmount: 0 };
+  }
+};
+
+export const getTotalSales = async (token) => {
+  try {
+    const { data } = await api.get(`/Transactions/BusOperator`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
   }
 };

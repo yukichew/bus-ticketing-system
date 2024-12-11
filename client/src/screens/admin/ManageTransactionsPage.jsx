@@ -6,7 +6,7 @@ import ViewTransaction from "../../components/admin/modal/ViewTransactions";
 import Table from "../../components/common/Table";
 import Modal from "../../components/common/Modal";
 import { IoFilter } from "react-icons/io5";
-import { FaRegTrashAlt, FaRegEye } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
@@ -35,9 +35,9 @@ const ManageTransactionsPage = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await getTransactionsDetails();
-        console.log(response);
-        setTransactions(response);
+        const { transactions } = await getTransactionsDetails();
+        console.log(transactions);
+        setTransactions(transactions);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       }

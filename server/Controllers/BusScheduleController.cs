@@ -888,6 +888,7 @@ RideNGo";
         }
         #endregion
 
+        #region Get bus schedule details
         [HttpGet("get-bus-schedules-details")]
         public async Task<IActionResult> GetBusSchedulesDetails()
         {
@@ -936,8 +937,11 @@ RideNGo";
                 })
                 .ToListAsync();
 
-            return Ok(busSchedules);
+            var totalBusSchedules = busSchedules.Count;
+
+            return Ok(new { busSchedules, totalBusSchedules });
         }
+        #endregion
 
         private bool BusScheduleExists(Guid id)
         {

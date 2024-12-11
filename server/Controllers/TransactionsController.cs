@@ -194,16 +194,23 @@ namespace server.Controllers
         public async Task<IActionResult> GetAllTransactions()
         {
             var transactions = await (from transaction in _context.Transaction
+                                      join booking in _context.Booking on transaction.BookingID equals booking.BookingID
+                                      join busSchedule in _context.BusSchedules on booking.BusScheduleID equals busSchedule.BusScheduleID
+                                      join busInfo in _context.BusInfo on busSchedule.BusID equals busInfo.BusID
+                                      join busType in _context.BusTypes on busInfo.BusTypeID equals busType.BusTypeID
                                       select new
                                       {
                                           transaction.TransactionID,
                                           transaction.BookingID,
                                           transaction.Amount,
                                           transaction.Status,
+                                          busType.Types, // Bus type information
                                           transaction.CreatedAt
                                       }).ToListAsync();
 
-            return Ok(transactions);
+            var totalAmount = transactions.Sum(t => t.Amount);
+
+            return Ok(new { transactions, totalAmount });
         }
         #endregion
     }

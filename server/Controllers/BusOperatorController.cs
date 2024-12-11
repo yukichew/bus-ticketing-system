@@ -101,5 +101,42 @@ namespace server.Controllers
             return Ok(new { message = $"Application has been rejected for Bus operator with ID {id}." });
         }
         #endregion
+
+        #region GET all Bus Operators Count with Status Filter
+        // GET: api/BusOperators/count?status=Active
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetBusOperatorsCount([FromQuery] string status)
+        {
+
+            if (string.IsNullOrEmpty(status))
+            {
+                return BadRequest(new { message = "Status parameter is required." });
+            }
+
+            var validStatuses = new List<string> { "Active", "Inactive", "Pending"};
+
+            if (!validStatuses.Contains(status))
+            {
+                return BadRequest(new { message = "Invalid status parameter." });
+            }
+
+            var busOperatorRoleId = await _context.Roles
+                .Where(r => r.Name == "BusOperator")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (busOperatorRoleId == null)
+            {
+                return BadRequest(new { message = "BusOperator role not found." });
+            }
+
+            var busOperatorsCount = await (from user in _context.Users
+                                           join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                                           where userRole.RoleId == busOperatorRoleId && user.Status == status
+                                           select user).CountAsync();
+
+            return Ok(busOperatorsCount);
+        }
+        #endregion
     }
 }
