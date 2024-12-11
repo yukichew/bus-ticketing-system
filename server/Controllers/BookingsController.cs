@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
-using server.Dto.Booking;
 using server.Models;
+using System.Collections.Generic;
 
 namespace server.Controllers
 {
@@ -12,10 +14,12 @@ namespace server.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public BookingsController(ApplicationDbContext context)
+        public BookingsController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Bookings
@@ -25,6 +29,7 @@ namespace server.Controllers
             return await _context.Booking.ToListAsync();
         }
 
+        #region get booking by bus schedule id api
         // GET: api/Bookings/{bookingID}
         [HttpGet("{id}")]
         public async Task<ActionResult<Booking>> GetBooking(Guid id)
@@ -38,8 +43,9 @@ namespace server.Controllers
 
             return booking;
         }
+        #endregion
 
-        #region buy bus ticket
+        #region buy bus ticket api
         // POST: api/Bookings
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(BookingDto bookingDto)
@@ -113,6 +119,7 @@ namespace server.Controllers
         }
         #endregion
 
+        #region add seats to booking method
         private async Task AddSeatAndPassenger(SeatDto seatDto, Guid bookingID, bool isReturn = false)
         {
             var passenger = new Passenger
@@ -134,8 +141,9 @@ namespace server.Controllers
             _context.Seats.Add(bookingSeat);
             await _context.SaveChangesAsync();
         }
+        #endregion
 
-        // Helper to create a booking
+        #region create booking method
         private async Task<Booking> CreateBooking(Guid scheduleID, double amount, List<SeatDto> seats)
         {
             var seatNumbers = seats.Select(seat => seat.SeatNumber).ToList();
@@ -187,33 +195,81 @@ namespace server.Controllers
 
             return booking;
         }
+        #endregion
 
-        #region get booking by passenger email
-        // GET: api/Bookings/History?email={email}
-        [HttpGet("History")]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetBookingHistory([FromQuery] string email)
+        #region get booking history api by passenger email
+        // GET: api/Bookings/History/Filters?status={status}&busOperator={busOperator}&originState={originState}&destinationState={destinationState}&travelDate={travelDate}
+        [Authorize(Policy = "MemberOnly")]
+        [HttpGet("History/FilterBookings")]
+        public async Task<ActionResult> FilterBookings(
+            [FromQuery] string status = null,
+            [FromQuery] string busOperator = null,
+            [FromQuery] string originState = null,
+            [FromQuery] string destinationState = null,
+            [FromQuery] DateTime? travelDate = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 5
+        )
         {
-            if (string.IsNullOrEmpty(email))
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
             {
-                return BadRequest(new { message = "Email is required." });
+                return Unauthorized(new { message = "User is not authenticated." });
             }
 
-            var bookings = await _context.Seats
-                .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == email.ToLower())
+            var query = _context.Seats
+                .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == user.Email.ToLower())
                 .Include(s => s.Booking)
+                .ThenInclude(b => b.BusSchedule.Routes)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(originState))
+            {
+                query = query.Where(s => EF.Functions.Like(s.Booking.BusSchedule.Routes.BoardingLocation.State, $"%{originState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(destinationState))
+            {
+                query = query.Where(s => EF.Functions.Like(s.Booking.BusSchedule.Routes.ArrivalLocation.State, $"%{destinationState}%"));
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(s => s.Booking.BookingStatus == status);
+            }
+
+            if (travelDate.HasValue)
+            {
+                query = query.Where(s => s.Booking.BusSchedule.TravelDate.Date == travelDate.Value.Date);
+            }
+
+            if (!string.IsNullOrEmpty(busOperator))
+            {
+                query = query.Where(s => s.Booking.BusSchedule.PostedBy.Fullname.Equals(busOperator, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var totalCount = await query.CountAsync();
+            var bookings = await query
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .Select(s => new
                 {
                     seatNumber = s.SeatNumber,
                     booking = s.Booking
-                })
-                .ToListAsync();
+                }).ToListAsync();
 
-            if (!bookings.Any())
+            if (bookings.Count == 0)
             {
-                return NotFound(new { message = "No bookings found." });
+                return Ok(new { message = "No bookings found." });
             }
 
-            return Ok(bookings);
+            return Ok(new
+            {
+                bookings,
+                totalCount,
+                totalPages = (int)Math.Ceiling((double)totalCount / limit),
+                currentPage = page
+            });
         }
         #endregion
 
