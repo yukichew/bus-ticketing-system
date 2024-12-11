@@ -225,8 +225,10 @@ namespace server.Controllers
                 return Unauthorized(new { message = "Only active BusOperators can get buses details." });
             }
 
+            var today = DateTime.Today;
+
             var busSchedules = await _context.Set<BusSchedule>()
-                        .Where(b => b.PostedBy.Id == busOperator.Id)
+                        .Where(b => b.PostedBy.Id == busOperator.Id && b.TravelDate >= today)
                         .Include(b => b.BusInfo)
                         .Include(b => b.RecurringOptions)
                         .Include(b => b.Routes)
@@ -290,6 +292,18 @@ namespace server.Controllers
             string scheduleStatus = null,
             DateTime? travelDate = null)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
             var query = _context.BusSchedules.AsQueryable();
 
             if (!string.IsNullOrEmpty(busPlate))
@@ -327,7 +341,10 @@ namespace server.Controllers
                 query = query.Where(bs => bs.TravelDate.Date == travelDate.Value.Date);
             }
 
+            var today = DateTime.Today;
+
             var busSchedules = await query
+                .Where(b => b.PostedBy.Id == busOperator.Id && b.TravelDate >= today)
                 .Include(b => b.BusInfo)
                 .Include(b => b.Routes)
                     .ThenInclude(r => r.BoardingLocation)
@@ -356,6 +373,18 @@ namespace server.Controllers
             string busPlate = null,
             string scheduleStatus = null)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
+            if (busOperator == null || busOperator.Status != "Active")
+            {
+                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
+            }
+
             var today = DateTime.Today;
             var query = _context.BusSchedules.AsQueryable();
 
@@ -672,7 +701,7 @@ namespace server.Controllers
 
             if (existingBusSchedule == null)
             {
-                return NotFound(new { message = $"Bus Schedule with ID {id} not found." });
+                return NotFound(new { message = $"Bus schedule not found." });
             }
 
             TimeSpan etd = TimeSpan.Parse(busScheduleDTO.ETD);
@@ -704,6 +733,49 @@ namespace server.Controllers
             existingBusSchedule.ScheduleStatus = busScheduleDTO.ScheduleStatus;
             existingBusSchedule.Status = busScheduleDTO.Status;
 
+            if (busScheduleDTO.ScheduleStatus == "Delayed")
+            {
+                if (busScheduleDTO.ScheduleStatus == "Delayed" && string.IsNullOrWhiteSpace(busScheduleDTO.Reasons))
+                {
+                    return BadRequest(new { message = "Reason for delay must be provided when the schedule is delayed." });
+                }
+
+                existingBusSchedule.Reasons = busScheduleDTO.Reasons;
+
+                var passengers = new List<dynamic>
+        {
+            new { fullname = "LuYing", email = "yingying.nly@gmail.com" },
+            new { fullname = "PassengerNg" +
+            "", email = "office.nly03@gmail.com" }
+        };
+
+                foreach (var passenger in passengers)
+                {
+                    string emailMessage = $@"Dear {passenger.fullname},
+
+We regret to inform you that your bus scheduled for {existingBusSchedule.TravelDate:yyyy-MM-dd} has been delayed.
+
+<p><u>Updated Bus Schedule</u></p>
+<p>Departure Time: {existingBusSchedule.ETD.ToString(@"hh\:mm")}</p>
+<p>Arrival Time: {existingBusSchedule.ETA.ToString(@"hh\:mm")}</p>
+<p>Reason for delay: {existingBusSchedule.Reasons}</p>
+
+Thank you for your understanding.
+
+Best regards,
+RideNGo";
+
+                    try
+                    {
+                        await _emailHelper.SendEmailAsync(passenger.fullname, passenger.email, "Bus Schedule Delay Notice", emailMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(new { message = $"Failed to send email to {passenger.email}: {ex.Message}" });
+                    }
+                }
+            }
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -712,7 +784,7 @@ namespace server.Controllers
             {
                 if (!BusScheduleExists(id))
                 {
-                    return NotFound(new { message = $"Bus schedule with ID {id} not found after update attempt." });
+                    return NotFound(new { message = $"Bus schedule not found." });
                 }
                 else
                 {
@@ -721,37 +793,6 @@ namespace server.Controllers
             }
 
             return Ok(new { message = "The bus schedule was successfully updated." });
-        }
-        #endregion
-
-        #region DeleteBusSchedule
-        // DELETE: api/BusSchedule/{id}
-        [Authorize(Policy = "BusOperatorOnly")]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBusSchedule(int id)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized(new { message = "User is not authenticated." });
-            }
-
-            var busOperator = await _context.Set<BusOperator>().FirstOrDefaultAsync(b => b.Id == userId);
-            if (busOperator == null || busOperator.Status != "Active")
-            {
-                return Unauthorized(new { message = "Only active BusOperators can get buses details." });
-            }
-
-            var busSchedule = await _context.Set<BusSchedule>().FindAsync(id);
-            if (busSchedule == null)
-            {
-                return NotFound(new { message = $"Bus Schedule with ID {id} not found." });
-            }
-
-            _context.Set<BusSchedule>().Remove(busSchedule);
-            await _context.SaveChangesAsync();
-
-            return Ok("The selected bus schedule is successfully deleted.");
         }
         #endregion
 
@@ -814,64 +855,6 @@ namespace server.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = $"Updated {busSchedules.Count} schedules to 'En Route'." });
-        }
-        #endregion
-
-        #region UpdateDelayedStatus
-        // PUT: api/BusSchedule/UpdateDelayedStatus/{id}
-        [HttpPut("UpdateDelayedStatus/{id}")]
-        public async Task<IActionResult> UpdateDelayedStatus(Guid id, BusScheduleDTO busScheduleDTO)
-        {
-            var busSchedules = await _context.BusSchedules
-                .Where(bs => bs.BusScheduleID == id)
-                .ToListAsync();
-
-            if (!busSchedules.Any())
-            {
-                return Ok(new { message = "No schedules to update." });
-            }
-
-            var passengers = new List<dynamic>
-            {
-                new { fullname = "Yuki", email = "yuki@gmail.com" },
-                new { fullname = "Jezlyn", email = "jezlyn@gmail.com" }
-            };
-
-            foreach (var busSchedule in busSchedules)
-            {
-                busSchedule.ScheduleStatus = "Delayed";
-                busSchedule.ETD = ParseTimeSpan(busScheduleDTO.ETD);
-                busSchedule.ETA = ParseTimeSpan(busScheduleDTO.ETA);
-                busSchedule.Reasons = busScheduleDTO.Reasons;
-
-                foreach (var passenger in passengers)
-                {
-                    string emailMessage = $@"Dear {passenger.fullname},
-
-We regret to inform you that your bus scheduled for {busSchedule.TravelDate:yyyy-MM-dd} has been delayed.
-
-The latest estimated departure time (ETD) is {busSchedule.ETD:hh\\:mm} and the latest estimated arrival time (ETA) is {busSchedule.ETA:hh\\:mm}.
-
-Reason for delay: {busSchedule.Reasons}
-
-Thank you for your understanding.
-
-Best regards,
-RideNGo";
-
-                    try
-                    {
-                        await _emailHelper.SendEmailAsync(passenger.fullname, passenger.email, "Bus Schedule Delay Notice", emailMessage);
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(new { message = $"Failed to send email to {passenger.email}: {ex.Message}" });
-                    }
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            return Ok($"Updated {busSchedules.Count} schedules to 'Delayed' and notified passengers.");
         }
         #endregion
 

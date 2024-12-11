@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import DatePickerField from '../../../components/common/DatePickerField';
 import CustomInput from '../../../components/common/CustomInput';
-import { GetAllBusByBusOperatorID } from '../../../api/busInfo';
-import { GetAllLocations } from '../../../api/location';
+import { getAllBusByBusOperatorID } from '../../../api/busInfo';
+import { getAllLocations } from '../../../api/location';
 import { createBusSchedule } from '../../../api/schedule';
+import * as yup from "yup";
+import { validateField } from '../../../utils/validate';
+import { toast } from "react-toastify";
 
 const NewBusScheduleForm = () => {
     const token = sessionStorage.getItem('token');
@@ -33,20 +35,20 @@ const NewBusScheduleForm = () => {
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [selectedDays, setSelectedDays] = useState([]);
+    const [price, setPrice] = useState("");
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         // Schedule information
         etd: '',
         eta: '',
         scheduleStatus: 'Scheduled',
         status: 'Active',
-    
         // Bus information
         busID: '',
         busPlate: '',
         numSeats: '',
         busType: '',
         busStatus: '',
-    
         // Route information
         boardingLocationID: '',
         departureTime: '',
@@ -54,7 +56,6 @@ const NewBusScheduleForm = () => {
         arrivalTime: '',
         routeStatus: 'Active',
         price: '',
-    
         // Recurring information
         isRecurring: '',
         options: '',
@@ -63,9 +64,21 @@ const NewBusScheduleForm = () => {
         toDate: '',
     });
 
+    const createScheduleSchema = yup.object().shape({
+        price: yup
+            .string()
+            .matches(/^\d+$/, "Price must be a positive number.")
+            .test(
+                "is-decimal",
+                "Price can have up to two decimal places.",
+                (value) => /^\d+(\.\d{1,2})?$/.test(value)
+            )
+            .required("Price is required"),
+    });
+
     const fetchBusData = async () => {
         try {
-            const results = await GetAllBusByBusOperatorID(token);
+            const results = await getAllBusByBusOperatorID(token);
             const busInfoArr = results?.busInfo || [];
             
             if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
@@ -87,7 +100,7 @@ const NewBusScheduleForm = () => {
     };
 
     const fetchLocationData = async () => {
-        const results = await GetAllLocations();
+        const results = await getAllLocations();
 
         const formattedData = results.map((item) => ({
             locationID: item.locationID,
@@ -194,6 +207,20 @@ const NewBusScheduleForm = () => {
         setSelectedDays([]);
     };
 
+    const handleInputChange = (field, value) => {
+        if (field === "price") setPrice(value);
+        validateField(field, value, setErrors, createScheduleSchema);
+
+        setFormData((prevData) => {
+            const updatedData = {
+                ...prevData,
+                [field]: value,
+            };
+  
+            return updatedData;
+        });
+    };
+
     const toggleDaySelection = (day) => {
         const dayName = day.fullDay;
         if (selectedDays.includes(dayName)) {
@@ -254,12 +281,11 @@ const NewBusScheduleForm = () => {
     
         const response = await createBusSchedule(scheduleDetails, token);
 
-        if (response) {
-            alert("Schedule created successfully!");
-            navigate('/bo/bus');
-        } else {
-            alert("Schedule created failed!");
+        if (response?.error) {
+            return toast.error(response.message);
         }
+        toast.success('Schedule created successfully.');
+        navigate('/bo/bus');
     };
 
     const recurringOptions = ['None', 'Daily', 'Monthly'];
@@ -276,7 +302,7 @@ const NewBusScheduleForm = () => {
 
     return(
         <>
-            <Navbar />
+            <Container>
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
@@ -502,13 +528,8 @@ const NewBusScheduleForm = () => {
                                 id="price"
                                 placeholder="Enter Price"
                                 value={formData.price}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        price: value,
-                                    }));
-                                }}
+                                onChange={(e) => handleInputChange("price", e.target.value)}
+                                error={errors.price}
                             />
                         </div>
                     </Card>
@@ -629,7 +650,7 @@ const NewBusScheduleForm = () => {
                 </div>
             </div>
 
-            <Footer />
+            </Container>
         </>
     );
 }

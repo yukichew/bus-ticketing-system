@@ -200,6 +200,13 @@ namespace server.Controllers
                 return Unauthorized(new { message = "Only active BusOperators can create buses." });
             }
 
+            var busTypeExists = await _context.Set<BusType>()
+                .AnyAsync(b => b.Types == busType.Types && b.NoOfSeats == busType.NoOfSeats);
+            if (busTypeExists)
+            {
+                return BadRequest(new { message = $"A bus with the type '{busType.Types}' and number of seats '{busType.NoOfSeats}' already exists." });
+            }
+
             busType.PostedBy = busOperator;
 
             _context.Set<BusType>().Add(busType);
@@ -225,6 +232,13 @@ namespace server.Controllers
             if (busOperator == null || busOperator.Status != "Active")
             {
                 return Unauthorized(new { message = "Only active BusOperators can create buses." });
+            }
+
+            var busTypeExists = await _context.Set<BusType>()
+                .AnyAsync(b => b.Types == busType.Types && b.NoOfSeats == busType.NoOfSeats);
+            if (busTypeExists)
+            {
+                return BadRequest(new { message = $"A bus with the type '{busType.Types}' and number of seats '{busType.NoOfSeats}' already exists." });
             }
 
             if (busType == null)

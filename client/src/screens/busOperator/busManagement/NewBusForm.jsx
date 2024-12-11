@@ -1,30 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
 import { createBus } from '../../../api/busInfo';
-import { GetAllBusTypesByBusOperatorID } from '../../../api/busType';
+import { getAllBusTypesByBusOperatorID } from '../../../api/busType';
+import * as yup from "yup";
+import { validateField } from '../../../utils/validate';
+import { toast } from 'react-toastify';
 
 const NewBusForm = () => {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
+    const [busPlate, setBusPlate] = useState("");
+    const [busType, setBusType] = useState("");
+    const [status, setStatus] = useState("");
     const [busTypeOptions, setBusTypeOptions] = useState([]);
     const [isBusTypeOpen, setIsBusTypeOpen] = useState(false);
     const [selectedBusTypeOption, setSelectedBusTypeOption] = useState('Select a bus type');
     const [isBusStatusOpen, setIsBusStatusOpen] = useState(false);
     const [selectedBusStatusOption, setSelectedBusStatusOption] = useState('Select a status');
+    const [errors, setErrors] = useState({});
     const [busDetails, setBusDetails] = useState({
         busPlate: '',
         busTypeID: '',
         status: '',
     });
 
+    const createBusSchema = yup.object().shape({
+        busPlate: yup
+          .string()
+          .matches(/^[A-Z0-9 ]+$/, "Bus Plate must only contain uppercase letters and numbers.")
+          .required("Bus Plate is required"),
+        busType: yup
+          .string()
+          .required("Bus Type is required"),
+        status: yup
+          .string()
+          .required("Status is required")
+    });
+
     const fetchBusTypeData = async () => {
-        const results = await GetAllBusTypesByBusOperatorID(token);
+        const results = await getAllBusTypesByBusOperatorID(token);
 
         const formattedData = results.map((item) => ({
             busTypeID: item.busTypeID,
@@ -60,11 +79,16 @@ const NewBusForm = () => {
         }));
     };
 
-    const handleInputChange = (name, value) => {
+    const handleInputChange = (field, value) => {
+        if (field === "busPlate") setBusPlate(value);
+        if (field === "busType") setBusType(value);
+        if (field === "status") setStatus(value);
+        validateField(field, value, setErrors, createBusSchema);
+
         setBusDetails((prevData) => {
             const updatedData = {
                 ...prevData,
-                [name]: value,
+                [field]: value,
             };
             return updatedData;
         });
@@ -73,17 +97,16 @@ const NewBusForm = () => {
     const handleSubmit = async () => {
         const response = await createBus(busDetails, token);
 
-        if (response) {
-            alert("Bus added successfully!");
-            navigate('/bo/bus');
-        } else {
-            alert("Bus addition failed!");
+        if (response?.error) {
+            return toast.error(response.message);
         }
+        toast.success('Bus added successfully.');
+        navigate('/bo/bus');
     };
 
     return (
         <>
-            <Navbar />
+            <Container>
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
@@ -100,6 +123,7 @@ const NewBusForm = () => {
                             placeholder="Enter Bus Plate"
                             value={busDetails.busPlate}
                             onChange={(e) => handleInputChange('busPlate', e.target.value)}
+                            error={errors.busPlate}
                         />
                     </div>
 
@@ -163,7 +187,7 @@ const NewBusForm = () => {
                 </div>
             </div>
 
-            <Footer />
+            </Container>
         </>
     );
 }

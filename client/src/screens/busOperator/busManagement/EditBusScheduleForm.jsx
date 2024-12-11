@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { HiOutlineUsers } from "react-icons/hi2";
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import DatePickerField from '../../../components/common/DatePickerField';
 import CustomInput from '../../../components/common/CustomInput';
 import { getBusSchedule, updateBusSchedule } from '../../../api/schedule';
-import { GetAllBusByBusOperatorID } from '../../../api/busInfo';
+import { getAllBusByBusOperatorID } from '../../../api/busInfo';
+import { toast } from 'react-toastify';
 
 const EditBusScheduleForm = () => {
     const token = sessionStorage.getItem('token');
@@ -19,6 +19,7 @@ const EditBusScheduleForm = () => {
     const [selectedBusPlateOption, setSelectedBusPlateOption] = useState('Select a bus plate');
     const [isBusPlateOpen, setIsBusPlateOpen] = useState(false);
     const [isStatusOpen, setIsStatusOpen] = useState(false);
+    const [isReasonOpen, setIsReasonOpen] = useState(false);
     const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
     const [isScheduleStatusOpen, setIsScheduleStatusOpen] = useState(false);
     const [selectedScheduleStatusOption, setSelectedScheduleStatusOption] = useState('Select a schedule status');
@@ -31,6 +32,7 @@ const EditBusScheduleForm = () => {
         eta: '',
         scheduleStatus: '',
         status: '',
+        reasons: '',
     
         // Bus information
         busID: '',
@@ -96,7 +98,7 @@ const EditBusScheduleForm = () => {
         })
 
         const recurringOption = results.recurringOptions.options;
-        if(recurringOption == "Monthly"){
+        if(recurringOption === "Monthly"){
             const fetchedSelectDays = results.recurringOptions.selectDays;
             setSelectedDays(fetchedSelectDays);
         }
@@ -107,7 +109,7 @@ const EditBusScheduleForm = () => {
 
     const fetchBusData = async () => {
         try {
-            const results = await GetAllBusByBusOperatorID(token);
+            const results = await getAllBusByBusOperatorID(token);
             const busInfoArr = results?.busInfo || [];
             
             if (Array.isArray(busInfoArr) && busInfoArr.length > 0) {
@@ -186,25 +188,41 @@ const EditBusScheduleForm = () => {
                 Status: formData.routeStatus,
                 Price: parseFloat(formData.price),
             },
-            RecurringOptions: {
-                Options: formData.options,
-                FromDate: formData.fromDate,
-                ToDate: formData.toDate,
-                SelectDays: formData.selectDays,
-                Status: formData.recurringStatus,
-            },
+            RecurringOptions:
+            formData.options === "None"
+                ? {
+                    Options: formData.options,
+                    Date: formData.date,
+                    Status: formData.recurringStatus,
+                }
+                : formData.options === "Daily"
+                ? {
+                    Options: formData.options,
+                    FromDate: formData.fromDate,
+                    ToDate: formData.toDate,
+                    Status: formData.recurringStatus,
+                }
+                : formData.options === "Monthly"
+                ? {
+                    Options: formData.options,
+                    FromDate: formData.fromDate,
+                    ToDate: formData.toDate,
+                    SelectDays: selectedDays,
+                    Status: formData.recurringStatus,
+                }
+                : null,
             ScheduleStatus: formData.scheduleStatus,
             Status: formData.status,
+            Reasons: formData.reasons,
         };
 
         const response = await updateBusSchedule(busScheduleID, scheduleDetails, token);
 
-        if (response) {
-            alert("Schedule updated successfully!");
-            navigate('/bo/bus');
-        } else {
-            alert("Schedule updated failed!");
+        if (response?.error) {
+            return toast.error(response.message);
         }
+        toast.success('Schedule updated successfully.');
+        navigate('/bo/bus');
     };
     
     const handleCancel = () => {
@@ -221,6 +239,10 @@ const EditBusScheduleForm = () => {
     };
 
     const handleSelectScheduleStatus = (option) => {
+        if(option === "Delayed"){
+            setIsReasonOpen(true);
+        }
+
         setSelectedScheduleStatusOption(option);
         setFormData((prevData) => ({
             ...prevData,
@@ -229,6 +251,16 @@ const EditBusScheduleForm = () => {
         setIsScheduleStatusOpen(false);
     };
     
+    const handleInputChange = (field, value) => {
+        setFormData((prevData) => {
+            const updatedData = {
+                ...prevData,
+                [field]: value,
+            };
+            return updatedData;
+        });
+    };
+
     const statusOptions = ['Active', 'Inactive'];
 
     const scheduleStatusOptions = ['Scheduled', 'On Time', 'En Route', 'Delayed', 'Completed'];
@@ -245,7 +277,7 @@ const EditBusScheduleForm = () => {
 
     return(
         <>
-            <Navbar />
+            <Container>
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center justify-between'>
@@ -364,6 +396,20 @@ const EditBusScheduleForm = () => {
                                 )}
                             </div>
                         </div>
+
+                        {isReasonOpen && (
+                            <div>
+                                <label htmlFor="reasons" className="block text-sm font-poppins font-medium text-gray-700 mb-2">Reschedule Reason</label>
+                                <CustomInput
+                                    type="text"
+                                    id="reasons"
+                                    className="mt-2 block w-full text-sm font-poppins rounded-lg p-2 ring-1 ring-gray-300 focus:ring-primary focus:outline-none"
+                                    placeholder="Enter Reschedule Reason"
+                                    value={formData.reasons}
+                                    onChange={(e) => handleInputChange('reasons', e.target.value)}
+                                />
+                            </div>
+                        )}
                     </Card>
                 </div>
 
@@ -606,7 +652,7 @@ const EditBusScheduleForm = () => {
                 </div>
             </div>
 
-            <Footer />
+            </Container>
         </>
     );
 }

@@ -11,8 +11,8 @@ import { Link } from 'react-router-dom';
 import Table from '../../components/common/Table';
 import Card from '../../components/common/Card';
 import { getBusSchedulesForToday, searchTodaySchedule } from '../../api/schedule';
-import { GetAllBusByBusOperatorID } from '../../api/busInfo';
-import { GetAllLocations } from '../../api/location';
+import { getAllBusByBusOperatorID } from '../../api/busInfo';
+import { getAllLocations } from '../../api/location';
 import { getRatesAndReviewsByBusOperatorID } from '../../api/rating';
 import { getTotalSalesRevenue } from '../../api/transaction';
 import Container from '../../components/Container';
@@ -59,7 +59,7 @@ const BODashboard = () => {
     };
 
     const fetchBusData = async () => {
-      const results = await GetAllBusByBusOperatorID(token);
+      const results = await getAllBusByBusOperatorID(token);
       const busesCount = results?.totalBuses || 0 ;
       setTotalBuses(busesCount);
     };
@@ -116,7 +116,7 @@ const BODashboard = () => {
     };
 
     const fetchLocationData = async () => {
-        const results = await GetAllLocations();
+        const results = await getAllLocations();
 
         const formattedData = results.map((item) => ({
             locationID: item.locationID,

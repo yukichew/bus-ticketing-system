@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaLongArrowAltRight } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiExport } from "react-icons/ci";
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Table from '../../../components/common/Table';
 
 const PassengerList = () => {
@@ -71,7 +68,7 @@ const PassengerList = () => {
 
     return(
         <>
-            <Navbar />
+            <Container>
 
             <div className='w-4/5 mt-8 mx-auto'>
                 <div className='flex items-center'>
@@ -169,7 +166,7 @@ const PassengerList = () => {
                 </div>
             </div>
 
-            <Footer />
+            </Container>
         </>
     );
 }

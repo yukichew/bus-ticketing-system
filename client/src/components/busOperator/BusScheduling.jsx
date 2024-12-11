@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircleOutline } from "react-icons/io";
-import { CiEdit, CiExport, CiSearch } from "react-icons/ci";
+import { CiEdit, CiSearch } from "react-icons/ci";
 import { GrPowerReset } from "react-icons/gr";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { RiArrowDropDownLine } from "react-icons/ri";
@@ -9,7 +9,7 @@ import Table from '../common/Table';
 import Card from '../common/Card';
 import DatePickerField from '../common/DatePickerField';
 import { getAllBusSchedulesByBusOperatorID, searchScheduleByBusOperatorID } from '../../api/schedule';
-import { GetAllLocations } from '../../api/location';
+import { getAllLocations } from '../../api/location';
 import moment from 'moment';
 
 const BusScheduling = () => {
@@ -80,7 +80,7 @@ const BusScheduling = () => {
     };
 
     const fetchLocationData = async () => {
-        const results = await GetAllLocations();
+        const results = await getAllLocations();
 
         const formattedData = results.map((item) => ({
             locationID: item.locationID,
@@ -432,13 +432,6 @@ const BusScheduling = () => {
                     <button className='ml-auto flex items-center font-medium hover:text-primary pr-1' onClick={() => handleNavigate('newSchedule')}>
                         <IoIosAddCircleOutline size={16} />
                         <p className='mx-1'>New Schedule</p>
-                    </button>
-                    
-                    <span className="text-gray-400 mx-2">|</span>
-                    
-                    <button className='ml-auto flex items-center font-medium hover:text-primary pr-1'>
-                        <CiExport size={16} />
-                        <p className='mx-1'>Export</p>
                     </button>
                 </div>
             </div>

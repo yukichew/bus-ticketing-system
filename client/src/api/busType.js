@@ -1,7 +1,7 @@
 import api from ".";
 import { catchError } from "../utils/error";
 
-export const GetAllBusTypesByBusOperatorID = async (token) => {
+export const getAllBusTypesByBusOperatorID = async (token) => {
   try {
     const { data } = await api.get(`/BusType`, {
       headers: {

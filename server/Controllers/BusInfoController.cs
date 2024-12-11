@@ -261,6 +261,18 @@ namespace server.Controllers
                 return Unauthorized(new { message = "Only active BusOperators can create buses." });
             }
 
+            var busPlateExists = await _context.Set<BusInfo>().AnyAsync(b => b.BusPlate == busInfo.BusPlate);
+            if (busPlateExists)
+            {
+                return BadRequest(new { message = $"A bus with the plate '{busInfo.BusPlate}' already exists." });
+            }
+
+            var busTypeExists = await _context.Set<BusType>().AnyAsync(bt => bt.BusTypeID == busInfo.BusTypeID);
+            if (!busTypeExists)
+            {
+                return BadRequest(new { message = $"BusType with ID {busInfo.BusTypeID} does not exist." });
+            }
+
             if (id != busInfo.BusID)
             {
                 return BadRequest(new { message = "Bus ID mismatch." });

@@ -1,24 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomInput from '../../../components/common/CustomInput';
 import { getBusType, updateBusType } from '../../../api/busType';
+import * as yup from "yup";
+import { validateField } from '../../../utils/validate';
+import { toast } from 'react-toastify';
 
 const EditBusTypeForm = () => {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const { busTypeID } = useParams();
+    const [types, setTypes] = useState("");
+    const [noOfSeats, setNoOfSeats] = useState("");
+    const [status, setStatus] = useState("");
     const [isStatusOpen, setIsStatusOpen] = useState(false);
     const [selectedStatusOption, setSelectedStatusOption] = useState('Select a status');
+    const [errors, setErrors] = useState({});
     const [busTypeDetails, setBusTypeDetails] = useState({
         busTypeID: '',
         types: '',
         noOfSeats: '',
         status: '',
+    });
+
+    const editBusTypeSchema = yup.object().shape({
+        types: yup
+            .string()
+            .matches(/^[A-Za-z0-9()+\-/%]+$/, "Types must only contain letters, numbers, and the characters ()+-/%")
+            .required("Bus Type is required"),
+        noOfSeats: yup
+            .number()
+            .typeError("No. of Seats must be a number")
+            .positive("No. of Seats must be a positive number")
+            .integer("No. of Seats must be a whole number")
+            .required("No. of Seats is required"),
+        status: yup
+            .string()
+            .required("Status is required"),
     });
 
     const fetchBusTypeData = async () => {
@@ -42,11 +64,19 @@ const EditBusTypeForm = () => {
         setIsStatusOpen(false);
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setBusTypeDetails({
-            ...busTypeDetails,
-            [name]: value,
+    const handleInputChange = (field, value) => {
+        if (field === "types") setTypes(value);
+        if (field === "noOfSeats") setNoOfSeats(value);
+        if (field === "status") setStatus(value);
+        validateField(field, value, setErrors, editBusTypeSchema);
+
+        setBusTypeDetails((prevData) => {
+            const updatedData = {
+              ...prevData,
+              [field]: value,
+            };
+  
+            return updatedData;
         });
     };
 
@@ -63,9 +93,12 @@ const EditBusTypeForm = () => {
             status: selectedStatusOption,
         };
 
-        await updateBusType(busTypeID, updatedDetails, token);
+        const response = await updateBusType(busTypeID, updatedDetails, token);
 
-        alert('Bus type updated successfully!');
+        if (response?.error) {
+            return toast.error(response.message);
+        }
+        toast.success('Bus type updated successfully.');
         navigate('/bo/bus');
     };
 
@@ -75,7 +108,7 @@ const EditBusTypeForm = () => {
 
     return (
         <>
-            <Navbar />
+            <Container>
 
             <div className="w-4/5 mt-8 mx-auto">
                 <div className="flex items-center">
@@ -94,7 +127,8 @@ const EditBusTypeForm = () => {
                             type="text"
                             required
                             value={busTypeDetails.types}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange("types", e.target.value)}
+                            error={errors.types}
                         />
                     </div>
 
@@ -109,7 +143,8 @@ const EditBusTypeForm = () => {
                             min="1"
                             placeholder="Enter Number of Seats"
                             value={busTypeDetails.noOfSeats}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange("noOfSeats", parseInt(e.target.value, 10))}
+                            error={errors.noOfSeats}
                         />
                     </div>
 
@@ -155,7 +190,7 @@ const EditBusTypeForm = () => {
                 </div>
             </div>
 
-            <Footer />
+            </Container>
         </>
     );
 };
