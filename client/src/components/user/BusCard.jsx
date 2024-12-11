@@ -10,22 +10,87 @@ import CustomButton from '../common/CustomButton';
 import { useNavigate } from 'react-router-dom';
 import { getOccupiedSeats } from '../../api/booking';
 import { getActiveRatings } from '../../api/rating';
+import { toast } from 'react-toastify';
 
 const BusCard = ({ schedule }) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [selectedSeats, setSelectedSeats] = useState([]);
   const [showSeatmap, setShowSeatmap] = useState(false);
   const [occupiedSeats, setOccupiedSeats] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
+  const [onwardSelectedSeats, setOnwardSelectedSeats] = useState([]);
+  const [returnSelectedSeats, setReturnSelectedSeats] = useState([]);
+
+  const isRoundTrip = localStorage.getItem('isRoundTrip') === 'true';
+  console.log(isRoundTrip);
+  const onwardSchedule = JSON.parse(localStorage.getItem('selectedSchedule'));
+  const returnSchedule = JSON.parse(
+    localStorage.getItem('selectedReturnSchedule')
+  );
+  const searchQuery = JSON.parse(localStorage.getItem('busSearch'));
 
   const handleSeatSelection = (seatNumber) => {
-    const updatedSeats = selectedSeats.includes(seatNumber)
-      ? selectedSeats.filter((seat) => seat !== seatNumber)
-      : [...selectedSeats, seatNumber];
+    let updatedSeats = [];
 
-    setSelectedSeats(updatedSeats);
-    localStorage.setItem('selectedSeats', JSON.stringify(updatedSeats));
+    if (isRoundTrip) {
+      if (!onwardSchedule) {
+        updatedSeats = onwardSelectedSeats.includes(seatNumber)
+          ? onwardSelectedSeats.filter((seat) => seat !== seatNumber)
+          : [...onwardSelectedSeats, seatNumber];
+        setOnwardSelectedSeats(updatedSeats);
+        localStorage.setItem(
+          'onwardSelectedSeats',
+          JSON.stringify(updatedSeats)
+        );
+        return;
+      }
+
+      if (
+        returnSelectedSeats.length >= onwardSelectedSeats.length &&
+        !returnSelectedSeats.includes(seatNumber)
+      ) {
+        return toast.error(
+          'You can only select the same number of seats as the onward trip.'
+        );
+      }
+
+      updatedSeats = returnSelectedSeats.includes(seatNumber)
+        ? returnSelectedSeats.filter((seat) => seat !== seatNumber)
+        : [...returnSelectedSeats, seatNumber];
+      setReturnSelectedSeats(updatedSeats);
+      localStorage.setItem('returnSelectedSeats', JSON.stringify(updatedSeats));
+      return;
+    }
+
+    updatedSeats = onwardSelectedSeats.includes(seatNumber)
+      ? onwardSelectedSeats.filter((seat) => seat !== seatNumber)
+      : [...onwardSelectedSeats, seatNumber];
+    setOnwardSelectedSeats(updatedSeats);
+    localStorage.setItem('onwardSelectedSeats', JSON.stringify(updatedSeats));
+  };
+
+  const handleProceed = () => {
+    if (isRoundTrip) {
+      if (!onwardSchedule) {
+        localStorage.setItem('selectedSchedule', JSON.stringify(schedule));
+        toast.info('Onward trip selected. Please choose a return trip.');
+        setShowSeatmap(false);
+        const queryParams = new URLSearchParams({
+          originState: searchQuery.destinationState,
+          destinationState: searchQuery.originState,
+          travelDate: searchQuery.returnDate,
+        }).toString();
+        navigate(`/bus-tickets?${queryParams}`);
+        return;
+      }
+
+      localStorage.setItem('selectedReturnSchedule', JSON.stringify(schedule));
+      navigate('/booking');
+      return;
+    }
+
+    localStorage.setItem('selectedSchedule', JSON.stringify(schedule));
+    navigate('/booking');
   };
 
   useEffect(() => {
@@ -43,7 +108,7 @@ const BusCard = ({ schedule }) => {
       setOccupiedSeats(data);
     };
     fetchOccupiedSeats();
-  }, [schedule.busScheduleId]);
+  }, [schedule]);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -146,10 +211,6 @@ const BusCard = ({ schedule }) => {
               className='font-semibold'
               type='button'
               onClick={() => {
-                localStorage.setItem(
-                  'selectedSchedule',
-                  JSON.stringify(schedule)
-                );
                 setShowSeatmap(true);
               }}
             />
@@ -195,14 +256,20 @@ const BusCard = ({ schedule }) => {
             schedule.busInfo.busType.types.includes('2+1') ? '2+1' : 'Executive'
           }
           schedule={schedule}
-          selectedSeats={selectedSeats}
+          selectedSeats={
+            isRoundTrip
+              ? !onwardSchedule
+                ? onwardSelectedSeats
+                : returnSelectedSeats
+              : onwardSelectedSeats
+          }
           handleSelect={handleSeatSelection}
           occupiedSeats={occupiedSeats}
         />
         <CustomButton
           title={'Proceed'}
           type='button'
-          onClick={() => navigate('/booking')}
+          onClick={handleProceed}
           className='mt-2'
         />
       </Modal>

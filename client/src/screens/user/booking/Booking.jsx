@@ -10,8 +10,18 @@ import { toast } from 'react-toastify';
 const Booking = () => {
   const navigate = useNavigate();
   const [passengerDetails, setPassengerDetails] = useState([]);
-  const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
+
+  const selectedSeats =
+    JSON.parse(localStorage.getItem('onwardSelectedSeats')) || [];
+
+  const returnSelectedSeats =
+    JSON.parse(localStorage.getItem('returnSelectedSeats')) || [];
+
   const schedule = JSON.parse(localStorage.getItem('selectedSchedule'));
+
+  const returnSchedule = JSON.parse(
+    localStorage.getItem('selectedReturnSchedule')
+  );
 
   useEffect(() => {
     if (!schedule) {
@@ -25,7 +35,11 @@ const Booking = () => {
   }
 
   const date = format(new Date(schedule.travelDate), 'yyyy-MM-dd');
-  const amountPaid = selectedSeats.length * schedule.routes.price;
+
+  const totalAmount =
+    selectedSeats.length * schedule.routes.price +
+    returnSelectedSeats.length *
+      (returnSchedule ? returnSchedule.routes.price : 0);
 
   const handlePassengerChange = (index, details) => {
     const updatedDetails = [...passengerDetails];
@@ -34,13 +48,32 @@ const Booking = () => {
   };
 
   const handleSubmit = async () => {
+    const onwardSeats = selectedSeats.map((seatNumber, idx) => ({
+      seatNumber,
+      passenger: passengerDetails[idx],
+    }));
+
+    const returnSeats = returnSchedule
+      ? returnSelectedSeats.map((seatNumber, idx) => ({
+          seatNumber,
+          passenger: passengerDetails[idx],
+        }))
+      : [];
+
     const bookingDetails = {
-      busScheduleID: schedule.busScheduleID,
-      amountPaid: amountPaid,
-      seats: selectedSeats.map((seatNumber, idx) => ({
-        seatNumber,
-        passenger: passengerDetails[idx],
-      })),
+      onwardTrip: {
+        busScheduleID: schedule.busScheduleID,
+        amountPaid: selectedSeats.length * schedule.routes.price,
+        seats: onwardSeats,
+      },
+      returnTrip: returnSchedule
+        ? {
+            busScheduleID: returnSchedule.busScheduleID,
+            amountPaid:
+              returnSelectedSeats.length * returnSchedule.routes.price,
+            seats: returnSeats,
+          }
+        : null,
     };
 
     const response = await buyTicket(bookingDetails);
@@ -50,11 +83,10 @@ const Booking = () => {
 
     navigate(`/payment`, {
       state: {
-        amountPaid,
+        amountPaid: totalAmount,
         bookingID: response.bookingID,
         fullname: passengerDetails[0].fullname,
         email: passengerDetails[0].email,
-        schedule,
       },
     });
   };
@@ -81,19 +113,46 @@ const Booking = () => {
               <p>{schedule.routes.arrivalLocation.name}</p>
             </div>
           </div>
+
+          {/* return trip summary */}
+          {returnSchedule && (
+            <div className='mt-4'>
+              <div className='text-center'>
+                <h3 className='font-bold text-lg'>Return Trip</h3>
+                <p className='text-sm'>
+                  Departure Date Time:{' '}
+                  {format(new Date(returnSchedule.travelDate), 'yyyy-MM-dd')}{' '}
+                  {returnSchedule.etd}
+                </p>
+              </div>
+
+              <div className='flex justify-between items-center'>
+                <div>
+                  <p className='font-semibold'>Departure</p>
+                  <p>{returnSchedule.routes.boardingLocation.name}</p>
+                </div>
+                <div className='text-right'>
+                  <p className='font-semibold'>Arrival</p>
+                  <p>{returnSchedule.routes.arrivalLocation.name}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* passenger details */}
         <div>
           <h2 className='text-xl font-bold mb-2 pl-1'>Passenger Details</h2>
-          {selectedSeats.map((seatNumber, index) => (
-            <PassengerForm
-              key={seatNumber}
-              seatNumber={seatNumber}
-              passengerNumber={index + 1}
-              onChange={(details) => handlePassengerChange(index, details)}
-            />
-          ))}
+          <div className='space-y-3'>
+            {selectedSeats.map((seatNumber, index) => (
+              <PassengerForm
+                key={seatNumber}
+                seatNumber={seatNumber}
+                passengerNumber={index + 1}
+                onChange={(details) => handlePassengerChange(index, details)}
+              />
+            ))}
+          </div>
         </div>
 
         {/* price */}
@@ -103,7 +162,7 @@ const Booking = () => {
               <h3 className='text-lg font-bold'>Total Amount</h3>
             </div>
             <div>
-              <h3 className='text-lg font-bold'>RM {amountPaid}</h3>
+              <h3 className='text-lg font-bold'>RM {totalAmount}</h3>
             </div>
           </div>
         </div>

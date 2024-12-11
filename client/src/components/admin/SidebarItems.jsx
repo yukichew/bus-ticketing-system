@@ -30,8 +30,8 @@ const SidebarItems = () => {
     },
     {
       key: 4,
-      name: "Manage Bus Routes",
-      href: "/manage-bus-routes",
+      name: "Manage Bus Schedule",
+      href: "/manage-bus-schedule",
       icon: TbMapRoute,
     },
     {

@@ -19,9 +19,12 @@ const Payment = () => {
   const elements = useElements();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(180);
   const { email, fullname, amountPaid, bookingID } = location.state || {};
   const schedule = JSON.parse(localStorage.getItem('selectedSchedule'));
-  const seats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
+  const returnSchedule = JSON.parse(
+    localStorage.getItem('selectedReturnSchedule')
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,9 +34,26 @@ const Payment = () => {
     }
   }, [schedule, navigate]);
 
+  useEffect(() => {
+    if (timeLeft === 0) {
+      toast.error('Payment time expired.');
+      navigate('/');
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, navigate]);
+
   if (!schedule) {
     return null;
   }
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
@@ -76,7 +96,12 @@ const Payment = () => {
 
     setLoading(false);
 
-    localStorage.removeItem('selectedSeats');
+    localStorage.removeItem('busSearch');
+    localStorage.removeItem('isRoundTrip');
+    localStorage.removeItem('onwardSelectedSeats');
+    localStorage.removeItem('returnSelectedSeats');
+    localStorage.removeItem('selectedSchedule');
+    localStorage.removeItem('selectedReturnSchedule');
     navigate('/payment-success');
   };
 
@@ -92,16 +117,21 @@ const Payment = () => {
         </div>
 
         <div className='bg-slate-50 rounded-lg shadow-sm border p-4'>
-          <h2 className='text-lg font-semibold'>Pickup & Drop off</h2>
+          <h2 className='text-lg font-semibold'>Onward Trip</h2>
           <TripSummary schedule={schedule} />
-          <div className='flex justify-between font-semibold border-t-2 mt-3 pt-3'>
-            <p>Seat No.</p>
-            <p>{seats.join(', ')}</p>
-          </div>
+
+          {returnSchedule && (
+            <>
+              <h2 className='text-lg font-semibold mt-3 border-t-2 pt-3'>
+                Return Trip
+              </h2>
+              <TripSummary schedule={returnSchedule} />
+            </>
+          )}
 
           <div className='flex justify-between font-semibold border-t-2 mt-3 pt-3'>
             <p>Amount</p>
-            <p>{schedule.amountPaid}</p>
+            <p>RM {amountPaid}</p>
           </div>
         </div>
 
@@ -115,6 +145,11 @@ const Payment = () => {
               disabled={loading || !stripe}
             />
           </form>
+          <div className='mt-5 text-center text-lg font-semibold'>
+            <p>
+              Time left: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            </p>
+          </div>
         </div>
       </div>
     </Container>

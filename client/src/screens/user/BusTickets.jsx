@@ -20,6 +20,15 @@ const BusTickets = () => {
   });
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setFormState({
+      originState: params.get('originState') || '',
+      destinationState: params.get('destinationState') || '',
+      travelDate: params.get('travelDate') || null,
+    });
+  }, [location.search]);
+
+  useEffect(() => {
     const fetchSchedules = async () => {
       const results = await searchSchedule(formState);
       setBusSchedules(results);

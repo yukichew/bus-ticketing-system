@@ -5,12 +5,19 @@ import DashboardCard from "../../components/admin/DashboardCard";
 import LineChart from "../../components/admin/LineChart";
 import PieChart from "../../components/admin/PieChart";
 import { MdAttachMoney } from "react-icons/md";
-import { FiUser } from "react-icons/fi";
 import { IoIosBus } from "react-icons/io";
 import { RiFilePaper2Line } from "react-icons/ri";
+import { fetchTotalBusOperators } from "../../api/busOperator";
+import { getTransactionsDetails } from "../../api/transaction";
+import { getAllBusSchedules } from "../../api/schedule";
+import { LuMapPinned } from "react-icons/lu";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [totalBusOperatorsActive, setTotalBusOperatorsActive] = useState(0);
+  const [totalBusOperatorsPending, setTotalBusOperatorsPending] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
+  const [totalBusSchedule, setTotalBusSchedule] = useState(0);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -21,6 +28,51 @@ const AdminDashboard = () => {
     console.log("Sidebar state changed:", isSidebarOpen);
   }, [isSidebarOpen]);
 
+  // Get total application and bus operator
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const activeCount = await fetchTotalBusOperators("Active");
+        const pendingCount = await fetchTotalBusOperators("Pending");
+
+        setTotalBusOperatorsActive(activeCount);
+        setTotalBusOperatorsPending(pendingCount);
+      } catch (err) {
+        console.error("Error fetching bus operators counts:", err);
+      }
+    };
+
+    fetchCounts();
+  }, []);
+
+  // Get total sales
+  useEffect(() => {
+    const fetchTotalTransactions = async () => {
+      try {
+        const { totalAmount } = await getTransactionsDetails();
+        setTotalSales(totalAmount);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    fetchTotalTransactions();
+  }, []);
+
+  // Get total bus schedule
+  useEffect(() => {
+    const fetchTotalBusSchedules = async () => {
+      try {
+        const { totalBusSchedules } = await getAllBusSchedules();
+        setTotalBusSchedule(totalBusSchedules);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    fetchTotalBusSchedules();
+  }, []);
+
   return (
     <div className="relative flex h-screen overflow-hidden">
       <AdminHeader
@@ -28,7 +80,6 @@ const AdminDashboard = () => {
         toggleSidebar={toggleSidebar}
       />
 
-      {/* Sidebar rendering */}
       <Sidebar isSidebarOpen={isSidebarOpen} />
 
       <main
@@ -38,23 +89,22 @@ const AdminDashboard = () => {
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <DashboardCard
-            title="Total Passengers"
-            value="277"
+            title="Total Bus Schedule"
+            value={totalBusSchedule}
             gradientColors={["#0A21C0", "#B3B4BD"]}
-            icon={<FiUser />}
-            link="/manage-user"
-            sectionState="Passengers"
+            icon={<LuMapPinned />}
+            link="/manage-bus-schedule"
           />
           <DashboardCard
             title="Total Ticket Sales"
-            value="1200"
+            value={totalSales}
             gradientColors={["#141619", "#2c2E3A"]}
             icon={<MdAttachMoney />}
             link="/manage-transactions"
           />
           <DashboardCard
             title="Total Bus Operators"
-            value="50"
+            value={totalBusOperatorsActive}
             gradientColors={["#050A44", "#0A21C0"]}
             icon={<IoIosBus />}
             link="/manage-user"
@@ -62,7 +112,7 @@ const AdminDashboard = () => {
           />
           <DashboardCard
             title="Total Applications"
-            value="45"
+            value={totalBusOperatorsPending}
             gradientColors={["#141619", "#B3B4BD"]}
             icon={<RiFilePaper2Line />}
             link="/manage-applications"

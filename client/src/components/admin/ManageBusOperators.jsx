@@ -1,58 +1,119 @@
-import React, { useState } from "react";
-import { IoIosAddCircleOutline } from "react-icons/io";
-import { FaRegEdit } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
 import { TiUserDeleteOutline } from "react-icons/ti";
 import { IoFilter } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
-import { busOperators } from "../../constants/Dummy";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
-import BoUpdateForm from "./modal/BOUpdateForm";
-import BoCreateForm from "./modal/BOCreateForm";
+import ViewBoDetails from "./modal/ViewBODetails";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
+import PromptConfirmation from "./modal/PromptConfirmation";
+import { getAllBoDetails } from "../../api/auth";
+import { deactivateBo } from "../../api/busOperator";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const mapBusOperatorsData = (response) => {
+  return response.map((item) => ({
+    id: item.id,
+    email: item.email,
+    userName: item.userName,
+    phoneNumber: item.phoneNumber,
+    address: item.address,
+    busImage: item.busImages[0],
+    status: item.status,
+  }));
+};
 
 const ManageBusOperators = () => {
-  const [showModal, setShowModal] = useState(false); // state for update modal
-  const [showCreateModal, setCreateModal] = useState(false); // state for create modal
-  const [showDetailsModal, setShowDetailsModal] = useState(false); // state for details modal
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDeactivate, setShowDeactivateModal] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+  const [busOperators, setBusOperators] = useState([]);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [filters, setFilters] = useState({
-    companyName: "",
-    companyEmail: "",
-    contactNumber: "",
-    address: "",
-    status: "",
+    userName: "",
+    email: "",
+    phoneNumber: "",
   });
 
   const initialFilters = {
-    companyName: "",
-    companyEmail: "",
-    contactNumber: "",
-    address: "",
-    status: "",
+    userName: "",
+    email: "",
+    phoneNumber: "",
   };
+
+  useEffect(() => {
+    const fetchBusOperators = async () => {
+      try {
+        const response = await getAllBoDetails();
+        if (response?.error) {
+          console.error("API error: ", response.message);
+        } else {
+          const mappedData = mapBusOperatorsData(response);
+          setBusOperators(mappedData);
+        }
+      } catch (error) {
+        console.error("Unexpected error occurred: ", error);
+      }
+    };
+
+    fetchBusOperators();
+  }, []);
+
+  const handleDeactivate = async () => {
+    if (!selectedOperator) {
+      toast.error("No operator selected.");
+      return;
+    }
+    try {
+      const response = await deactivateBo(selectedOperator.id);
+
+      if (response?.error) {
+        console.error("API error: ", response.message);
+      } else {
+        toast.success("Bus operator has been deactivated");
+        setShowDeactivateModal(false);
+
+        setBusOperators((prev) =>
+          prev.filter((operator) => operator.id !== selectedOperator.id)
+        );
+      }
+    } catch (error) {
+      console.error("Unexpected error occurred: ", error);
+    }
+  };
+
+  const applyFilters = () => {
+    return busOperators
+      .filter((item) =>
+        Object.keys(filters).every((key) => {
+          if (!filters[key]) return true;
+          if (key === "status") {
+            return item.status?.toLowerCase() === filters[key]?.toLowerCase();
+          }
+          return item[key]?.toLowerCase().includes(filters[key].toLowerCase());
+        })
+      )
+      .filter((item) => item.status?.toLowerCase() != "pending");
+  };
+
+  const filteredBoData = applyFilters();
+
+  const enhancedData = filteredBoData.map((item) => ({
+    ...item,
+    status: <Status status={item.status} />,
+    originalStatus: item.status,
+  }));
 
   const clearFilters = () => {
     setFilters(initialFilters);
   };
 
-  const columns = [
-    "Company Name",
-    "Company Email",
-    "Contact Number",
-    "Address",
-  ];
-
-  const columnKeys = [
-    "companyName",
-    "companyEmail",
-    "contactNumber",
-    "address",
-  ];
+  const columns = ["User Name", "Email", "Phone Number", "Address"];
+  const columnKeys = ["userName", "email", "phoneNumber", "address"];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -62,60 +123,35 @@ const ManageBusOperators = () => {
     }));
   };
 
-  const filteredData = busOperators.filter((operator) =>
-    Object.keys(filters).every((key) =>
-      operator[key].toLowerCase().includes(filters[key].toLowerCase())
-    )
-  );
-
-  const enhancedData = filteredData.map((item) => ({
-    ...item,
-    status: <Status status={item.status} />,
-    originalStatus: item.status,
-  }));
-
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
-      {/* Show View Details if status is "Deactivated" */}
-      {row.originalStatus === "Deactivated" && (
-        <div className="relative group">
-          <button
-            onClick={() => {
-              setShowDetailsModal(true); // Set the details modal to show
-              setSelectedOperator(row);
-            }}
-            className="text-grey-500 hover:text-grey-600"
-          >
-            <FaRegEye className="text-lg text-gray-500 cursor-pointer" />
-          </button>
-          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            View Details
-          </span>
-        </div>
-      )}
+      <div className="relative group">
+        <button
+          onClick={() => {
+            setShowDetailsModal(true);
+            setSelectedOperator(row);
+          }}
+          className="text-grey-500 hover:text-grey-600"
+        >
+          <FaRegEye className="text-lg text-gray-500 cursor-pointer" />
+        </button>
+        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          View Details
+        </span>
+      </div>
 
-      {/* Show Update and Deactivate if status is NOT "Deactivated" */}
-      {row.originalStatus !== "Deactivated" && (
+      {row.originalStatus !== "Inactive" && (
         <>
-          <div className="relative group">
-            <button
-              onClick={() => {
-                setSelectedOperator(row);
-                setShowModal(true);
-              }}
-              className="text-green-500 hover:text-green-600"
-            >
-              <FaRegEdit className="text-lg text-gray-500 cursor-pointer" />
-            </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Update
-            </span>
-          </div>
-
           <div className="h-4 w-px bg-gray-400"></div>
 
           <div className="relative group">
-            <button className="text-red-500 hover:text-red-600">
+            <button
+              onClick={() => {
+                setShowDeactivateModal(true);
+                setSelectedOperator(row);
+              }}
+              className="text-red-500 hover:text-red-600"
+            >
               <TiUserDeleteOutline className="text-lg text-gray-500 cursor-pointer" />
             </button>
             <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -129,59 +165,58 @@ const ManageBusOperators = () => {
 
   return (
     <>
+      <ToastContainer />
       {showFilters && (
         <Card>
-          {/* First Row: Company Name and Company Email */}
           <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/2">
               <label
-                htmlFor="companyName"
+                htmlFor="userName"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                Company Name
+                User Name
               </label>
               <CustomInput
-                placeholder="Filter by Company Name"
-                id="companyName"
-                name="companyName"
+                placeholder="Filter by User Name"
+                id="userName"
+                name="userName"
                 type="text"
-                value={filters.companyName}
+                value={filters.userName}
                 onChange={handleFilterChange}
               />
             </div>
             <div className="w-1/2">
               <label
-                htmlFor="companyEmail"
+                htmlFor="email"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                Company Email
+                Email
               </label>
               <CustomInput
-                placeholder="Filter by Company Email"
-                id="companyEmail"
-                name="companyEmail"
+                placeholder="Filter by Email"
+                id="email"
+                name="email"
                 type="text"
-                value={filters.companyEmail}
+                value={filters.email}
                 onChange={handleFilterChange}
               />
             </div>
           </div>
 
-          {/* Second Row: Contact Number, Address, and Status */}
           <div className="flex justify-between gap-4 mb-4">
             <div className="w-1/3">
               <label
-                htmlFor="contactNumber"
+                htmlFor="phoneNumber"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
               >
-                Contact Number
+                Phone Number
               </label>
               <CustomInput
-                placeholder="Filter by Contact Number"
-                id="contactNumber"
-                name="contactNumber"
+                placeholder="Filter by Phone Number"
+                id="phoneNumber"
+                name="phoneNumber"
                 type="text"
-                value={filters.contactNumber}
+                value={filters.phoneNumber}
                 onChange={handleFilterChange}
               />
             </div>
@@ -217,12 +252,11 @@ const ManageBusOperators = () => {
               >
                 <option value="">All Status</option>
                 <option value="active">Active</option>
-                <option value="deactivated">Deactivated</option>
+                <option value="inactive">Inactive</option>
               </select>
             </div>
           </div>
 
-          {/* Third Row: Clear Filters Button */}
           <div className="mt-4 w-full">
             <CustomButton
               title="Clear Filters"
@@ -236,19 +270,11 @@ const ManageBusOperators = () => {
       <div className="flex justify-between items-center mt-12 mb-4">
         <p className="text-gray-500">
           <span className="font-semibold text-secondary">
-            {filteredData.length} bus operators
+            {filteredBoData.length} bus operators
           </span>{" "}
           found
         </p>
         <div className="flex justify-end items-center">
-          <button
-            onClick={() => setCreateModal(true)}
-            className="ml-auto flex items-center font-medium hover:text-primary pr-1"
-          >
-            <IoIosAddCircleOutline size={16} />
-            <p className="mx-1"> New Bus Operator</p>
-          </button>
-
           <span className="text-gray-400 mx-2">|</span>
 
           <button
@@ -271,30 +297,29 @@ const ManageBusOperators = () => {
         />
       </div>
 
-      {/* modal for update */}
-      <Modal isVisible={showModal} onClose={() => setShowModal(false)}>
-        <BoUpdateForm
-          operator={selectedOperator}
-          onClose={() => setShowModal(false)}
-        />
-      </Modal>
-
-      {/* modal for create  */}
-      <Modal isVisible={showCreateModal} onClose={() => setCreateModal(false)}>
-        <BoCreateForm onClose={() => setCreateModal(false)} />
-      </Modal>
-
-      {/* modal for view details */}
       <Modal
         isVisible={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
       >
-        <BoUpdateForm
+        <ViewBoDetails
           operator={selectedOperator}
           onClose={() => setShowDetailsModal(false)}
-          isDeactivated={selectedOperator?.originalStatus === "Deactivated"}
         />
       </Modal>
+
+      {showDeactivate && (
+        <Modal
+          isVisible={showDeactivate}
+          onClose={() => setShowDeactivateModal(false)}
+        >
+          <PromptConfirmation
+            header="Are you sure you want to deactivate this user?"
+            confirmTitle="Deactivate"
+            onClose={() => setShowDeactivateModal(false)}
+            onConfirm={handleDeactivate}
+          />
+        </Modal>
+      )}
     </>
   );
 };

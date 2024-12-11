@@ -1,7 +1,7 @@
 import React from 'react';
 import Bullets from '../../../components/common/Bullets';
 import TripSummary from '../../../components/user/TripSummary';
-import { policies } from '../../../constants/Policies';
+import { policies } from '../../../constants/UserConstants';
 
 const Notes = ({ schedule }) => {
   return (

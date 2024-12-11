@@ -1,45 +1,44 @@
-import Carousel from '../components/common/Carousel';
-import Notes from '../screens/user/modal/Notes';
-import Ratings from '../screens/user/modal/Ratings';
-import BusInfo from '../components/busOperator/BusInfo';
-import BusType from '../components/busOperator/BusType';
-import BusScheduling from '../components/busOperator/BusScheduling';
-import ManageBusOperator from '../components/admin/ManageBusOperators';
-import ManageUser from '../components/admin/ManageUser';
-import ManageTransactions from '../components/admin/ManageTransactions';
-import ManageRefunds from '../components/admin/ManageRefunds';
-import ManagePolicy from '../components/admin/ManagePolicy';
-import ManageFaq from '../components/admin/ManageFaq';
+import Carousel from "../components/common/Carousel";
+import Notes from "../screens/user/modal/Notes";
+import Ratings from "../screens/user/modal/Ratings";
+import BusInfo from "../components/busOperator/BusInfo";
+import BusType from "../components/busOperator/BusType";
+import BusScheduling from "../components/busOperator/BusScheduling";
+import ManageBusOperator from "../components/admin/ManageBusOperators";
+import ManageUser from "../components/admin/ManageUser";
+import ManagePolicy from "../components/admin/ManagePolicy";
+import ManageFaq from "../components/admin/ManageFaq";
+import ViewBusRoutes from "../components/admin/modal/ViewBusRoutes";
+import BusScheduleInfo from "../screens/admin/modal/BusScheduleInfo";
 
 export const busInfoTabs = [
-  { label: 'Notes', content: <Notes /> },
+  { label: "Notes", content: <Notes /> },
   {
-    label: 'Photos',
+    label: "Photos",
     content: (props) => <Carousel images={props.schedule.postedBy.busImages} />,
   },
   {
-    label: 'Ratings & Reviews',
+    label: "Ratings & Reviews",
     content: (props) => <Ratings id={props.schedule.postedBy.id} />,
   },
 ];
 
 export const busManagementTabs = [
-  { label: 'All', content: <BusInfo /> },
-  { label: 'Bus Type', content: <BusType /> },
-  { label: 'Bus Scheduling', content: <BusScheduling /> },
+  { label: "All", content: <BusInfo /> },
+  { label: "Bus Type", content: <BusType /> },
+  { label: "Bus Scheduling", content: <BusScheduling /> },
 ];
 
 export const manageUserTabs = [
-  { label: 'Passengers', content: <ManageUser /> },
-  { label: 'Bus Operators', content: <ManageBusOperator /> },
-];
-
-export const manageTransactionsTabs = [
-  { label: 'Transactions', content: <ManageTransactions /> },
-  { label: 'Refunds Request', content: <ManageRefunds /> },
+  { label: "Users", content: <ManageUser /> },
+  { label: "Bus Operators", content: <ManageBusOperator /> },
 ];
 
 export const manageContentTabs = [
-  { label: 'FAQs', content: <ManageFaq /> },
-  { label: 'Terms and Conditions', content: <ManagePolicy /> },
+  { label: "FAQs", content: <ManageFaq /> },
+  { label: "Terms and Conditions", content: <ManagePolicy /> },
+];
+
+export const busScheduleInfoTabs = [
+  { label: "Schedule Info", content: <BusScheduleInfo /> },
 ];

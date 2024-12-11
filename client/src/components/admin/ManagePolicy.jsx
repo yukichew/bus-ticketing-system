@@ -9,7 +9,7 @@ import Status from "../../components/admin/Status";
 import Modal from "../common/Modal";
 import PolicyCreateForm from "../../components/admin/modal/PolicyCreateForm";
 import PolicyEditForm from "../../components/admin/modal/PolicyEditForm";
-import DeleteConfirmation from "./modal/DeleteConfirmation";
+import PromptConfirmation from "./modal/PromptConfirmation";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
@@ -296,8 +296,9 @@ const ManagePolicy = () => {
           isVisible={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
         >
-          <DeleteConfirmation
-            operator={setSelectedPolicy}
+          <PromptConfirmation
+            header="Are you sure you want to delete this FAQ?"
+            confirmTitle="Delete"
             onClose={() => setShowDeleteModal(false)}
             onConfirm={handleConfirmDelete}
           />

@@ -1,28 +1,20 @@
 import React, { useState, useEffect } from "react";
-import CustomButton from "../../common/CustomButton";
 import CustomInput from "../../common/CustomInput";
-import Card from "../../common/Card";
 
-const ViewTransaction = ({ operator, onClose }) => {
+const ViewTransaction = ({ operator }) => {
   const [transactionDetails, setTransactionDetails] = useState({
-    transactionNo: "",
-    purchaseAt: "",
-    purchaseBy: "",
-    paymentType: "",
-    amountPaid: "",
-    refundReason: "",
+    transactionID: "",
+    amount: "",
+    createdAt: "",
     status: "",
   });
 
   useEffect(() => {
     if (operator) {
       setTransactionDetails({
-        transactionNo: operator.transactionNo,
-        purchaseAt: operator.purchaseAt,
-        purchaseBy: operator.purchaseBy,
-        paymentType: operator.paymentType,
-        amountPaid: operator.amountPaid,
-        refundReason: operator.refundReason,
+        transactionID: operator.transactionID,
+        amount: operator.amount,
+        createdAt: operator.createdAt,
         status: operator.originalStatus,
       });
     }
@@ -32,6 +24,9 @@ const ViewTransaction = ({ operator, onClose }) => {
 
   return (
     <div className="flex flex-col space-y-4 w-[400px]">
+      <header className="font-poppins font-semibold text-lg text-primary mb-4">
+        Transaction ID: {operator.transactionID}
+      </header>
       <div className="pointer-events-none">
         <label
           htmlFor="transactionNo"
@@ -44,55 +39,7 @@ const ViewTransaction = ({ operator, onClose }) => {
           id="transactionNo"
           name="transactionNo"
           type="text"
-          value={transactionDetails.transactionNo}
-          readOnly
-        />
-      </div>
-      <div className="pointer-events-none">
-        <label
-          htmlFor="purchaseAt"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Purchase At
-        </label>
-        <CustomInput
-          placeholder="Purchase At"
-          id="purchaseAt"
-          name="purchaseAt"
-          type="text"
-          value={transactionDetails.purchaseAt}
-          readOnly
-        />
-      </div>
-      <div className="pointer-events-none">
-        <label
-          htmlFor="purchaseBy"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Purchase By
-        </label>
-        <CustomInput
-          placeholder="Purchase By"
-          id="purchaseBy"
-          name="purchaseBy"
-          type="text"
-          value={transactionDetails.purchaseBy}
-          readOnly
-        />
-      </div>
-      <div className="pointer-events-none">
-        <label
-          htmlFor="paymentType"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Payment Type
-        </label>
-        <CustomInput
-          placeholder="Payment Type"
-          id="paymentType"
-          name="paymentType"
-          type="text"
-          value={transactionDetails.paymentType}
+          value={transactionDetails.transactionID}
           readOnly
         />
       </div>
@@ -105,31 +52,29 @@ const ViewTransaction = ({ operator, onClose }) => {
         </label>
         <CustomInput
           placeholder="Amount Paid"
-          id="amountPaid"
-          name="amountPaid"
+          id="amount"
+          name="amount"
           type="text"
-          value={transactionDetails.amountPaid}
+          value={transactionDetails.amount}
           readOnly
         />
       </div>
-
-      {transactionDetails.refundReason && (
-        <div className="pointer-events-none">
-          <label
-            htmlFor="refundReason"
-            className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-          >
-            Refund Reason
-          </label>
-          <CustomInput
-            id="refundReason"
-            name="refundReason"
-            type="text"
-            value={transactionDetails.refundReason}
-            readOnly
-          />
-        </div>
-      )}
+      <div className="pointer-events-none pb-4">
+        <label
+          htmlFor="createdAt"
+          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+        >
+          Created At
+        </label>
+        <CustomInput
+          placeholder="Created At"
+          id="createdAt"
+          name="createdAt"
+          type="text"
+          value={transactionDetails.createdAt}
+          readOnly
+        />
+      </div>
     </div>
   );
 };

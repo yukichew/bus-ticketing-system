@@ -1,41 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Table from "../../components/common/Table";
-import { MdOutlineCancel } from "react-icons/md";
-import { SiTicktick } from "react-icons/si";
 import { IoFilter } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
-import { busRoutes } from "../../constants/Dummy";
 import Modal from "../../components/common/Modal";
 import ViewBusRoutes from "../../components/admin/modal/ViewBusRoutes";
 import Status from "../../components/admin/Status";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
+import { getAllBusSchedules } from "../../api/schedule";
+import Tabs from "../../components/common/Tabs";
+import { busScheduleInfoTabs } from "../../constants/TabItems";
+
+const mapBusScheduleData = (response) => {
+  return response.map((item) => ({
+    busScheduleID: item.busScheduleID,
+    travelDate: new Date(item.travelDate).toLocaleDateString("en-GB"),
+    etd: item.etd,
+    eta: item.eta,
+    isRecurring: item.isRecurring ? "Yes" : "No",
+    status: item.status,
+    busPlate: item.busInfo.busPlate,
+    busType: item.busInfo.busType.types,
+    busNoOfSeats: item.busInfo.busType.noOfSeats,
+    boardingLocation: item.routes.boardingLocation.name,
+    boardingAddress: item.routes.boardingLocation.address,
+    arrivalLocation: item.routes.arrivalLocation.name,
+    arrivalAddress: item.routes.arrivalLocation.address,
+    departureTime: item.routes.departureTime,
+    arrivalTime: item.routes.arrivalTime,
+    postedByUser: item.postedBy.userName,
+    busImages: item.postedBy.busImages,
+  }));
+};
 
 const ManageBusRoutes = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // state for approve modal
-  const [showDetailsModal, setShowDetailsModal] = useState(false); // separate state for details modal
+  const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [showFilters, setShowFilters] = useState(true);
+  const [busSchedules, setBusSchedules] = useState([]);
   const [filters, setFilters] = useState({
-    busPlate: "",
-    origin: "",
-    destination: "",
+    busScheduleID: "",
+    travelDate: "",
     etd: "",
     eta: "",
+    isRecurring: "",
     status: "",
   });
 
   const initialFilters = {
-    busPlate: "",
-    origin: "",
-    destination: "",
+    busScheduleID: "",
+    travelDate: "",
     etd: "",
     eta: "",
+    isRecurring: "",
     status: "",
+  };
+
+  useEffect(() => {
+    const fetchBusSchedules = async () => {
+      try {
+        const response = await getAllBusSchedules();
+        console.log(response);
+        const mappedData = mapBusScheduleData(response);
+        setBusSchedules(mappedData);
+      } catch (error) {
+        console.error("Error fetching bus schedules:", error);
+      }
+    };
+
+    fetchBusSchedules();
+  }, []);
+
+  const applyFilters = () => {
+    return busSchedules.filter((item) =>
+      Object.keys(filters).every((key) => {
+        if (!filters[key]) return true;
+        if (key === "status") {
+          return item.status?.toLowerCase() === filters[key]?.toLowerCase();
+        }
+        if (key === "travelDate") {
+          const filterDate = new Date(filters[key]).toLocaleDateString("en-GB");
+          return item.travelDate === filterDate;
+        }
+        return item[key]?.toLowerCase().includes(filters[key].toLowerCase());
+      })
+    );
+  };
+
+  const filteredBusSchedule = applyFilters();
+
+  const shortenBusScheduleID = (id) => {
+    if (!id) return "";
+    return `${id.slice(0, 8)}`;
   };
 
   const clearFilters = () => {
@@ -46,8 +107,14 @@ const ManageBusRoutes = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const columns = ["Bus Plate", "Origin", "Destination", "ETD", "ETA"];
-  const columnKeys = ["busPlate", "origin", "destination", "etd", "eta"];
+  const columns = ["Bus Schedule ID", "Travel Date", "ETD", "ETA", "Recurring"];
+  const columnKeys = [
+    "busScheduleID",
+    "travelDate",
+    "etd",
+    "eta",
+    "isRecurring",
+  ];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -57,14 +124,9 @@ const ManageBusRoutes = () => {
     }));
   };
 
-  const filteredData = busRoutes.filter((operator) =>
-    Object.keys(filters).every((key) =>
-      operator[key].toLowerCase().includes(filters[key].toLowerCase())
-    )
-  );
-
-  const enhancedData = filteredData.map((item) => ({
+  const enhancedData = filteredBusSchedule.map((item) => ({
     ...item,
+    busScheduleID: shortenBusScheduleID(item.busScheduleID),
     status: (
       <div className="flex justify-center">
         <Status status={item.status} />
@@ -75,54 +137,20 @@ const ManageBusRoutes = () => {
 
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
-      {/* Conditional Buttons Based on Status */}
-      {row.originalStatus === "Approved" ? (
-        // View Details Button (Only for Approved status)
-        <div className="relative group">
-          <button
-            onClick={() => {
-              setShowDetailsModal(true); // Set the details modal to show
-              setSelectedOperator(row);
-            }}
-            className="text-gray-500 hover:text-gray-600"
-          >
-            <FaRegEye className="text-lg text-gray-500 cursor-pointer" />
-          </button>
-          <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            View Details
-          </span>
-        </div>
-      ) : (
-        <>
-          {/* Approve Button (Only if not Approved) */}
-          <div className="relative group">
-            <button
-              onClick={() => {
-                setShowModal(true);
-                setSelectedOperator(row);
-              }}
-              className="text-green-500 hover:text-green-600"
-            >
-              <SiTicktick className="text-sm text-gray-500 cursor-pointer" />
-            </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Approve
-            </span>
-          </div>
-
-          <div className="h-4 w-px bg-gray-400"></div>
-
-          {/* Reject Button (Only if not Approved) */}
-          <div className="relative group">
-            <button className="text-red-500 hover:text-red-600">
-              <MdOutlineCancel className="text-gray-500 cursor-pointer" />
-            </button>
-            <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              Reject
-            </span>
-          </div>
-        </>
-      )}
+      <div className="relative group">
+        <button
+          onClick={() => {
+            setShowDetailsModal(true);
+            setSelectedOperator(row);
+          }}
+          className="text-gray-500 hover:text-gray-600"
+        >
+          <FaRegEye className="text-lg text-gray-500 cursor-pointer" />
+        </button>
+        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          View Details
+        </span>
+      </div>
     </div>
   );
 
@@ -142,66 +170,67 @@ const ManageBusRoutes = () => {
         <div className="w-4/5 mt-8 mx-auto">
           <div className="flex items-center">
             <h2 className="font-poppins font-bold text-2xl pb-2">
-              Bus Routes Management
+              Bus Schedule Management
             </h2>
           </div>
 
-          {/* filter input */}
           {showFilters && (
             <Card>
-              {/* First Row */}
               <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/3">
                   <label
-                    htmlFor="busPlate"
+                    htmlFor="busScheduleID"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"
                   >
-                    Bus Plate
+                    Bus Schedule ID
                   </label>
                   <CustomInput
-                    placeholder="Filter by Bus Plate"
-                    id="busPlate"
-                    name="busPlate"
+                    placeholder="Filter by Bus Schedule ID"
+                    id="busScheduleID"
+                    name="busScheduleID"
                     type="text"
-                    value={filters.busPlate}
+                    value={filters.busScheduleID}
                     onChange={handleFilterChange}
                   />
                 </div>
                 <div className="w-1/3">
                   <label
-                    htmlFor="origin"
+                    htmlFor="travelDate"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"
                   >
-                    Origin
+                    Travel Date
                   </label>
                   <CustomInput
-                    placeholder="Filter by Origin"
-                    id="origin"
-                    name="origin"
-                    type="text"
-                    value={filters.origin}
+                    placeholder="Filter by Travel Date"
+                    id="travelDate"
+                    name="travelDate"
+                    type="date"
+                    value={filters.travelDate}
                     onChange={handleFilterChange}
                   />
                 </div>
+
                 <div className="w-1/3">
                   <label
-                    htmlFor="destination"
+                    htmlFor="isRecurring"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"
                   >
-                    Destination
+                    Recurring
                   </label>
-                  <CustomInput
-                    placeholder="Filter by Destination"
-                    id="destination"
-                    name="destination"
-                    type="text"
-                    value={filters.destination}
+                  <select
+                    id="isRecurring"
+                    name="isRecurring"
+                    value={filters.isRecurring}
                     onChange={handleFilterChange}
-                  />
+                    className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
+                  >
+                    <option value="">Select Recurring Option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
                 </div>
               </div>
 
-              {/* Second Row */}
               <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/3">
                   <label
@@ -250,13 +279,12 @@ const ManageBusRoutes = () => {
                     className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
                   >
                     <option value="">All Status</option>
-                    <option value="approved">Approved</option>
-                    <option value="pending">Pending</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
                   </select>
                 </div>
               </div>
 
-              {/* Third Row - Clear Filter Button */}
               <div className="mt-4 w-full">
                 <CustomButton
                   title="Clear Filters"
@@ -270,7 +298,7 @@ const ManageBusRoutes = () => {
           <div className="flex justify-between items-center mt-12 mb-4">
             <p className="text-gray-500">
               <span className="font-semibold text-secondary">
-                {filteredData.length} bus routes
+                {filteredBusSchedule.length} bus schedules
               </span>{" "}
               found
             </p>
@@ -295,7 +323,6 @@ const ManageBusRoutes = () => {
             />
           </div>
 
-          {/* modal for approve */}
           <Modal isVisible={showModal} onClose={() => setShowModal(false)}>
             <ViewBusRoutes
               operator={selectedOperator}
@@ -303,15 +330,19 @@ const ManageBusRoutes = () => {
             />
           </Modal>
 
-          {/* Modal for View Details */}
           <Modal
             isVisible={showDetailsModal}
             onClose={() => setShowDetailsModal(false)}
+            className="w-11/12 md:w-3/4 lg:w-1/2"
           >
-            <ViewBusRoutes
-              operator={selectedOperator}
-              onClose={() => setShowDetailsModal(false)}
-              isApproved={selectedOperator?.originalStatus === "Approved"}
+            <Tabs
+              tabs={busScheduleInfoTabs.map((tab) => ({
+                ...tab,
+                content: React.cloneElement(tab.content, {
+                  schedule: selectedOperator,
+                }),
+              }))}
+              orientation="vertical"
             />
           </Modal>
         </div>

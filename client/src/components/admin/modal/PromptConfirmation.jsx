@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import CustomButton from "../../../components/common/CustomButton";
 
-const DeleteConfirmation = ({ operator, onClose, onConfirm }) => {
+const PromptConfirmation = ({ header, confirmTitle, onConfirm, onClose }) => {
   const [loading, setLoading] = useState(false);
 
-  const handleDelete = async () => {
+  const handleConfirm = async () => {
     setLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       onConfirm();
     } catch (error) {
-      console.error("Error deleting data:", error);
+      console.error("Error during confirmation action:", error);
     }
     setLoading(false);
   };
@@ -18,16 +18,17 @@ const DeleteConfirmation = ({ operator, onClose, onConfirm }) => {
   return (
     <div className="p-4">
       <header className="font-poppins font-semibold text-lg text-primary mb-4">
-        Are you sure you want to delete this data?
+        {header}
       </header>
+
       <div className="flex space-x-4 justify-between">
         <CustomButton
-          title={loading ? "Deleting..." : "Delete"}
-          onClick={handleDelete}
+          title={loading ? "Processing..." : confirmTitle}
+          onClick={handleConfirm}
           className="w-1/2 text-white"
         />
         <CustomButton
-          title="Cancel"
+          title={"Cancel"}
           onClick={onClose}
           className="w-1/2 text-white"
         />
@@ -36,4 +37,4 @@ const DeleteConfirmation = ({ operator, onClose, onConfirm }) => {
   );
 };
 
-export default DeleteConfirmation;
+export default PromptConfirmation;
