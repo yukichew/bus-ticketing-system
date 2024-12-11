@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CustomButton from '../../../components/common/CustomButton';
 import Container from '../../../components/Container';
 import PassengerForm from './PassengerForm';
@@ -8,21 +8,24 @@ import { buyTicket } from '../../../api/booking';
 import { toast } from 'react-toastify';
 
 const Booking = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { schedule } = location.state || {};
   const [passengerDetails, setPassengerDetails] = useState([]);
   const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
-
-  const date = format(new Date(schedule.travelDate), 'yyyy-MM-dd');
-  const amountPaid = selectedSeats.length * schedule.routes.price;
+  const schedule = JSON.parse(localStorage.getItem('selectedSchedule'));
 
   useEffect(() => {
     if (!schedule) {
-      toast.error('No schedule found. Please select a trip.');
+      toast.error('You have not selected a schedule.');
       navigate('/');
     }
   }, [schedule, navigate]);
+
+  if (!schedule) {
+    return null;
+  }
+
+  const date = format(new Date(schedule.travelDate), 'yyyy-MM-dd');
+  const amountPaid = selectedSeats.length * schedule.routes.price;
 
   const handlePassengerChange = (index, details) => {
     const updatedDetails = [...passengerDetails];
@@ -44,8 +47,6 @@ const Booking = () => {
     if (response?.error) {
       return toast.error(response.message);
     }
-    
-    localStorage.setItem('selectedTrip', JSON.stringify(schedule));
 
     navigate(`/payment`, {
       state: {
@@ -53,6 +54,7 @@ const Booking = () => {
         bookingID: response.bookingID,
         fullname: passengerDetails[0].fullname,
         email: passengerDetails[0].email,
+        schedule,
       },
     });
   };

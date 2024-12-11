@@ -116,7 +116,13 @@ const BusCard = ({ schedule }) => {
               title='SELECT'
               className='font-semibold'
               type='button'
-              onClick={() => setShowSeatmap(true)}
+              onClick={() => {
+                localStorage.setItem(
+                  'selectedSchedule',
+                  JSON.stringify(schedule)
+                );
+                setShowSeatmap(true);
+              }}
             />
           </div>
           <button
@@ -166,7 +172,7 @@ const BusCard = ({ schedule }) => {
         <CustomButton
           title={'Proceed'}
           type='button'
-          onClick={() => navigate('/booking', { state: { schedule } })}
+          onClick={() => navigate('/booking')}
           className='mt-2'
         />
       </Modal>
