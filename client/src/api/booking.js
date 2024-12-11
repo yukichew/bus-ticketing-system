@@ -10,9 +10,15 @@ export const buyTicket = async (bookingDetails) => {
   }
 };
 
-export const getBookings = async (email) => {
+export const filterBookings = async (filters) => {
   try {
-    const { data } = await api.get('/Bookings/History?email=' + email);
+    const queryParams = new URLSearchParams(
+      Object.entries(filters).filter(([_, value]) => value)
+    ).toString();
+
+    const { data } = await api.get(
+      `/Bookings/History/FilterBookings?${queryParams}`
+    );
     return data;
   } catch (err) {
     return catchError(err);

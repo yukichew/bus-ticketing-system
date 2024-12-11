@@ -3,3 +3,5 @@ export const policies = [
   'No cancellation or refund after booking',
   'No refund for no-show or late arrival',
 ];
+
+export const filterStatusOptions = ['Confirmed', 'Pending', 'Cancelled'];

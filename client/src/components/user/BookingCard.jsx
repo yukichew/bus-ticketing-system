@@ -48,7 +48,7 @@ const BookingCard = ({ booking, seatNumber, user }) => {
         </div>
 
         {/* departure and arrival */}
-        <div className='col-span-3 pl-3'>
+        <div className='col-span-3 md:pl-3'>
           <p className='font-semibold md:text-lg'>
             {booking.busSchedule.routes.boardingLocation.state} -{' '}
             {booking.busSchedule.routes.arrivalLocation.state}
@@ -59,7 +59,7 @@ const BookingCard = ({ booking, seatNumber, user }) => {
         </div>
 
         {/* boarding */}
-        <div className='col-span-3 pl-2'>
+        <div className='col-span-3 md:pl-2'>
           <p className='font-semibold'>Boarding</p>
           <p className='text-gray-500 font-medium text-sm'>
             {booking.busSchedule.routes.boardingLocation.name}

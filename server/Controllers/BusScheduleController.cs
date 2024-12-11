@@ -87,7 +87,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region FilterBusSchedule
+        #region filter bus schdule api
         // GET: api/BusScheduke/FilterBusSchedule
         [HttpGet("FilterBusSchedule")]
         public async Task<ActionResult> FilterBusSchedule(
@@ -896,7 +896,7 @@ RideNGo";
             var busSchedules = await _context.BusSchedules
                 .Include(bs => bs.BusInfo)
                 .Include(bs => bs.Routes)
-                .Include(bs => bs.PostedBy)  
+                .Include(bs => bs.PostedBy)
                 .Select(bs => new
                 {
                     bs.BusScheduleID,
