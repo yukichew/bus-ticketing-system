@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 import BusTicketForm from './user/BusTicketForm';
@@ -11,6 +11,15 @@ const Hero = () => {
     returnDate: null,
   });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.removeItem('busSearch');
+    localStorage.removeItem('isRoundTrip');
+    localStorage.removeItem('onwardSelectedSeats');
+    localStorage.removeItem('returnSelectedSeats');
+    localStorage.removeItem('selectedSchedule');
+    localStorage.removeItem('selectedReturnSchedule');
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
