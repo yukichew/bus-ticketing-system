@@ -14,6 +14,10 @@ namespace server.Models
 
         [ForeignKey("BusScheduleID")]
         public virtual BusSchedule? BusSchedule { get; set; }
+        public Guid? ReturnBusScheduleID { get; set; }
+
+        [ForeignKey("ReturnBusScheduleID")]
+        public virtual BusSchedule? ReturnBusSchedule { get; set; }
 
         [Required]
         [StringLength(50)]
