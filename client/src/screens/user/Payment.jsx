@@ -16,9 +16,11 @@ const Payment = () => {
   const stripe = useStripe();
   const elements = useElements();
   const location = useLocation();
-  const { bookingID, schedule, seats, email, amountPaid, fullname } =
-    location.state || {};
+  const bookingID = location.pathname.split('/').pop();
+  const { email, amountPaid, fullname } = location.state || {};
   const [loading, setLoading] = useState(false);
+  const schedule = JSON.parse(sessionStorage.getItem('onwardTrip'));
+  const seats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
   const navigate = useNavigate();
 
   const handlePaymentSubmit = async (e) => {
@@ -62,6 +64,9 @@ const Payment = () => {
       navigate('/payment-success');
     }
     setLoading(false);
+
+    sessionStorage.removeItem('onwardTrip');
+    localStorage.removeItem('selectedSeats');
   };
 
   return (

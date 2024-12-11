@@ -89,10 +89,16 @@ const Navbar = ({ auth }) => {
               {dropdownVisible && (
                 <div className='absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2'>
                   <Link
-                    to='/edit-profile'
+                    to='/profile'
                     className='block px-4 py-2 text-slate-600 hover:text-primary'
                   >
-                    Edit Profile
+                    Profile
+                  </Link>
+                  <Link
+                    to='/change-password'
+                    className='block px-4 py-2 text-slate-600 hover:text-primary'
+                  >
+                    Change Password
                   </Link>
                   <button
                     onClick={handleLogout}
