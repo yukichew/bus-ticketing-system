@@ -194,7 +194,6 @@ namespace server.Controllers
 
             return booking;
         }
-        #endregion
 
         #region get booking history api by passenger email
         // GET: api/Bookings/History/Filters?status={status}&busOperator={busOperator}&originState={originState}&destinationState={destinationState}&travelDate={travelDate}
