@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
 using server.Models;
+using System.Collections.Generic;
 
 namespace server.Controllers
 {
@@ -194,6 +195,7 @@ namespace server.Controllers
 
             return booking;
         }
+        #endregion
 
         #region get booking history api by passenger email
         // GET: api/Bookings/History/Filters?status={status}&busOperator={busOperator}&originState={originState}&destinationState={destinationState}&travelDate={travelDate}
@@ -204,7 +206,9 @@ namespace server.Controllers
             [FromQuery] string busOperator = null,
             [FromQuery] string originState = null,
             [FromQuery] string destinationState = null,
-            [FromQuery] DateTime? travelDate = null
+            [FromQuery] DateTime? travelDate = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 5
         )
         {
             var user = await _userManager.GetUserAsync(User);
@@ -244,20 +248,28 @@ namespace server.Controllers
                 query = query.Where(s => s.Booking.BusSchedule.PostedBy.Fullname.Equals(busOperator, StringComparison.OrdinalIgnoreCase));
             }
 
+            var totalCount = await query.CountAsync();
             var bookings = await query
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .Select(s => new
                 {
                     seatNumber = s.SeatNumber,
                     booking = s.Booking
-                })
-                .ToListAsync();
+                }).ToListAsync();
 
             if (bookings.Count == 0)
             {
                 return Ok(new { message = "No bookings found." });
             }
 
-            return Ok(bookings);
+            return Ok(new
+            {
+                bookings,
+                totalCount,
+                totalPages = (int)Math.Ceiling((double)totalCount / limit),
+                currentPage = page
+            });
         }
         #endregion
 
