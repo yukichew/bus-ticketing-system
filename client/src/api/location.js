@@ -1,7 +1,7 @@
 import api from ".";
 import { catchError } from "../utils/error";
 
-export const GetAllLocations = async () => {
+export const getAllLocations = async () => {
     try {
       const { data } = await api.get(`/Location`);
       return data;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomButton from '../../components/common/CustomButton';
 import TripSummary from '../../components/user/TripSummary';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -11,21 +11,32 @@ import {
 import { confirmTransaction, initiatePayment } from '../../api/transaction';
 import PaymentCard from '../../components/user/PaymentCard';
 import Container from '../../components/Container';
+import { toast } from 'react-toastify';
+import Loader from '../../components/common/Loader';
 
 const Payment = () => {
   const stripe = useStripe();
   const elements = useElements();
   const location = useLocation();
-  const bookingID = location.pathname.split('/').pop();
-  const { email, amountPaid, fullname } = location.state || {};
   const [loading, setLoading] = useState(false);
-  const schedule = JSON.parse(sessionStorage.getItem('onwardTrip'));
+  const { email, fullname, amountPaid, bookingID } = location.state || {};
+  const schedule = JSON.parse(localStorage.getItem('selectedSchedule'));
   const seats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!schedule) {
+      toast.error('You have not selected a schedule.');
+      navigate('/');
+    }
+  }, [schedule, navigate]);
+
+  if (!schedule) {
+    return null;
+  }
+
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-
     if (!stripe || !elements) {
       return;
     }
@@ -49,7 +60,7 @@ const Payment = () => {
     });
 
     if (result.error) {
-      return alert(
+      return toast.error(
         `Payment failed: ${result.error.message}. Please try again.`
       );
     }
@@ -59,18 +70,19 @@ const Payment = () => {
       'Succeeded'
     );
 
-    if (!isConfirmed.error) {
-      alert('Payment successful!');
-      navigate('/payment-success');
+    if (isConfirmed.error) {
+      toast.error(isConfirmed.message);
     }
+
     setLoading(false);
 
-    sessionStorage.removeItem('onwardTrip');
     localStorage.removeItem('selectedSeats');
+    navigate('/payment-success');
   };
 
   return (
     <Container>
+      {loading && <Loader />}
       <div className='grid grid-cols-1 md:grid-cols-2 max-w-7xl mx-auto space-y-5 pt-10 pb-12 px-10'>
         <div className='md:col-span-2 border-t-4 border-t-primary rounded-lg p-4 shadow-md'>
           <h2 className='text-lg font-semibold'>Secure Payment Page</h2>

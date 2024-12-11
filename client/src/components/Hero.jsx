@@ -18,13 +18,12 @@ const Hero = () => {
       originState: formState.originState,
       destinationState: formState.destinationState,
       travelDate: formState.travelDate,
-      returnDate: formState.returnDate,
     }).toString();
     navigate(`/bus-tickets?${queryParams}`);
   };
 
   return (
-    <section className='relative z-0'>
+    <section className='relative'>
       <img
         src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         className='absolute inset-0 object-cover w-full h-full'
@@ -43,14 +42,15 @@ const Hero = () => {
             </div>
 
             <div className='w-full max-w-xl xl:px-6 xl:w-5/12'>
-              <div className='bg-white rounded p-8 sm:p-10'>
-                <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-6 sm:text-2xl'>
+              <div className='bg-white rounded p-10'>
+                <h3 className='font-poppins mb-5 text-xl font-semibold sm:text-center sm:mb-6 sm:text-2xl'>
                   Buy Bus Tickets Online
                 </h3>
                 <BusTicketForm
                   formState={formState}
                   setFormState={setFormState}
                   onSubmit={handleSearch}
+                  customButtonClassName='pt-1'
                 />
               </div>
             </div>

@@ -8,7 +8,7 @@ import { validateField } from '../../../utils/validate';
 import { addRating } from '../../../api/rating';
 import { toast } from 'react-toastify';
 
-const Rating = ({ booking, user, onSuccess }) => {
+const Rating = ({ booking, onSuccess }) => {
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
   const [errors, setErrors] = useState({});
@@ -34,7 +34,7 @@ const Rating = ({ booking, user, onSuccess }) => {
       status: 'Active',
     };
 
-    const response = await addRating(ratingDetails, user.token);
+    const response = await addRating(ratingDetails);
 
     if (response?.error) {
       return toast.error(response.message);
@@ -43,14 +43,14 @@ const Rating = ({ booking, user, onSuccess }) => {
     toast.success('Rating added successfully');
     onSuccess();
   };
-  
+
   return (
     <>
       {/* header */}
       <div className='font-semibold text-center mb-5'>
         <h2 className='text-lg'>Rate and Review Your Trip</h2>
         <p className='text-primary'>
-          with {booking.busSchedule.postedBy.userName}
+          with {booking.busSchedule.postedBy.fullname}
         </p>
       </div>
 
@@ -96,8 +96,8 @@ const Rating = ({ booking, user, onSuccess }) => {
           </div>
 
           {/* bus operator */}
-          <div className='grid grid-cols-2 text-sm mt-3 items-center'>
-            <p>{booking.busSchedule.postedBy.userName}</p>
+          <div className='text-sm mt-3 items-center'>
+            <p>{booking.busSchedule.postedBy.fullname}</p>
           </div>
         </div>
 

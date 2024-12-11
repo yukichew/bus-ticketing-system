@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/common/Navbar";
-import Footer from "../../components/Footer";
+import Container from "../../components/Container";
 import { FaStar } from "react-icons/fa";
 import Stars from "../../components/common/Stars";
 import BOReview from "../../components/busOperator/BOReview";
@@ -136,7 +135,7 @@ const BORatesAndReviews = () => {
 
   return (
     <>
-      <Navbar />
+      <Container>
 
       <div className="w-4/5 mt-8 mb-8 mx-auto">
         <div className="flex items-center justify-between">
@@ -254,7 +253,7 @@ const BORatesAndReviews = () => {
         </div>
       </div>
 
-      <Footer />
+      </Container>
     </>
   );
 };

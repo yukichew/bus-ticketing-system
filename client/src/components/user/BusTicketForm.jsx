@@ -13,10 +13,10 @@ const BusTicketForm = ({
   customButtonClassName,
   showSearchButton = true,
 }) => {
-  const { originState, destinationState, travelDate, returnDate } = formState;
+  const { originState, destinationState, travelDate } = formState;
 
   const handleChange = async (key, value) => {
-    if (key === 'travelDate' || key === 'returnDate') {
+    if (key === 'travelDate') {
       value = value ? format(new Date(value), 'yyyy-MM-dd') : null;
     }
     setFormState((prevState) => ({ ...prevState, [key]: value }));
@@ -24,7 +24,7 @@ const BusTicketForm = ({
 
   return (
     <form
-      className={`space-y-2 ${className}`}
+      className={`space-y-3 ${className}`}
       onSubmit={onSubmit}
     >
       <CustomInput
@@ -55,14 +55,6 @@ const BusTicketForm = ({
         selectedDate={travelDate}
         setSelectedDate={(date) => handleChange('travelDate', date)}
         minDate={new Date()}
-      />
-      <DatePickerField
-        id={'returnDate'}
-        name={'returnDate'}
-        placeholder={'Return Date (Optional)'}
-        selectedDate={returnDate}
-        setSelectedDate={(date) => handleChange('returnDate', date)}
-        minDate={travelDate}
       />
       {showSearchButton && (
         <CustomButton

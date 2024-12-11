@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { IoMdAddCircleOutline } from 'react-icons/io';
 import { MdOutlineSubtitles, MdOutlineTitle } from 'react-icons/md';
-import { RiServiceLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
-import Navbar from '../../../components/common/Navbar';
-import Footer from '../../../components/Footer';
+import Container from '../../../components/Container';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
 import CustomField from '../../../components/common/CustomInput';
@@ -13,15 +11,12 @@ import FilesUploadButton from '../../../components/common/FilesUploadButton';
 
 const UserProfile = () => {
   const [showBioFields, setShowBioFields] = useState(false);
-  const [showServiceFields, setShowServiceFields] = useState(false);
   const [isBioDisabled, setIsBioDisabled] = useState(false);
-  const [isServiceDisabled, setIsServiceDisabled] = useState(false);
   const [isEditingCompany, setIsEditingCompany] = useState(false);
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [isEditingService, setIsEditingService] = useState(false);
   const [images, setImages] = useState([]);
-  const [selectedRefundableOption, setSelectedRefundableOption] = useState('');
 
   const handleEdit = (form) => {
     if (form === 'company') {
@@ -66,15 +61,6 @@ const UserProfile = () => {
     setIsBioDisabled(true);
   };
 
-  const handleAddService = () => {
-    setShowServiceFields(true);
-    setIsServiceDisabled(true);
-  };
-
-  const handleRefundableChange = (event) => {
-    setSelectedRefundableOption(event.target.value);
-  };
-
   const [companyInfo, setCompanyInfo] = useState({
     companyname: 'Super Nice Express',
     companyemail: 'contact@superniceexpress.com',
@@ -90,7 +76,7 @@ const UserProfile = () => {
 
   return (
     <>
-      <Navbar />
+      <Container>
 
       <div className='w-4/5 mt-6 mx-auto'>
         <div className='flex items-center'>
@@ -382,88 +368,9 @@ const UserProfile = () => {
             />
           </Card>
         </div>
-
-        <div className='mb-6'>
-          <Card
-            header='Services & Reputations'
-            Icon={CiEdit}
-            onClick={isEditingService ? null : () => handleEdit('service')}
-            tooltip='Edit'
-          >
-            <div className='mt-4 flex items-center'>
-              <label htmlFor="refundableOption" className="text-md font-poppins font-medium text-gray-700 mr-4"> 
-                Allowed for Refundable?
-              </label>
-              <div className='flex items-center space-x-4'>
-                <label className='flex items-center'>
-                  <input
-                    type='radio'
-                    value='yes'
-                    checked={selectedRefundableOption === 'yes'}
-                    onChange={handleRefundableChange}
-                    className='mr-1'
-                  />
-                  Yes
-                </label>
-                <label className='flex items-center'>
-                  <input
-                    type='radio'
-                    value='no'
-                    checked={selectedRefundableOption === 'no'}
-                    onChange={handleRefundableChange}
-                    className='mr-1'
-                  />
-                  No
-                </label>
-              </div>
-            </div>
-
-            {showServiceFields && (
-              <>
-                <CustomField
-                  id={'services'}
-                  name={'services'}
-                  placeholder={'Service and Reputations'}
-                  type={'text'}
-                  required
-                  icon={RiServiceLine}
-                />
-              </>
-            )}
-            {isEditingService && (
-              <div className='flex justify-between'>
-                <CustomButton
-                  title={'Cancel'}
-                  className={
-                    'w-40 bg-white hover:bg-indigo-50 text-[#0A21C0] border border-primary mt-5'
-                  }
-                  onClick={() => handleCancel('service')}
-                />
-                <CustomButton
-                  title={'Save'}
-                  className={'w-40 mt-5'}
-                  onClick={() => handleSave('service')}
-                />
-              </div>
-            )}
-            <CustomButton
-              title={
-                <>
-                  <IoMdAddCircleOutline
-                    className='inline-block mr-2 mb-1'
-                    size={22}
-                  />
-                  Add Services & Reputations
-                </>
-              }
-              onClick={handleAddService}
-              disabled={isServiceDisabled}
-            />
-          </Card>
-        </div>
       </div>
 
-      <Footer />
+      </Container>
     </>
   );
 };

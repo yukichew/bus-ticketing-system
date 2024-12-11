@@ -10,18 +10,22 @@ import { toast } from 'react-toastify';
 const Booking = () => {
   const navigate = useNavigate();
   const [passengerDetails, setPassengerDetails] = useState([]);
-  const schedule = JSON.parse(sessionStorage.getItem('onwardTrip'));
   const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
-
-  const date = format(new Date(schedule.travelDate), 'yyyy-MM-dd');
-  const amountPaid = selectedSeats.length * schedule.routes.price;
+  const schedule = JSON.parse(localStorage.getItem('selectedSchedule'));
 
   useEffect(() => {
     if (!schedule) {
-      toast.error('No schedule found. Please select a trip.');
+      toast.error('You have not selected a schedule.');
       navigate('/');
     }
   }, [schedule, navigate]);
+
+  if (!schedule) {
+    return null;
+  }
+
+  const date = format(new Date(schedule.travelDate), 'yyyy-MM-dd');
+  const amountPaid = selectedSeats.length * schedule.routes.price;
 
   const handlePassengerChange = (index, details) => {
     const updatedDetails = [...passengerDetails];
@@ -44,11 +48,13 @@ const Booking = () => {
       return toast.error(response.message);
     }
 
-    navigate(`payment/${response.bookingID}`, {
+    navigate(`/payment`, {
       state: {
         amountPaid,
+        bookingID: response.bookingID,
         fullname: passengerDetails[0].fullname,
         email: passengerDetails[0].email,
+        schedule,
       },
     });
   };
