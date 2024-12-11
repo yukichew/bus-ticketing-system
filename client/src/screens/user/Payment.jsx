@@ -20,10 +20,20 @@ const Payment = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const { email, fullname, amountPaid, bookingID } = location.state || {};
-
-  const schedule = JSON.parse(localStorage.getItem('selectedTrip'));
+  const schedule = JSON.parse(localStorage.getItem('selectedSchedule'));
   const seats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!schedule) {
+      toast.error('You have not selected a schedule.');
+      navigate('/');
+    }
+  }, [schedule, navigate]);
+
+  if (!schedule) {
+    return null;
+  }
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
@@ -66,19 +76,9 @@ const Payment = () => {
 
     setLoading(false);
 
-    sessionStorage.removeItem('selectedTrip');
     localStorage.removeItem('selectedSeats');
-
     navigate('/payment-success');
   };
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      localStorage.removeItem('selectedTrip');
-    }, 300000);
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   return (
     <Container>
