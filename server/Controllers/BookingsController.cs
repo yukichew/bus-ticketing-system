@@ -62,7 +62,7 @@ namespace server.Controllers
             {
                 BusScheduleID = bookingDto.BusScheduleID,
                 BookingStatus = "Pending",
-                AmountPaid = 0,
+                AmountPaid = bookingDto.AmountPaid,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
                 BusSchedule = await _context.BusSchedules.FindAsync(bookingDto.BusScheduleID)

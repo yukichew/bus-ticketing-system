@@ -17,7 +17,6 @@ const BusTickets = () => {
     destinationState:
       new URLSearchParams(location.search).get('destinationState') || '',
     travelDate: new URLSearchParams(location.search).get('travelDate') || null,
-    returnDate: new URLSearchParams(location.search).get('returnDate') || null,
   });
 
   useEffect(() => {
@@ -25,7 +24,6 @@ const BusTickets = () => {
       const results = await searchSchedule(formState);
       setBusSchedules(results);
     };
-
     fetchSchedules();
   }, [formState]);
 
@@ -89,6 +87,7 @@ const BusTickets = () => {
               <BusCard
                 key={schedule.id}
                 schedule={schedule}
+                formState={formState}
               />
             ))}
         </div>

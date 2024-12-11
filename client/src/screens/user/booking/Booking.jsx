@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CustomButton from '../../../components/common/CustomButton';
 import Container from '../../../components/Container';
@@ -9,12 +9,20 @@ import { toast } from 'react-toastify';
 
 const Booking = () => {
   const location = useLocation();
-  const { selectedSeats, schedule } = location.state || {};
-  const [passengerDetails, setPassengerDetails] = useState([]);
   const navigate = useNavigate();
+  const { schedule } = location.state || {};
+  const [passengerDetails, setPassengerDetails] = useState([]);
+  const selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
 
   const date = format(new Date(schedule.travelDate), 'yyyy-MM-dd');
   const amountPaid = selectedSeats.length * schedule.routes.price;
+
+  useEffect(() => {
+    if (!schedule) {
+      toast.error('No schedule found. Please select a trip.');
+      navigate('/');
+    }
+  }, [schedule, navigate]);
 
   const handlePassengerChange = (index, details) => {
     const updatedDetails = [...passengerDetails];
@@ -36,14 +44,14 @@ const Booking = () => {
     if (response?.error) {
       return toast.error(response.message);
     }
+    
+    localStorage.setItem('selectedTrip', JSON.stringify(schedule));
 
-    navigate('/payment', {
+    navigate(`/payment`, {
       state: {
-        bookingID: response.bookingID,
         amountPaid,
-        seats: selectedSeats,
+        bookingID: response.bookingID,
         fullname: passengerDetails[0].fullname,
-        schedule,
         email: passengerDetails[0].email,
       },
     });
