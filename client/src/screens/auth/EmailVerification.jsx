@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import { validateField } from '../../utils/validate';
 import { forgotPassword, verifyEmail } from '../../api/auth';
 import { toast } from 'react-toastify';
+import LoginHero from '../../components/LoginHero';
 
 const EmailVerification = () => {
   const navigate = useNavigate();
@@ -63,20 +64,12 @@ const EmailVerification = () => {
     <>
       <div className='flex h-screen'>
         {/* Left Side */}
-        <div className='flex-1 bg-slate-50 flex items-center justify-center'>
-          <div className='text-center p-8'>
-            <h2 className='font-poppins text-3xl font-semibold text-gray-800'>
-              Welcome to RideNGo!
-            </h2>
-            <p className='mt-4 text-gray-600 lg:w-4/6 lg:mx-auto'>
-              RideNGo stands as Malaysia's leading online platform for bus
-              ticketing, earning the trust of millions of global travellers.
-            </p>
-          </div>
+        <div className="flex-1 bg-slate-50 flex items-center justify-center relative">
+          <LoginHero />
         </div>
 
         {/* Right Side */}
-        <div className='flex-1 flex items-center justify-center'>
+        <div className="flex-1 flex items-center justify-center">
           <div className='w-full max-w-md p-8'>
             <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
               {source === 'register'
