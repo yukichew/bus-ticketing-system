@@ -8,12 +8,16 @@ import Tabs from '../common/Tabs';
 import Seatmap from './Seatmap';
 import CustomButton from '../common/CustomButton';
 import { useNavigate } from 'react-router-dom';
+import { getOccupiedSeats } from '../../api/booking';
+import { getActiveRatings } from '../../api/rating';
 
 const BusCard = ({ schedule }) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [showSeatmap, setShowSeatmap] = useState(false);
+  const [occupiedSeats, setOccupiedSeats] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
 
   const handleSeatSelection = (seatNumber) => {
     const updatedSeats = selectedSeats.includes(seatNumber)
@@ -31,6 +35,31 @@ const BusCard = ({ schedule }) => {
 
     return () => clearTimeout(timeout);
   }, [schedule]);
+
+  useEffect(() => {
+    const fetchOccupiedSeats = async () => {
+      const data = await getOccupiedSeats(schedule.busScheduleID);
+      if (data.error) return;
+      setOccupiedSeats(data);
+    };
+    fetchOccupiedSeats();
+  }, [schedule.busScheduleId]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const results = await getActiveRatings(schedule.postedBy.id);
+      if (results && results.length > 0) {
+        const avgRating =
+          results.reduce((sum, review) => sum + review.rate, 0) /
+          results.length;
+        setAverageRating(avgRating.toFixed(1));
+      }
+    };
+    fetchReviews();
+  }, [schedule.postedBy.id]);
+
+  const availableSeats =
+    schedule.busInfo.busType.noOfSeats - occupiedSeats.length;
 
   return (
     <div className='rounded-lg font-poppins shadow-md mb-4 w-11/12 lg:max-w-7xl mx-auto bg-slate-50 border'>
@@ -96,7 +125,7 @@ const BusCard = ({ schedule }) => {
               <div className='flex flex-row items-center text-white'>
                 <FaStar className='w-2 md:w-3' />
                 <p className='font-medium text-xs md:text-sm ml-1'>
-                  {schedule.routes.price}
+                  {averageRating}
                 </p>
               </div>
             </div>
@@ -104,7 +133,7 @@ const BusCard = ({ schedule }) => {
             <div className='flex flex-row items-center text-gray-600 ml-2 md:ml-0 md:mt-1'>
               <GoPeople className='w-3 md:w-4' />
               <p className='font-medium text-xs text-center pl-1'>
-                {schedule.passengers}
+                {availableSeats}
               </p>
             </div>
           </div>
@@ -168,6 +197,7 @@ const BusCard = ({ schedule }) => {
           schedule={schedule}
           selectedSeats={selectedSeats}
           handleSelect={handleSeatSelection}
+          occupiedSeats={occupiedSeats}
         />
         <CustomButton
           title={'Proceed'}
