@@ -24,7 +24,7 @@ const BusTicketForm = ({
 
   return (
     <form
-      className={`space-y-2 ${className}`}
+      className={`space-y-3 ${className}`}
       onSubmit={onSubmit}
     >
       <CustomInput

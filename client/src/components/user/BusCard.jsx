@@ -116,8 +116,8 @@ const BusCard = ({ schedule }) => {
 
         {/* price and capacity */}
         <div className='grid grid-cols-2 items-center'>
-          <p className='hidden md:block mx-auto font-bold text-xl'>
-            RM {schedule.routes.price}
+          <p className='hidden md:block ml-auto font-bold text-xl'>
+            RM {schedule.routes.price}0
           </p>
 
           <div className='flex-row flex md:flex-col md:justify-center md:items-center md:ml-auto'>
