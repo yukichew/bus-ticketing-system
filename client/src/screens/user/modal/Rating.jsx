@@ -8,7 +8,7 @@ import { validateField } from '../../../utils/validate';
 import { addRating } from '../../../api/rating';
 import { toast } from 'react-toastify';
 
-const Rating = ({ booking, user, onSuccess }) => {
+const Rating = ({ booking, onSuccess }) => {
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
   const [errors, setErrors] = useState({});
@@ -34,7 +34,7 @@ const Rating = ({ booking, user, onSuccess }) => {
       status: 'Active',
     };
 
-    const response = await addRating(ratingDetails, user.token);
+    const response = await addRating(ratingDetails);
 
     if (response?.error) {
       return toast.error(response.message);
