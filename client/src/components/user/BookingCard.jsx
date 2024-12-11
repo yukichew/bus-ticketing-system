@@ -133,7 +133,6 @@ const BookingCard = ({ booking, seatNumber, user }) => {
       >
         <Rating
           booking={booking}
-          user={user}
           onSuccess={() => setRatingView(false)}
         />
       </Modal>

@@ -19,12 +19,16 @@ const Ratings = ({ id }) => {
     <>
       <RatingSummary reviews={reviews} />
       <h2 className='text-lg font-semibold mt-5'>Reviews</h2>
-      {reviews.map((review) => (
-        <Review
-          key={review.id}
-          review={review}
-        />
-      ))}
+      {reviews && reviews.length > 0 ? (
+        reviews.map((review) => (
+          <Review
+            key={review.id}
+            review={review}
+          />
+        ))
+      ) : (
+        <p className=''>No reviews available</p>
+      )}
     </>
   );
 };

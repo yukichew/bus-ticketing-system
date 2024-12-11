@@ -109,6 +109,25 @@ namespace server.Controllers
         }
         #endregion
 
+        #region Get active rates and reviews api
+        // GET: api/RatesAndReviews/BusOperator/Active/{busOperatorID}
+        [HttpGet("Active/{busOperatorID}")]
+        public async Task<ActionResult> GetActiveRatesAndReviewsByBusOperatorID(string busOperatorID)
+        {
+            var activeRatesAndReviews = await _context.Set<RatesAndReviews>()
+                .Include(r => r.Booking)
+                .ThenInclude(b => b.BusSchedule)
+                .Where(r => r.Status == "Active" && r.Booking.BusSchedule.PostedBy.Id == busOperatorID)
+                .OrderByDescending(r => r.PostedAt)
+                .ToListAsync();
+            if (!activeRatesAndReviews.Any())
+            {
+                return NotFound(new { message = "No active rates and reviews found for the specified bus operator." });
+            }
+            return Ok(activeRatesAndReviews);
+        }
+        #endregion
+
         #region Add rates and reviews api
         // POST: api/RatesAndReviews
         [Authorize(Policy = "MemberOnly")]
@@ -161,43 +180,6 @@ namespace server.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetRatesAndReviews), new { id = ratesAndReviews.ID }, ratesAndReviews);
-        }
-        #endregion
-
-        #region UpdateRatesAndReviews
-        // PUT: api/RatesAndReviews/{id}
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateRatesAndReviews(Guid id, [FromBody] RatesAndReviewsDTO ratesAndReviewsDto)
-        {
-            var existingRatesAndReviews = await _context.RatesAndReviews.FindAsync(id);
-
-            if (existingRatesAndReviews == null)
-            {
-                return NotFound(new { message = $"Rates and reviews with ID {id} not found." });
-            }
-
-            existingRatesAndReviews.Comment = ratesAndReviewsDto.Comment;
-            existingRatesAndReviews.Rate = ratesAndReviewsDto.Rate;
-            existingRatesAndReviews.Status = ratesAndReviewsDto.Status;
-            _context.Entry(existingRatesAndReviews).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.RatesAndReviews.Any(r => r.ID == id))
-                {
-                    return NotFound(new { message = $"Rates and reviews with ID {id} not found." });
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(new { message = "The selected rate and review is successfully updated." });
         }
         #endregion
 
