@@ -6,9 +6,7 @@ const Loader = () => {
       <div
         className='inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent'
         role='status'
-      >
-        <span className='sr-only'>Loading...</span>
-      </div>
+      ></div>
     </div>
   );
 };

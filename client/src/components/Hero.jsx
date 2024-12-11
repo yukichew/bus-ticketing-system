@@ -28,15 +28,16 @@ const Hero = () => {
   };
 
   return (
-    <section className='relative'>
+    <section className='relative h-screen flex items-center justify-center'>
       <img
         src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         className='absolute inset-0 object-cover w-full h-full'
+        alt='Bus'
       />
-      <div className='relative bg-gray-900 bg-opacity-65'>
-        <div className='px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8'>
-          <div className='flex flex-col items-center justify-between xl:flex-row'>
-            <div className='w-full max-w-xl mb-12 xl:mb-0 xl:pr-16 xl:w-7/12'>
+      <div className='relative bg-gray-900 bg-opacity-65 w-full h-full flex items-center justify-center'>
+        <div className='px-4 py-10 md:py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl 2xl:w-full md:px-20 lg:px-8'>
+          <div className='flex flex-col items-center justify-between lg:flex-row'>
+            <div className='w-full max-w-xl mb-12 lg:mb-0 lg:pr-16 lg:w-1/2 2xl:w-2/5'>
               <h2 className='font-poppins max-w-lg mb-4 text-3xl font-bold text-white sm:text-4xl sm:leading-tight'>
                 Book Your Bus Tickets on RideNGo
               </h2>
@@ -46,7 +47,7 @@ const Hero = () => {
               </p>
             </div>
 
-            <div className='w-full max-w-xl xl:px-6 xl:w-5/12'>
+            <div className='w-full max-w-xl lg:pl-6 lg:w-1/2 2xl:w-3/5'>
               <div className='bg-white rounded p-10'>
                 <h3 className='font-poppins mb-5 text-xl font-semibold sm:text-center sm:mb-6 sm:text-2xl'>
                   Buy Bus Tickets Online
