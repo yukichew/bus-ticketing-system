@@ -10,6 +10,7 @@ import CustomButton from '../../components/common/CustomButton';
 import { filterStatusOptions } from '../../constants/UserConstants';
 import useDebounce from '../../utils/useDebounce';
 import { format } from 'date-fns';
+import { IoFilter } from 'react-icons/io5';
 
 const Trips = () => {
   const { auth } = useAuth();
@@ -56,7 +57,13 @@ const Trips = () => {
       <div className='w-4/5 mx-auto my-7 flex flex-col md:flex-row gap-6'>
         {/* Filters Section */}
         <div className='w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow-sm max-h-96'>
-          <h3 className='font-poppins font-bold text-xl mb-4'>Filters</h3>
+          <h3 className='font-poppins font-bold text-xl mb-4 flex items-center'>
+            <IoFilter
+              size={16}
+              className='mr-2'
+            />{' '}
+            Filters
+          </h3>
           <div className='space-y-3'>
             <CustomInput
               id={'originState'}
