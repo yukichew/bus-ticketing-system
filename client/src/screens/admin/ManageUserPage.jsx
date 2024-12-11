@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 
 const ManageUserPage = () => {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState("Passengers"); // Default tab
+  const [activeTab, setActiveTab] = useState("Users"); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -16,7 +16,7 @@ const ManageUserPage = () => {
 
   useEffect(() => {
     if (location.state?.section) {
-      setActiveTab(location.state.section); // Update active tab based on passed sectionState
+      setActiveTab(location.state.section);
     }
   }, [location.state]);
 

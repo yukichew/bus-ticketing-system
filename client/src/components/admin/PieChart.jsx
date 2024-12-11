@@ -1,29 +1,79 @@
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
-import React from 'react';
-import { Pie } from 'react-chartjs-2';
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from "chart.js";
+import React, { useState, useEffect } from "react";
+import { Pie } from "react-chartjs-2";
+import { getTransactionsDetails } from "../../api/transaction";
+import { getAllBusTypes } from "../../api/busType";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = () => {
-  // Sample data for ticket sales by bus type
+  const [salesData, setSalesData] = useState({});
+  const [busTypes, setBusTypes] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const uniqueBusTypes = await getAllBusTypes();
+        setBusTypes(uniqueBusTypes);
+
+        const { transactions } = await getTransactionsDetails();
+        const busTypeSales = {};
+
+        uniqueBusTypes.forEach((busType) => {
+          busTypeSales[busType] = 0;
+        });
+
+        transactions.forEach((transaction) => {
+          const busType = transaction.types;
+          const amount = transaction.amount;
+
+          if (busTypeSales[busType] !== undefined) {
+            busTypeSales[busType] += amount;
+          }
+        });
+
+        setSalesData(busTypeSales);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const data = {
-    labels: ['Executive', 'Executive', 'Double Deck (Upper Deck)'],
+    labels: busTypes,
     datasets: [
       {
-        label: 'Ticket Sales by Bus Type',
-        data: [30, 50, 20], // Percentage or actual ticket sales numbers
-        backgroundColor: [
-          'rgba(10, 33, 192, 0.6)', // Executive (24 Seats) color
-          'rgba(44, 46, 58, 0.6)', // Executive (40 Seats) color
-          'rgba(5, 10, 68, 0.6)', // Double Deck (Upper Deck) color
-        ],
-        borderColor: ['#0A21C0', '#2c2E3A', '#050A44'],
+        label: "Ticket Sales by Bus Type",
+        data: busTypes.map((busType) => salesData[busType] || 0),
+        backgroundColor: busTypes.map((_, index) => {
+          const colors = [
+            "rgba(10, 33, 192, 0.6)",
+            "rgba(44, 46, 58, 0.6)",
+            "rgba(5, 10, 68, 0.6)",
+            "rgba(255, 99, 132, 0.6)",
+            "rgba(54, 162, 235, 0.6)",
+            "rgba(255, 159, 64, 0.6)",
+          ];
+          return colors[index % colors.length];
+        }),
+        borderColor: busTypes.map((_, index) => {
+          const borderColors = [
+            "#0A21C0",
+            "#2c2E3A",
+            "#050A44",
+            "#FF5733",
+            "#36A2EB",
+            "#FF9F40",
+          ];
+          return borderColors[index % borderColors.length];
+        }),
         borderWidth: 1,
       },
     ],
   };
 
-  // Chart options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -38,7 +88,7 @@ const PieChart = () => {
     plugins: {
       legend: {
         display: true,
-        position: 'bottom',
+        position: "bottom",
         labels: {
           padding: 20,
           font: {
@@ -51,7 +101,7 @@ const PieChart = () => {
           label: function (tooltipItem) {
             const label = data.labels[tooltipItem.dataIndex];
             const value = data.datasets[0].data[tooltipItem.dataIndex];
-            return `${label}: ${value}%`;
+            return `${label}: $${value}`;
           },
         },
       },
@@ -59,7 +109,7 @@ const PieChart = () => {
   };
 
   return (
-    <div className='w-80 h-80 mx-auto mt-10 h-[26rem]'>
+    <div className="w-80 h-80 mx-auto mt-10 h-[26rem]">
       <Pie data={data} options={options} />
     </div>
   );

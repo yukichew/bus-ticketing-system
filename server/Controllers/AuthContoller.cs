@@ -8,6 +8,8 @@ using System.Text;
 using server.Helper;
 using server.Dto.Auth;
 using Microsoft.AspNetCore.Authorization;
+using server.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace server.Controllers
 {
@@ -21,8 +23,9 @@ namespace server.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly EmailService _emailService;
         private readonly OTPService _otpService;
+        private readonly ApplicationDbContext _context;
 
-        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager, EmailService emailService, OTPService otpService)
+        public AuthController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, SignInManager<User> signInManager, EmailService emailService, OTPService otpService, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -30,6 +33,7 @@ namespace server.Controllers
             _signInManager = signInManager;
             _emailService = emailService;
             _otpService = otpService;
+            _context = context;
         }
 
         #region Register
@@ -371,6 +375,7 @@ namespace server.Controllers
 
         #region Refresh Token API
         [HttpPost("refresh-token")]
+
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto refreshTokenRequestDto)
         {
             var refreshToken = refreshTokenRequestDto.RefreshToken;
@@ -401,6 +406,7 @@ namespace server.Controllers
         #endregion
 
         #region Get Principal From Expired Token Method
+
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -430,10 +436,70 @@ namespace server.Controllers
         #region Logout API
         [Authorize]
         [HttpPost("logout")]
+
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return Ok(new { message = "Logged out successfully." });
+        }
+        #endregion
+
+        #region GET all Members API
+        [HttpGet("get-members")]
+        public async Task<IActionResult> GetAllMembers()
+        {
+
+            var role = await _context.Roles
+                .Where(r => r.Name == "Member")
+                .FirstOrDefaultAsync();
+
+            if (role == null)
+            {
+                return BadRequest(new { message = "Member role not found." });
+            }
+
+            var members = await (from user in _context.Users
+                                 join userRole in _context.UserRoles
+                                 on user.Id equals userRole.UserId
+                                 where userRole.RoleId == role.Id
+                                 select user)
+                                  .ToListAsync();
+
+            return Ok(members);
+        }
+        #endregion
+
+        #region GET all Bus Operators Details API
+        [HttpGet("get-busoperators-details")]
+        public async Task<IActionResult> GetAllBusOperators()
+        {
+            var busOperatorRoleId = await _context.Roles
+                .Where(r => r.Name == "BusOperator")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (busOperatorRoleId == null)
+            {
+                return BadRequest(new { message = "BusOperator role not found." });
+            }
+
+            var busOperators = await (from user in _context.Users
+                                      join userRole in _context.UserRoles
+                                      on user.Id equals userRole.UserId
+                                      where userRole.RoleId == busOperatorRoleId
+                                      select new
+                                      {
+                                          user.Id,
+                                          user.Email,
+                                          user.UserName,
+                                          user.PhoneNumber,
+                                          ((BusOperator)user).Address,
+                                          ((BusOperator)user).BusImages,
+                                          ((BusOperator)user).IsRefundable,
+                                          ((BusOperator)user).Status
+                                      }).ToListAsync();
+
+            return Ok(busOperators);
         }
         #endregion
     }

@@ -8,7 +8,7 @@ const DashboardCard = ({
   gradientColors,
   icon,
   link,
-  sectionState, // Prop to accept state for rendering specific content
+  sectionState, 
 }) => {
   return (
     <div

@@ -1,28 +1,22 @@
 import React, { useState, useEffect } from "react";
-import CustomButton from "../../../components/common/CustomButton";
 import CustomInput from "../../../components/common/CustomInput";
-import Card from "../../../components/common/Card";
 
-const ViewBusRoutes = ({ operator, onClose, isApproved }) => {
+const ViewBusRoutes = ({ schedule }) => {
   const [routeInfo, setRouteInfo] = useState({
     busPlate: "",
-    origin: "",
-    destination: "",
-    etd: "",
-    eta: "",
+    busType: "",
+    busNoOfSeats: "",
   });
 
   useEffect(() => {
-    if (operator) {
+    if (schedule) {
       setRouteInfo({
-        busPlate: operator.busPlate,
-        origin: operator.origin,
-        destination: operator.destination,
-        etd: operator.etd,
-        eta: operator.eta,
+        busPlate: schedule.busPlate,
+        busType: schedule.busType,
+        busNoOfSeats: schedule.busNoOfSeats,
       });
     }
-  }, [operator]);
+  }, [schedule]);
 
   const handleRouteChange = (e) => {
     const { id, value } = e.target;
@@ -53,17 +47,17 @@ const ViewBusRoutes = ({ operator, onClose, isApproved }) => {
       </div>
       <div className="pointer-events-none">
         <label
-          htmlFor="origin"
+          htmlFor="busType"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Origin
+          Bus Type
         </label>
         <CustomInput
-          placeholder="Enter origin"
-          id="origin"
-          name="origin"
+          placeholder="Enter Bus Type"
+          id="busType"
+          name="busType"
           type="text"
-          value={routeInfo.origin}
+          value={routeInfo.busType}
           onChange={handleRouteChange}
           className="pointer-events-none"
           required
@@ -71,59 +65,22 @@ const ViewBusRoutes = ({ operator, onClose, isApproved }) => {
       </div>
       <div className="pointer-events-none">
         <label
-          htmlFor="destination"
+          htmlFor="noOfSeats"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Destination
+          No of Seats
         </label>
         <CustomInput
-          placeholder="Enter destination"
-          id="destination"
-          name="destination"
+          placeholder="Enter No of Seats"
+          id="noOfSeats"
+          name="noOfSeats"
           type="text"
-          value={routeInfo.destination}
+          value={routeInfo.busNoOfSeats}
           onChange={handleRouteChange}
           className="pointer-events-none"
           required
         />
       </div>
-      <div className="pointer-events-none">
-        <label
-          htmlFor="etd"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          ETD
-        </label>
-        <CustomInput
-          placeholder="Enter ETD"
-          id="etd"
-          name="etd"
-          type="text"
-          value={routeInfo.etd}
-          onChange={handleRouteChange}
-          className="pointer-events-none"
-          required
-        />
-      </div>
-      <div className="pointer-events-none">
-        <label
-          htmlFor="eta"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          ETA
-        </label>
-        <CustomInput
-          placeholder="Enter ETA"
-          id="eta"
-          name="eta"
-          type="text"
-          value={routeInfo.eta}
-          onChange={handleRouteChange}
-          className="pointer-events-none"
-          required
-        />
-      </div>
-      {!isApproved && <CustomButton title={"Approve Bus Routes"} />}
     </div>
   );
 };
