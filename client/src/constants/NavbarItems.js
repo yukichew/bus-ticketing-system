@@ -9,4 +9,4 @@ export const busOperatorLinks = [
   { key: 3, name: 'Rates & Review', href: '/bo/rates-and-reviews' },
 ];
 
-export const memberLinks = [{ key: 2, name: 'Booking', href: '/trips' }];
+export const memberLinks = [{ key: 2, name: 'My Trips', href: '/trips' }];

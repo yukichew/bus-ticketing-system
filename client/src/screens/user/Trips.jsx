@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import BookingCard from '../../components/user/BookingCard';
 import Container from '../../components/Container';
 import { useAuth } from '../../utils/AuthContext';
-import { filterBookings, getBookings } from '../../api/booking';
+import { filterBookings } from '../../api/booking';
 import { getUserProfile } from '../../api/auth';
 import CustomInput from '../../components/common/CustomInput';
 import DatePickerField from '../../components/common/DatePickerField';
-import CustomButton from '../../components/common/CustomButton';
 import { filterStatusOptions } from '../../constants/UserConstants';
 import useDebounce from '../../utils/useDebounce';
 import { format } from 'date-fns';
 import { IoFilter } from 'react-icons/io5';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const Trips = () => {
   const { auth } = useAuth();
@@ -23,8 +23,11 @@ const Trips = () => {
     destinationState: '',
     travelDate: '',
   });
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const debouncedFilters = useDebounce(filters, 500);
+
+  const bookingsPerPage = 3;
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -33,14 +36,20 @@ const Trips = () => {
         setUser({ ...profile, token: auth.token });
 
         if (profile) {
-          const result = await filterBookings(debouncedFilters);
-          setBookings(Array.isArray(result) ? result : []);
+          const result = await filterBookings({
+            ...debouncedFilters,
+            page: currentPage,
+            limit: bookingsPerPage,
+          });
+
+          setBookings(Array.isArray(result.bookings) ? result.bookings : []);
+          setTotalPages(Math.ceil(result.totalCount / bookingsPerPage));
         }
       }
     };
 
     fetchBookings();
-  }, [debouncedFilters, auth]);
+  }, [debouncedFilters, auth, currentPage]);
 
   const handleStatusChange = (status) => {
     setFilters((prevFilters) => {
@@ -52,10 +61,16 @@ const Trips = () => {
     });
   };
 
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
     <Container>
-      <div className='w-4/5 mx-auto my-7 flex flex-col md:flex-row gap-6'>
-        {/* Filters Section */}
+      <div className='w-4/5 mx-auto my-8 flex flex-col md:flex-row gap-6'>
+        {/* filters */}
         <div className='w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow-sm max-h-96'>
           <h3 className='font-poppins font-bold text-xl mb-4 flex items-center'>
             <IoFilter
@@ -117,7 +132,7 @@ const Trips = () => {
           </div>
         </div>
 
-        {/* Results Section */}
+        {/* results */}
         <div className='w-full md:w-3/4'>
           <h3 className='font-poppins font-bold text-2xl mb-5'>
             Booking History
@@ -136,6 +151,35 @@ const Trips = () => {
                   user={user}
                 />
               ))}
+            </div>
+          )}
+
+          {/* pagination */}
+          {totalPages > 1 && (
+            <div className='flex justify-center space-x-2 mt-6 ml-auto'>
+              <button
+                className={`font-medium ${
+                  currentPage === 1 ? 'text-gray-400' : 'hover:text-primary'
+                }`}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <FaChevronLeft />
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className={`font-medium ${
+                  currentPage === totalPages
+                    ? 'text-gray-400'
+                    : 'hover:text-primary'
+                }`}
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                <FaChevronRight />
+              </button>
             </div>
           )}
         </div>
