@@ -45,8 +45,8 @@ const PassengerForm = ({ passengerNumber, seatNumber, onChange }) => {
     <form className='space-y-2 bg-slate-50 border rounded-lg shadow-md p-3'>
       <div className='text-sm flex flex-row items-center pb-1'>
         <p className='font-semibold'>Passenger {passengerNumber}</p>
-        <PiLineVerticalBold className='fill-primary mx-2' />
-        <p className='font-medium text-gray-600'>Seat {seatNumber}</p>
+        {/* <PiLineVerticalBold className='fill-primary mx-2' /> */}
+        {/* <p className='font-medium text-gray-600'>Seat {seatNumber}</p> */}
       </div>
 
       <CustomInput

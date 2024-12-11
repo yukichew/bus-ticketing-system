@@ -19,6 +19,11 @@ const Hero = () => {
       destinationState: formState.destinationState,
       travelDate: formState.travelDate,
     }).toString();
+    localStorage.setItem('busSearch', JSON.stringify(formState));
+    localStorage.setItem(
+      'isRoundTrip',
+      formState.returnDate ? 'true' : 'false'
+    );
     navigate(`/bus-tickets?${queryParams}`);
   };
 

@@ -9,7 +9,11 @@ const Container = ({ children }) => {
   useEffect(() => {
     const clearSeatsTimeout = setTimeout(() => {
       localStorage.removeItem('selectedSchedule');
-      localStorage.removeItem('selectedSeats');
+      localStorage.removeItem('selectedReturnSchedule');
+      localStorage.removeItem('onwardSelectedSeats');
+      localStorage.removeItem('returnSelectedSeats');
+      localStorage.removeItem('busSearch');
+      localStorage.removeItem('isRoundTrip');
     }, 60 * 1000 * 5); // 5 minutes
     return () => clearTimeout(clearSeatsTimeout);
   }, []);

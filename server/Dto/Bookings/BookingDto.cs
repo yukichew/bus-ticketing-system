@@ -4,9 +4,13 @@ namespace server.Dto
 {
     public class BookingDto
     {
-        [Required(ErrorMessage = "Bus schedule id is required")]
+        public TripDetails OnwardTrip { get; set; }
+        public TripDetails? ReturnTrip { get; set; }
+    }
+
+    public class TripDetails
+    {
         public Guid BusScheduleID { get; set; }
-        [Required(ErrorMessage = "Total amount is required")]
         public double AmountPaid { get; set; }
         public List<SeatDto> Seats { get; set; }
     }
