@@ -9,6 +9,7 @@ import { getBus, updateBus } from '../../../api/busInfo';
 import { getAllBusTypesByBusOperatorID, getBusType } from '../../../api/busType';
 import * as yup from "yup";
 import { validateField } from '../../../utils/validate';
+import { toast } from 'react-toastify';
 
 const EditBusForm = () => {
     const token = sessionStorage.getItem('token');
@@ -125,9 +126,12 @@ const EditBusForm = () => {
             status: selectedBusStatusOption,
         };
 
-        await updateBus(busID, updatedDetails, token);
+        const response = await updateBus(busID, updatedDetails, token);
 
-        alert("Bus updated successfully!");
+        if (response?.error) {
+            return toast.error(response.message);
+        }
+        toast.success('Bus updated successfully.');
         navigate('/bo/bus');
     };
 

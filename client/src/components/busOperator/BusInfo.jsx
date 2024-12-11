@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { CiEdit, CiExport, CiSearch } from "react-icons/ci";
+import { CiEdit, CiSearch } from "react-icons/ci";
 import { GrPowerReset } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai";
 import Table from '../common/Table';
 import Card from '../common/Card';
 import { getAllBusByBusOperatorID, searchBus, deleteBus } from '../../api/busInfo';
 import { getAllBusTypesByBusOperatorID } from '../../api/busType';
+import { toast } from 'react-toastify';
 
 const BusInfo = () => {
     const token = sessionStorage.getItem('token');
@@ -227,10 +228,10 @@ const BusInfo = () => {
         const response = await deleteBus(busID, token);
 
         if(response){
-            alert("Bus deleted successfully!");
+            toast.success('Bus deleted successfully!');
             fetchBusData();
         }else{
-            alert("Bus deleted failed!");
+            toast.error("Bus deleted failed!");
         }
     };
 
@@ -377,13 +378,6 @@ const BusInfo = () => {
                     <button className='ml-auto flex items-center font-medium hover:text-primary pr-1' onClick={() => handleNavigate('newBus')}>
                         <IoIosAddCircleOutline size={16} />
                         <p className='mx-1'>New Bus</p>
-                    </button>
-
-                    <span className="text-gray-400 mx-2">|</span>
-                            
-                    <button className='ml-auto flex items-center font-medium hover:text-primary pr-1'>
-                        <CiExport size={16} />
-                        <p className='mx-1'>Export</p>
                     </button>
                 </div>
             </div>

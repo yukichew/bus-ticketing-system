@@ -8,6 +8,7 @@ import CustomInput from '../../../components/common/CustomInput';
 import { createBusType } from '../../../api/busType';
 import * as yup from "yup";
 import { validateField } from '../../../utils/validate';
+import { toast } from 'react-toastify';
 
 const NewBusTypeForm = () => {
     const token = sessionStorage.getItem('token');
@@ -67,12 +68,11 @@ const NewBusTypeForm = () => {
     const handleSubmit = async () => {
         const response = await createBusType(busTypeDetails, token);
 
-        if(response){
-            alert("Bus type added successfully!");
-            navigate('/bo/bus');
-        }else{
-            alert("Bus type added failed!");
+        if (response?.error) {
+            return toast.error(response.message);
         }
+        toast.success('Bus type added successfully.');
+        navigate('/bo/bus');
     };
 
     return(

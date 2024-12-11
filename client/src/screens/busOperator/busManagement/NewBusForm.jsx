@@ -9,6 +9,7 @@ import { createBus } from '../../../api/busInfo';
 import { getAllBusTypesByBusOperatorID } from '../../../api/busType';
 import * as yup from "yup";
 import { validateField } from '../../../utils/validate';
+import { toast } from 'react-toastify';
 
 const NewBusForm = () => {
     const token = sessionStorage.getItem('token');
@@ -96,12 +97,11 @@ const NewBusForm = () => {
     const handleSubmit = async () => {
         const response = await createBus(busDetails, token);
 
-        if (response) {
-            alert("Bus added successfully!");
-            navigate('/bo/bus');
-        } else {
-            alert("Bus addition failed!");
+        if (response?.error) {
+            return toast.error(response.message);
         }
+        toast.success('Bus added successfully.');
+        navigate('/bo/bus');
     };
 
     return (
