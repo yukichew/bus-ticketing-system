@@ -11,9 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import MemberRoutes from './routes/MemberRoutes';
 
-const stripePromise = loadStripe(
-  'pk_test_51Pjg7s08WeyfGZMBKCnDiE2nlWFgN0vq2vM2rfYCaKkkhhBRdpa3uFkxdTcP4CCiJG9lrdSSOIELTdxlTkhYPqaK00rr2N0yXu'
-);
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 function App() {
   useEffect(() => {
