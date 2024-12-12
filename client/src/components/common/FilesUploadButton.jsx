@@ -6,7 +6,7 @@ const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFile
     const [files, setFiles] = useState(initialFiles);
 
     useEffect(() => {
-        setImages(files.map(file => file.name));
+        setImages(files);
     }, [files, setImages]);
 
     const handleFileChange = (e) => {
@@ -72,6 +72,10 @@ const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFile
                             Supported Format: SVG, JPG, PNG
                         </div>
                     </div>
+                </div>
+
+                <div className="font-poppins text-xs text-gray-600 mt-2 w-full text-left">
+                    *Only {maxFiles} image{maxFiles > 1 ? "s" : ""} {maxFiles > 1 ? "are" : "is"} allowed to be uploaded.
                 </div>
 
                 {files.length > 0 && (
