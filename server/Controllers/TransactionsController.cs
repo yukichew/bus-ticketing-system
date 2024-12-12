@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
-using server.Dto;
+using server.Dto.Bookings;
 using server.Helper;
 using server.Models;
 using Stripe;
@@ -25,7 +25,6 @@ namespace server.Controllers
             _config = config;
             _emailService = emailService;
         }
-
 
         // GET: api/Transactions
         [HttpGet]
@@ -66,7 +65,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Check out using Stripe
+        #region Check out using Stripe api
         // POST: api/Transactions
         [HttpPost]
         public async Task<ActionResult<Transaction>> CheckOut(TransactionDto transactionDto)
@@ -121,7 +120,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Confirm transaction
+        #region Confirm transaction api
         [HttpPost("ConfirmTransaction")]
         public async Task<IActionResult> ConfirmTransaction([FromBody] TransactionStatusDto statusDto)
         {

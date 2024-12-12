@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
+using server.Dto.Bookings;
 using server.Models;
-using System.Collections.Generic;
 
 namespace server.Controllers
 {

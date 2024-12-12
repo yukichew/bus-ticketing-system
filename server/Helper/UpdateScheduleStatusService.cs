@@ -68,7 +68,7 @@ namespace server.Helper
             var fiveMinutesAfter = currentTime.Add(TimeSpan.FromMinutes(5));
 
             var busSchedules = await context.BusSchedules
-                .Where(bs => bs.ScheduleStatus == "On Time"
+                .Where(bs => (bs.ScheduleStatus == "On Time" || bs.ScheduleStatus == "Delayed")
                              && bs.TravelDate.Date == currentDate
                              && (bs.ETD >= fiveMinutesBefore && bs.ETD <= fiveMinutesAfter))
                 .ToListAsync();

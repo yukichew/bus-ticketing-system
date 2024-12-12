@@ -12,6 +12,7 @@ import EditBusForm from '../screens/busOperator/busManagement/EditBusForm';
 import PassengerList from '../screens/busOperator/busManagement/PassengerList';
 import UserProfile from '../screens/busOperator/profile/UserProfile';
 import AuthenticatedRoute from './AuthenticatedRoute';
+import BusScheduleHistory from '../screens/busOperator/busManagement/BusScheduleHistory';
 
 const routesConfig = [
   { path: '/bo/dashboard', component: BODashboard },
@@ -22,8 +23,15 @@ const routesConfig = [
   { path: '/bo/bus/new-bus-type', component: NewBusTypeForm },
   { path: '/bo/bus/edit-bus-type/:busTypeID', component: EditBusTypeForm },
   { path: '/bo/bus/new-bus-schedule', component: NewBusScheduleForm },
-  { path: '/bo/bus/edit-bus-schedule/:busScheduleID', component: EditBusScheduleForm },
-  { path: '/bo/bus/bus-schedule/passenger-lists/:busScheduleID', component: PassengerList },
+  {
+    path: '/bo/bus/edit-bus-schedule/:busScheduleID',
+    component: EditBusScheduleForm,
+  },
+  {
+    path: '/bo/bus/bus-schedule/passenger-lists/:busScheduleID',
+    component: PassengerList,
+  },
+  { path: '/bo/bus/bus-schedule-history', component: BusScheduleHistory },
   { path: '/bo/rates-and-reviews', component: BORatesAndReviews },
 ];
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { toast } from 'react-toastify';
-import Loader from '../components/common/Loader';
 
 const AuthenticatedRoute = ({ children, requiredRole }) => {
   const { auth } = useAuth();

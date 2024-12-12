@@ -91,7 +91,9 @@ const Navbar = () => {
               {dropdownVisible && (
                 <div className='absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2'>
                   <Link
-                    to='/profile'
+                    to={
+                      auth.role === 'Member' ? '/profile' : '/bo/user-profile'
+                    }
                     className='block px-4 py-2 text-slate-600 hover:text-primary'
                   >
                     Profile

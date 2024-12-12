@@ -16,6 +16,7 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region filter seats by bus schedule api
         // GET: api/Seat?busScheduleId={busScheduleId}
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Seat>>> FilterSeats([FromQuery] string busScheduleId)
@@ -25,7 +26,7 @@ namespace server.Controllers
             {
                 return BadRequest("Invalid bus schedule ID");
             }
-            
+
             var seatNumbers = await _context.Seats
                 .Where(s => s.Booking.BusScheduleID == busScheduleGuid && (s.Status == "Occupied" || s.Status == "Reserved"))
                 .Select(s => s.SeatNumber)
@@ -33,7 +34,9 @@ namespace server.Controllers
 
             return Ok(seatNumbers);
         }
+        #endregion
 
+        #region get passenger list api
         // GET: api/Seat/PassengerList
         [HttpGet("PassengerList")]
         public async Task<ActionResult<IEnumerable<Seat>>> GetPassengerList([FromQuery] string busScheduleId)
@@ -51,5 +54,6 @@ namespace server.Controllers
 
             return Ok(passengers);
         }
+        #endregion
     }
 }

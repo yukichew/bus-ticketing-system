@@ -27,6 +27,19 @@ export const getBusSchedulesForToday = async (token) => {
   }
 };
 
+export const getAllPreviousBusSchedules = async (token) => {
+  try {
+    const { data } = await api.get(`/BusSchedule/BusOperator/History`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
 export const getBusSchedule = async (busScheduleID, token) => {
   try {
     const { data } = await api.get(`/BusSchedule/${busScheduleID}`, {
@@ -62,6 +75,23 @@ export const searchScheduleByBusOperatorID = async (filters, token) => {
     const queryParams = new URLSearchParams(filters).toString();
     const { data } = await api.get(
       `/BusSchedule/BusOperator/FilterBusSchedule?${queryParams}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
+export const searchHistorySchedule = async (filters, token) => {
+  try {
+    const queryParams = new URLSearchParams(filters).toString();
+    const { data } = await api.get(
+      `/BusSchedule/BusOperator/FilterBusScheduleHistory?${queryParams}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
