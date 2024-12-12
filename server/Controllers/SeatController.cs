@@ -34,5 +34,21 @@ namespace server.Controllers
             return Ok(seatNumbers);
         }
 
+        // GET: api/Seat/PassengerList
+        [HttpGet("PassengerList")]
+        public async Task<ActionResult<IEnumerable<Seat>>> GetPassengerList([FromQuery] string busScheduleId)
+        {
+            Guid busScheduleGuid = Guid.Empty;
+            if (!string.IsNullOrEmpty(busScheduleId) && !Guid.TryParse(busScheduleId, out busScheduleGuid))
+            {
+                return BadRequest("Invalid bus schedule ID");
+            }
+
+            var passengers = await _context.Seats
+                .Where(s => s.Booking.BusScheduleID == busScheduleGuid && (s.Booking.BookingStatus == "Confirmed"))
+                .ToListAsync();
+
+            return Ok(passengers);
+        }
     }
 }
