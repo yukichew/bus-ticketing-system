@@ -12,7 +12,6 @@ import { IoIosArrowRoundBack } from 'react-icons/io';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const FaqUserView = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [expandedQuestionId, setExpandedQuestionId] = useState(null);
   const [faqData, setFaqData] = useState([]);
@@ -33,7 +32,6 @@ const FaqUserView = () => {
     const getFaqs = async () => {
       try {
         const data = await fetchActiveFaqs();
-        console.log('Fetched FAQs Data:', data);
         const faqsWithIds = data.map((faq, index) => ({
           ...faq,
           faqId: index.toString(),
@@ -76,25 +74,36 @@ const FaqUserView = () => {
           )}
           <Card>
             {Object.keys(categorizedFaqs).map((category, index) => (
-              <div
-                key={category}
-                className='mb-6'
-              >
-                <h3
-                  className='text-xl font-bold mb-10 cursor-pointer font-poppins hover:text-primary'
+              <div key={category}>
+                <div
                   onClick={() => handleCategoryClick(category)}
+                  className='cursor-pointer flex items-center flex-row'
                 >
-                  {index + 1}. {category}
-                </h3>
+                  <h3 className='text-xl font-bold cursor-pointer font-poppins hover:text-primary flex-1 items-center'>
+                    {index + 1}. {category}
+                  </h3>
+                  {expandedCategory === category ? (
+                    <RiArrowDropUpLine
+                      size={24}
+                      className='ml-2 text-gray-500'
+                    />
+                  ) : (
+                    <RiArrowDropDownLine
+                      size={24}
+                      className='ml-2 text-gray-500'
+                    />
+                  )}
+                </div>
+
                 {expandedCategory === category && (
-                  <ul className='list-none pl-0'>
+                  <ul className='mt-5 list-none pl-0 border-t pt-4'>
                     {categorizedFaqs[category].map((faq) => (
                       <li
                         key={faq.faqId}
-                        className='flex flex-col mb-6 cursor-pointer'
+                        className='flex flex-col'
                       >
                         <div
-                          className='flex items-center mb-1 font-poppins hover:text-primary'
+                          className='flex items-center mb-1 font-poppins hover:text-primary cursor-pointer'
                           onClick={() => handleQuestionClick(faq.faqId)}
                         >
                           <FaRegQuestionCircle className='mr-2 text-gray-500' />
@@ -114,7 +123,7 @@ const FaqUserView = () => {
                           )}
                         </div>
                         {expandedQuestionId === faq.faqId && (
-                          <div className='flex items-start mt-1 border-t pt-2'>
+                          <div className='flex items-start mt-4 border-t pt-2'>
                             <div className='flex items-center justify-center w-8 h-8 mr-2 text-gray-500'>
                               <RiQuestionAnswerLine className='w-4 h-4' />
                             </div>
