@@ -162,7 +162,7 @@ const EditBusScheduleForm = () => {
     };
 
     const handleNavigate = () => {
-        navigate('/bo/bus/bus-schedule/passenger-lists');
+        navigate(`/bo/bus/bus-schedule/passenger-lists/${busScheduleID}`);
     };
 
     const handleSubmit = async () => {
@@ -263,7 +263,7 @@ const EditBusScheduleForm = () => {
 
     const statusOptions = ['Active', 'Inactive'];
 
-    const scheduleStatusOptions = ['Scheduled', 'On Time', 'En Route', 'Delayed', 'Completed'];
+    const scheduleStatusOptions = ['Scheduled', 'Delayed'];
 
     const daysOfWeek = [
         { label: 'M', fullDay: 'Monday' },

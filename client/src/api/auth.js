@@ -21,6 +21,15 @@ export const register = async (registerDetails) => {
   }
 };
 
+export const registerAsBusOperator = async (registerDetails) => {
+  try {
+    const { data } = await api.post('/Auth/register/busOperator', registerDetails);
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
 export const getUserProfile = async () => {
   try {
     const { data } = await api.get('/Auth/profile');

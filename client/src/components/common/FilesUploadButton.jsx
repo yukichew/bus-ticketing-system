@@ -79,14 +79,14 @@ const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFile
                         <div className="flex flex-col space-y-2">
                         {files.map((file, index) => (
                             <div key={index} className="flex items-center justify-between w-full">
-                            <div className={`flex-shrink-0 ${aspectRatio === "square" ? "h-12 w-12" : "h-10 w-16"}`}> {/* Reduced image size */}
+                            <div className={`flex-shrink-0 ${aspectRatio === "square" ? "h-12 w-12" : "h-10 w-16"}`}>
                                 <img
                                 src={URL.createObjectURL(file)}
                                 alt={file.name}
                                 className={`w-full h-full object-cover ${aspectRatio === "square" ? "aspect-square" : "aspect-[16/9]"}`}
                                 />
                             </div>
-                            <div className="flex-grow ml-3 flex items-center justify-between"> {/* Allow file name to grow and be on the right */}
+                            <div className="flex-grow ml-3 flex items-center justify-between">
                                 <span className="font-poppins text-sm break-words">{file.name}</span>
                                 <button
                                 onClick={() => handleDelete(index)}
