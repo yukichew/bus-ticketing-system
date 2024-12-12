@@ -47,6 +47,10 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
     }
   };
 
+  const navigateToLogin = () => {
+    navigate("/login");
+  };
+
   useEffect(() => {
     const fetchBusOperatorsCounts = async () => {
       try {
@@ -56,7 +60,7 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
         console.error("Error fetching bus operators counts:", err);
       }
     };
-
+    
     fetchBusOperatorsCounts();
   }, []);
 
