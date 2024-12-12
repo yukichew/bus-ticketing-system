@@ -1,5 +1,0 @@
-export const accessKeyId = 'ASIA5FKHMQTLBKQAHT23';
-export const secretAccessKey = '4B+AX5sVkEkd+NylvSp2x0LdD9+t1E+P5Y8egoTB';
-export const sessionToken = 'IQoJb3JpZ2luX2VjEPz//////////wEaCXVzLXdlc3QtMiJHMEUCIE0LDe9Yls1PJOJ+hwjf8rhq6coNazu5DVXUg1gEzfLRAiEAoJxSSwsto6bH6Rk/BAi6AiSSjg/eonG13kVDllRwCZQquwIItf//////////ARAAGgw5MDQ3NzcyMDQ5NTAiDFFG45/sLwytsUdPjCqPAsCNc/zXwD0PtLJSvLHWSKkRq1+Cms9mH8dpoZTR3dQvV5jN3tpXLlNSxFYmABza/mJPLdEKpdOsM+1yHAQo+Eodd6wxPzVsFD2qY5mj4Y4Xrl+qH42DXQRBDasdhgt4BC998g3wQZFh5CymigwmodyoDY9tp0UZ0jzLVtdIvjr+Qdf3GlrYZVWz0O8MrykEINBi+5KDNfLgljqKjLtFtThh5H044Ru1sZEdwOI86nPKARIqQu3u02IbA0FWEsIWufQsGlv7ZMAPv+dfTsTQlbi+POTy0sUiISAW2YPeNyolCEoo6PHcg5HYn1EDGS1EcV/ZhPNoPy6DAgZTwGL65AbCGW0e14j8x+TbYm7mxfIwhMDpugY6nQFGvH831aSg65hOn5rDdREqyhTJrjwry4lHIYarhaRIskB11OzQ2RkNVwjRnDkDxP8zqJrzoCfSt8QTCpn13GXGpqrrTOb989apXm16iEcTx2jgrVG3vWn76Vb6RkJtPAlTNZgcsu3P9iIeWgC+eP9QP8O0Hn1qr5gFMNw07uvDZRqu1LSswdhmRAMat5xHt3eicVNEzN/+WjU4Ol1r';
-export const region = 'us-east-1';
-export const bucket = 'ridengo-s3-bucket';
