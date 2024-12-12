@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CiUser } from 'react-icons/ci';
 import { IoEye, IoEyeOff, IoKeyOutline } from 'react-icons/io5';
@@ -46,7 +46,8 @@ const UserRegistration = () => {
       .required('Password is required'),
     cpassword: yup
       .string()
-      .oneOf([yup.ref('password'), null], 'Password must match'),
+      .required('Confirm password is required')
+      .oneOf([yup.ref('password')], 'Confirm password must match password'),
     phoneNumber: yup
       .string()
       .required('Phone number is required')
@@ -57,11 +58,20 @@ const UserRegistration = () => {
   });
 
   const handleChange = (field, value) => {
+    const formState = {
+      fullname,
+      password,
+      cpassword,
+      phoneNumber,
+      [field]: value,
+    };
+
     if (field === 'fullname') setFullname(value);
     if (field === 'password') setPassword(value);
-    if (field === 'cpassword') setCPassword(value);
     if (field === 'phoneNumber') setPhoneNumber(value);
-    validateField(field, value, setErrors, registerSchema);
+    if (field === 'cpassword') setCPassword(value);
+
+    validateField(field, value, setErrors, registerSchema, formState);
   };
 
   const handleSubmit = async (e) => {
@@ -161,6 +171,7 @@ const UserRegistration = () => {
                   )}
                 </div>
               </div>
+
               <div className='relative mt-3'>
                 <CustomInput
                   id={'cpassword'}

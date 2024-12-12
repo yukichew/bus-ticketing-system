@@ -287,9 +287,8 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Verify OTP Reset Password API
-        [Authorize]
-        [HttpPost("verify-otp-reset-password")]
+        #region Validate OTP Reset Password API
+        [HttpPost("validate-otp-reset-password")]
         public async Task<IActionResult> VerifyOTPForResetPassword([FromBody] ValidateOTPDto validateOTPDto)
         {
             var user = await _userManager.FindByEmailAsync(validateOTPDto.Email);
@@ -309,7 +308,6 @@ namespace server.Controllers
         #endregion
 
         #region Reset Password API
-        [Authorize]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
