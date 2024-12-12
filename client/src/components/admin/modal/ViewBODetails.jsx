@@ -24,7 +24,6 @@ const ViewBoDetails = ({ operator }) => {
           ? operator.busImage
           : [operator.busImage],
       });
-      console.log("bus image:", operator.busImage);
     }
   }, [operator]);
 

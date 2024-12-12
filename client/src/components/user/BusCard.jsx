@@ -22,7 +22,6 @@ const BusCard = ({ schedule }) => {
   const [returnSelectedSeats, setReturnSelectedSeats] = useState([]);
 
   const isRoundTrip = localStorage.getItem('isRoundTrip') === 'true';
-  console.log(isRoundTrip);
   const onwardSchedule = JSON.parse(localStorage.getItem('selectedSchedule'));
   const returnSchedule = JSON.parse(
     localStorage.getItem('selectedReturnSchedule')

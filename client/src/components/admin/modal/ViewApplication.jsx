@@ -27,7 +27,6 @@ const ApplicationForm = ({ operator, onClose }) => {
           ? operator.busImage
           : [operator.busImage],
       });
-      console.log("bus", operator.busImage);
     }
   }, [operator]);
 
@@ -50,7 +49,6 @@ const ApplicationForm = ({ operator, onClose }) => {
   const handleApproveClick = async () => {
     if (operator && operator.id) {
       try {
-        console.log("Approving operator with ID:", operator.id);
         const response = await approveBo(operator.id);
         if (response && response.message) {
           toast.success("Application has been approved!");

@@ -36,7 +36,6 @@ const ManageTransactionsPage = () => {
     const fetchTransactions = async () => {
       try {
         const { transactions } = await getTransactionsDetails();
-        console.log(transactions);
         setTransactions(transactions);
       } catch (error) {
         console.error("Error fetching transactions:", error);

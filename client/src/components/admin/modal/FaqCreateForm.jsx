@@ -49,8 +49,6 @@ const FaqCreateForm = ({}) => {
 
     const response = await createFaq({ ...formState, status: "Active" });
 
-    console.log("Response from server:", response);
-
     if (response?.faqId) {
       toast.success("FAQ created successfully!");
       handleNavigation("FAQs");
