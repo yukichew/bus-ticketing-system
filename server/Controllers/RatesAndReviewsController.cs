@@ -88,7 +88,7 @@ namespace server.Controllers
 
             var ratesAndReviews = await _context.Set<RatesAndReviews>()
                 .Include(b => b.Booking)
-                .Where(r => r.Status == "Active" && r.Booking.BusSchedule.PostedBy.Id == busOperator.Id)
+                .Where(r => r.Status != "Inactive" && r.Booking.BusSchedule.PostedBy.Id == busOperator.Id)
                 .OrderByDescending(r => r.PostedAt)
                 .ToListAsync();
 
@@ -209,12 +209,12 @@ namespace server.Controllers
                 return NotFound(new { message = "Rate and review not found." });
             }
 
-            ratesAndReviews.Status = "Inactive";
+            ratesAndReviews.Status = "Pending for Review";
 
             _context.Entry(ratesAndReviews).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "The review is Inactive now." });
+            return Ok(new { message = "The review is Pending for Review now." });
         }
         #endregion
 
