@@ -299,9 +299,11 @@ namespace server.Controllers
         }
         #endregion
 
+        #region checck if bus type exists method
         private bool BusTypeExists(Guid id)
         {
             return _context.Set<BusType>().Any(e => e.BusTypeID == id);
         }
+        #endregion
     }
 }

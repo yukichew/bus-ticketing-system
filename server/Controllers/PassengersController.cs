@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
-using server.Dto;
+using server.Dto.Bookings;
 using server.Models;
 
 namespace server.Controllers
@@ -22,13 +17,16 @@ namespace server.Controllers
             _context = context;
         }
 
+        #region get all passengers api
         // GET: api/Passengers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Passenger>>> GetPassenger()
         {
             return await _context.Passenger.ToListAsync();
         }
+        #endregion
 
+        #region get a single passenger api
         // GET: api/Passengers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Passenger>> GetPassenger(Guid id)
@@ -42,37 +40,9 @@ namespace server.Controllers
 
             return Ok(passenger);
         }
+        #endregion
 
-        // PUT: api/Passengers/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPassenger(Guid id, Passenger passenger)
-        {
-            if (id != passenger.PassengerID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(passenger).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PassengerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
+        #region create a new passenger api
         // POST: api/Passengers
         [HttpPost]
         public async Task<ActionResult<Passenger>> PostPassenger(PassengerDto passengerDto)
@@ -88,26 +58,13 @@ namespace server.Controllers
 
             return CreatedAtAction("GetPassenger", new { id = passenger.PassengerID }, passenger);
         }
+        #endregion
 
-        // DELETE: api/Passengers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePassenger(int id)
-        {
-            var passenger = await _context.Passenger.FindAsync(id);
-            if (passenger == null)
-            {
-                return NotFound();
-            }
-
-            _context.Passenger.Remove(passenger);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
+        #region check if passenger exists method
         private bool PassengerExists(Guid id)
         {
             return _context.Passenger.Any(e => e.PassengerID == id);
         }
+        #endregion
     }
 }

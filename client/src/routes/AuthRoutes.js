@@ -7,6 +7,7 @@ import UserRegistration from '../screens/auth/UserRegistration';
 import BORegistration from '../screens/auth/BORegistration';
 import ResetPassword from '../screens/auth/ResetPassword';
 import ChangePassword from '../screens/auth/ChangePassword';
+import AuthenticatedRoute from './AuthenticatedRoute';
 
 const AuthRoutes = [
   <Route
@@ -35,7 +36,11 @@ const AuthRoutes = [
   />,
   <Route
     path='/change-password'
-    element={<ChangePassword />}
+    element={
+      <AuthenticatedRoute>
+        <ChangePassword />
+      </AuthenticatedRoute>
+    }
   />,
 ];
 
