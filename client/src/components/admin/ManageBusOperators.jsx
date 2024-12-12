@@ -37,18 +37,23 @@ const ManageBusOperators = () => {
     userName: "",
     email: "",
     phoneNumber: "",
+    address: "",
+    status: "",
   });
 
   const initialFilters = {
     userName: "",
     email: "",
     phoneNumber: "",
+    address: "",
+    status: "",
   };
 
   useEffect(() => {
     const fetchBusOperators = async () => {
       try {
         const response = await getAllBoDetails();
+        console.log(response);
         if (response?.error) {
           console.error("API error: ", response.message);
         } else {

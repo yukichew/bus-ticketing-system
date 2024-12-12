@@ -4,7 +4,6 @@ import { IoFilter } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
 import Table from "../../components/common/Table";
 import Status from "../../components/admin/Status";
-import ViewUserDetails from "./modal/ViewUserDetails";
 import Modal from "../common/Modal";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
@@ -13,20 +12,16 @@ import PromptConfirmation from "./modal/PromptConfirmation";
 import { getAllMembers } from "../../api/auth";
 
 const ManageUser = () => {
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showDeactivate, setShowDeactivateModal] = useState(false);
-  const [selectedOperator, setSelectedOperator] = useState(null);
   const [members, setMembers] = useState([]);
   const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
-    fullName: "",
     email: "",
     phoneNumber: "",
     status: "",
   });
 
   const initialFilters = {
-    fullName: "",
     email: "",
     phoneNumber: "",
     status: "",
@@ -49,8 +44,8 @@ const ManageUser = () => {
     setFilters(initialFilters);
   };
 
-  const columns = ["Full Name", "Email", "Phone Number"];
-  const columnKeys = ["fullname", "email", "phoneNumber"];
+  const columns = ["Email", "Phone Number"];
+  const columnKeys = ["email", "phoneNumber"];
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -82,29 +77,12 @@ const ManageUser = () => {
 
   const actionIcons = (row) => (
     <div className="flex justify-center space-x-2">
-      <div className="relative group">
-        <button
-          onClick={() => {
-            setShowDetailsModal(true);
-            setSelectedOperator(row);
-          }}
-          className="text-grey-500 hover:text-grey-600"
-        >
-          <FaRegEye className="text-lg text-gray-500 cursor-pointer" />
-        </button>
-        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          View Details
-        </span>
-      </div>
-
       {row.originalStatus !== "Deactivated" && (
         <>
-          <div className="h-4 w-px bg-gray-400"></div> {/* Separator */}
           <div className="relative group">
             <button
               onClick={() => {
                 setShowDeactivateModal(true);
-                setSelectedOperator(row);
               }}
               className="text-red-500 hover:text-red-600"
             >
@@ -124,23 +102,7 @@ const ManageUser = () => {
       {showFilters && (
         <Card>
           <div className="flex justify-between gap-4 mb-4">
-            <div className="w-1/2">
-              <label
-                htmlFor="fullname"
-                className="block text-md font-poppins font-medium text-gray-700 mb-2"
-              >
-                Full Name
-              </label>
-              <CustomInput
-                placeholder="Filter by Full Name"
-                id="fullname"
-                name="fullname"
-                type="text"
-                value={filters.fullname}
-                onChange={handleFilterChange}
-              />
-            </div>
-            <div className="w-1/2">
+            <div className="w-1/3">
               <label
                 htmlFor="email"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -156,10 +118,7 @@ const ManageUser = () => {
                 onChange={handleFilterChange}
               />
             </div>
-          </div>
-
-          <div className="flex justify-between gap-4 mb-4">
-            <div className="w-1/2">
+            <div className="w-1/3">
               <label
                 htmlFor="phoneNumber"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -175,7 +134,7 @@ const ManageUser = () => {
                 onChange={handleFilterChange}
               />
             </div>
-            <div className="w-1/2">
+            <div className="w-1/3">
               <label
                 htmlFor="status"
                 className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -233,16 +192,6 @@ const ManageUser = () => {
           actions={actionIcons}
         />
       </div>
-
-      <Modal
-        isVisible={showDetailsModal}
-        onClose={() => setShowDetailsModal(false)}
-      >
-        <ViewUserDetails
-          operator={selectedOperator}
-          onClose={() => setShowDetailsModal(false)}
-        />
-      </Modal>
 
       {showDeactivate && (
         <Modal
