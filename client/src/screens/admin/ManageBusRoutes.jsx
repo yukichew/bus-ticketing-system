@@ -64,9 +64,8 @@ const ManageBusRoutes = () => {
   useEffect(() => {
     const fetchBusSchedules = async () => {
       try {
-        const response = await getAllBusSchedules();
-        console.log(response);
-        const mappedData = mapBusScheduleData(response);
+        const { busSchedules } = await getAllBusSchedules();
+        const mappedData = mapBusScheduleData(busSchedules);
         setBusSchedules(mappedData);
       } catch (error) {
         console.error("Error fetching bus schedules:", error);
