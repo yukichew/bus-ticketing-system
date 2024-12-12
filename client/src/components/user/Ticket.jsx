@@ -35,7 +35,7 @@ const Ticket = ({ booking, seatNumber, user }) => {
         </div>
 
         <div className='grid grid-cols-2 gap-3 items-center'>
-          {content({ title: 'Passenger', desc: user.userName })}
+          {content({ title: 'Passenger', desc: user.fullname })}
           {content({
             title: 'Trip No',
             desc: booking.busSchedule.busScheduleID,
@@ -68,7 +68,10 @@ const Ticket = ({ booking, seatNumber, user }) => {
             desc: booking.busSchedule.busInfo.busType.types,
           })}
           {content({ title: 'Seat', desc: seatNumber })}
-          {content({ title: 'Price', desc: booking.busSchedule.routes.price })}
+          {content({
+            title: 'Price (RM)',
+            desc: booking.busSchedule.routes.price,
+          })}
         </div>
       </div>
       <CustomButton
