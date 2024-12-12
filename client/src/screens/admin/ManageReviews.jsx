@@ -247,10 +247,8 @@ const ManageReviews = () => {
             </h2>
           </div>
 
-          {/* filter input */}
           {showFilters && (
             <Card>
-              {/* First Row */}
               <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/3">
                   <label
@@ -302,7 +300,6 @@ const ManageReviews = () => {
                 </div>
               </div>
 
-              {/* Second Row */}
               <div className="flex justify-between gap-4 mb-4">
                 <div className="w-1/2">
                   <label
@@ -351,7 +348,6 @@ const ManageReviews = () => {
                 </div>
               </div>
 
-              {/* Third Row */}
               <div className="mt-4">
                 <CustomButton
                   title="Clear Filters"
@@ -423,13 +419,6 @@ const ManageReviews = () => {
               orientation="vertical"
             />
           </Modal>
-
-          {/* <Modal isVisible={showModal} onClose={() => setShowModal(false)}>
-            <Tabs
-              tabs={rateAndReviewInfoTabs(ratesAndReviews)}
-              orientation="vertical"
-            />
-          </Modal> */}
         </div>
       </main>
     </div>

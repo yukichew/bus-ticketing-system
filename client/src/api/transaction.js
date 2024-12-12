@@ -38,7 +38,6 @@ export const getTotalSalesRevenue = async (token) => {
 export const getTransactionsDetails = async () => {
   try {
     const { data } = await api.get("/Transactions/get-transaction-details");
-    console.log("API Response:", data);
     const { transactions, totalAmount } = data;
 
     if (!transactions || totalAmount === undefined) {

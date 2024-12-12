@@ -9,7 +9,6 @@ export const approveBo = async (id) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("Fetched data:", data);
     return data;
   } catch (err) {
     return catchError(err);
@@ -37,7 +36,6 @@ export const deactivateBo = async (id) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("Fetched data:", data);
     return data;
   } catch (err) {
     return catchError(err);

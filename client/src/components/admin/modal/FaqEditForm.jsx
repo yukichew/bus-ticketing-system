@@ -29,7 +29,6 @@ const FaqEditForm = ({ operator, onClose }) => {
 
   useEffect(() => {
     if (operator) {
-      console.log("FAQ ID:", operator.faqId);
       setFaqInfo({
         faqId: operator.faqId,
         question: operator.question,

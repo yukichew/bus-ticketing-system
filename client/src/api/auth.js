@@ -131,7 +131,6 @@ export const editProfile = async (fullname, phoneNumber) => {
 export const getAllBoDetails = async () => {
   try {
     const { data } = await api.get('/Auth/get-busoperators-details');
-    console.log('Fetching data', data);
     return data;
   } catch (err) {
     return catchError(err);
@@ -141,7 +140,6 @@ export const getAllBoDetails = async () => {
 export const getAllMembers = async () => {
   try {
     const { data } = await api.get('/Auth/get-members');
-    console.log('Fetching data', data);
     return data;
   } catch (err) {
     return catchError(err);

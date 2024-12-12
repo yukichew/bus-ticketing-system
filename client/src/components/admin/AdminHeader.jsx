@@ -1,79 +1,83 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  transactions,
-  busRoutes,
-  applications,
-  ratesAndReviews,
-} from "../../constants/Dummy";
 import { IoMenu } from "react-icons/io5";
 import { RiMenuUnfoldFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { FaBusAlt } from "react-icons/fa";
-import { CgProfile } from "react-icons/cg";
-import { MdOutlineLogout } from "react-icons/md";
 import { IoMdNotificationsOutline } from "react-icons/io";
-import { Avatar, Badge, WindmillContext } from "@windmill/react-ui";
+import { WindmillContext } from "@windmill/react-ui";
+import { fetchTotalBusOperators } from "../../api/busOperator";
+import { getUserProfile, logout } from "../../api/auth";
+import { fetchPendingReviewCount } from "../../api/rating";
+import { toast } from "react-toastify";
+import { useAuth } from "../../utils/AuthContext";
 
 const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
+  const navigate = useNavigate();
   const { mode } = useContext(WindmillContext);
-  const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [refundRequestCount, setRefundRequestCount] = useState(0);
-  const [busOperatorApplicationCount, setbusOperatorApplicationCount] =
-    useState(0);
-  const [busRoutesApplicationCount, setbusRoutesApplicationCount] = useState(0);
-  const [reportedReviewsCount, setReportedReviewsCount] = useState(0);
+  const { auth, setAuth } = useAuth();
   const notificationsRef = useRef(null);
   const profileRef = useRef(null);
-  const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = useState(false);
+  const [busOperatorApplicationCount, setbusOperatorApplicationCount] =
+    useState(0);
+  const [reportedReviewsCount, setReportedReviewsCount] = useState(0);
 
   useEffect(() => {
-    // Calculate total refund requests (both "Request for Refund" and "Processing Refund")
-    const totalRefundRequests = transactions.filter(
-      (transaction) =>
-        transaction.status === "Request for Refund" ||
-        transaction.status === "Processing Refund"
-    ).length;
-    setRefundRequestCount(totalRefundRequests);
+    const fetchProfile = async () => {
+      if (auth) {
+        const profile = await getUserProfile(auth.token);
+        setProfile(profile);
+      }
+    };
+    fetchProfile();
+  }, [auth]);
+
+  const handleLogout = async () => {
+    const result = await logout();
+
+    if (result?.error) {
+      toast.error(result.message);
+    } else {
+      toast.success("You are logged out!");
+      setAuth(null);
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    const fetchBusOperatorsCounts = async () => {
+      try {
+        const pendingCount = await fetchTotalBusOperators("Pending");
+        setbusOperatorApplicationCount(pendingCount);
+      } catch (err) {
+        console.error("Error fetching bus operators counts:", err);
+      }
+    };
+
+    fetchBusOperatorsCounts();
   }, []);
 
   useEffect(() => {
-    const totalBusOperatorApplication = applications.filter(
-      (applications) => applications.status === "Pending"
-    ).length;
-    setbusOperatorApplicationCount(totalBusOperatorApplication);
+    const fetchReportedReviewCount = async () => {
+      try {
+        const pendingReviewCount = await fetchPendingReviewCount();
+        setReportedReviewsCount(pendingReviewCount);
+      } catch (error) {
+        console.error("Error fetching pending review count:", error);
+      }
+    };
+
+    fetchReportedReviewCount();
   }, []);
 
-  useEffect(() => {
-    const totalBusRoutesApplicationCount = busRoutes.filter(
-      (busRoutes) => busRoutes.status === "Pending"
-    ).length;
-    setbusRoutesApplicationCount(totalBusRoutesApplicationCount);
-  }, []);
-
-  useEffect(() => {
-    const totalReportedReviewsCount = ratesAndReviews.filter(
-      (ratesAndReviews) => ratesAndReviews.status === "Pending for Review"
-    ).length;
-    setReportedReviewsCount(totalReportedReviewsCount);
-  }, []);
-
-  // Calculate total notifications
-  const totalNotifications =
-    refundRequestCount +
-    busOperatorApplicationCount +
-    busRoutesApplicationCount +
-    reportedReviewsCount;
+  const totalNotifications = busOperatorApplicationCount + reportedReviewsCount;
 
   const handleNotificationsClick = () => {
     setIsNotificationsMenuOpen((prev) => !prev);
-    setIsProfileMenuOpen(false);
-  };
-
-  const handleProfileClick = () => {
-    setIsProfileMenuOpen((prev) => !prev);
-    setIsNotificationsMenuOpen(false);
+    setDropdownVisible(false);
   };
 
   useEffect(() => {
@@ -85,7 +89,7 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
         setIsNotificationsMenuOpen(false);
       }
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileMenuOpen(false);
+        setDropdownVisible(false);
       }
     };
 
@@ -122,8 +126,8 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
             </div>
           </div>
 
-          {/* Notifications and Profile */}
           <ul className="flex items-center space-x-6">
+            {/* Notification Dropdown */}
             <li className="relative" ref={notificationsRef}>
               <button
                 className="p-2 rounded-full bg-[#f0f5ff] text-gray-800 transition-colors duration-300 hover:text-primary"
@@ -148,22 +152,6 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                       Notifications
                     </h5>
 
-                    {/* Refunds Request */}
-                    <DropdownItem className="justify-between">
-                      <Link
-                        to="/manage-transactions"
-                        state={{ section: "Refunds Request" }}
-                        className="flex justify-between w-full"
-                      >
-                        <span>Refunds Request</span>
-                        <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
-                          {refundRequestCount}{" "}
-                          {/* Display total refunds request */}
-                        </span>
-                      </Link>
-                    </DropdownItem>
-
-                    {/* Bus Operator Applications */}
                     <DropdownItem
                       onClick={() => navigate("/manage-applications")}
                       className="justify-between"
@@ -171,23 +159,9 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                       <span>Bus Operator Applications</span>
                       <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
                         {busOperatorApplicationCount}{" "}
-                        {/* Display total bus operator applications */}
                       </span>
                     </DropdownItem>
 
-                    {/* Bus Routes Applications */}
-                    <DropdownItem
-                      onClick={() => navigate("/manage-bus-routes")}
-                      className="justify-between"
-                    >
-                      <span>Bus Routes Application</span>
-                      <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
-                        {busRoutesApplicationCount}{" "}
-                        {/* Display total bus routes applications */}
-                      </span>
-                    </DropdownItem>
-
-                    {/* Reported Reviews */}
                     <DropdownItem
                       onClick={() => navigate("/manage-reviews")}
                       className="justify-between"
@@ -195,7 +169,6 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
                       <span>Reported Reviews</span>
                       <span className="ml-2 h-5 w-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">
                         {reportedReviewsCount}{" "}
-                        {/* Display total reported reviews */}
                       </span>
                     </DropdownItem>
                   </div>
@@ -203,43 +176,44 @@ const AdminHeader = ({ isSidebarOpen, toggleSidebar }) => {
               )}
             </li>
 
+            {/* Profile Dropdown */}
             <li className="relative" ref={profileRef}>
-              <button
-                className="flex items-center rounded-lg p-2 transition-colors duration-300 hover:bg-[#f0f5ff] hover:text-primary"
-                onClick={handleProfileClick}
-                aria-label="Account"
-                aria-haspopup="true"
-              >
-                <Avatar
-                  className="w-8 h-8"
-                  src="https://www.nookit.in/cdn/shop/products/POA4-325.webp?v=1704085792&width=1946"
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span className="ml-2 text-gray-700">Admin</span>
-              </button>
-              {isProfileMenuOpen && (
-                <div className="absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                  <div className="p-2 text-gray-700">
-                    <Link to="/admin-profile">
-                      <DropdownItem>
-                        <CgProfile
-                          className="w-4 h-4 mr-3"
-                          aria-hidden="true"
-                        />
-                        <span>Profile</span>
-                      </DropdownItem>
-                    </Link>
-                    <DropdownItem onClick={() => alert("Log out!")}>
-                      <MdOutlineLogout
-                        className="w-4 h-4 mr-3"
-                        aria-hidden="true"
-                      />
-                      <span>Log out</span>
-                    </DropdownItem>
+              <div className="hidden lg:flex">
+                {auth ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setDropdownVisible(!dropdownVisible)}
+                      className="text-slate-600 hover:text-primary transition duration-200 font-medium"
+                    >
+                      {profile?.userName}
+                    </button>
+
+                    {dropdownVisible && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2">
+                        <Link
+                          to="/admin-profile"
+                          className="block px-4 py-2 text-slate-600 hover:text-primary"
+                        >
+                          Profile
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-slate-600 hover:text-primary"
+                        >
+                          Log Out
+                        </button>
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <button
+                    onClick={navigateToLogin}
+                    className="text-secondary font-semibold hover:text-primary transition duration-200 underline-offset-2"
+                  >
+                    Login
+                  </button>
+                )}
+              </div>
             </li>
           </ul>
         </div>

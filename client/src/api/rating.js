@@ -51,7 +51,6 @@ export const updateReportedStatus = async (reviewID, token) => {
 export const getAllRatings = async () => {
   try {
     const { data } = await api.get(`/RatesAndReviews`);
-    console.log("API reponse:", data);
     return data;
   } catch (err) {
     return catchError(err);
@@ -73,11 +72,18 @@ export const approveAndRejectReviews = async (id, status) => {
         },
       }
     );
-
-    console.log("API response:", data);
     return data;
   } catch (err) {
     console.error("Error updating review status:", err);
+    return catchError(err);
+  }
+};
+
+export const fetchPendingReviewCount = async () => {
+  try {
+    const { data } = await api.get(`/RatesAndReviews/count/pending`);
+    return data;
+  } catch (err) {
     return catchError(err);
   }
 };

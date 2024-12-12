@@ -37,7 +37,6 @@ const ReviewForm = ({ operator, onClose }) => {
 
   const handleApproveAndReject = async (status) => {
     if (!operator || !operator.reviewID) {
-      console.log(operator.reviewID);
       console.error("No operator selected or missing ID.");
       return;
     }
