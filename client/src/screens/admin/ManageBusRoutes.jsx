@@ -44,7 +44,6 @@ const ManageBusRoutes = () => {
   const [showFilters, setShowFilters] = useState(true);
   const [busSchedules, setBusSchedules] = useState([]);
   const [filters, setFilters] = useState({
-    busScheduleID: "",
     travelDate: "",
     etd: "",
     eta: "",
@@ -53,7 +52,6 @@ const ManageBusRoutes = () => {
   });
 
   const initialFilters = {
-    busScheduleID: "",
     travelDate: "",
     etd: "",
     eta: "",
@@ -106,9 +104,8 @@ const ManageBusRoutes = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const columns = ["Bus Schedule ID", "Travel Date", "ETD", "ETA", "Recurring"];
+  const columns = ["Travel Date", "ETD", "ETA", "Recurring"];
   const columnKeys = [
-    "busScheduleID",
     "travelDate",
     "etd",
     "eta",
@@ -146,7 +143,7 @@ const ManageBusRoutes = () => {
         >
           <FaRegEye className="text-lg text-gray-500 cursor-pointer" />
         </button>
-        <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <span className="absolute w-24 left-1/2 transform -translate-x-1/2 -translate-y-8 bg-gray-700 text-white text-xs rounded px-1 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           View Details
         </span>
       </div>
@@ -176,23 +173,7 @@ const ManageBusRoutes = () => {
           {showFilters && (
             <Card>
               <div className="flex justify-between gap-4 mb-4">
-                <div className="w-1/3">
-                  <label
-                    htmlFor="busScheduleID"
-                    className="block text-md font-poppins font-medium text-gray-700 mb-2"
-                  >
-                    Bus Schedule ID
-                  </label>
-                  <CustomInput
-                    placeholder="Filter by Bus Schedule ID"
-                    id="busScheduleID"
-                    name="busScheduleID"
-                    type="text"
-                    value={filters.busScheduleID}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-                <div className="w-1/3">
+                <div className="w-1/2">
                   <label
                     htmlFor="travelDate"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"
@@ -209,7 +190,7 @@ const ManageBusRoutes = () => {
                   />
                 </div>
 
-                <div className="w-1/3">
+                <div className="w-1/2">
                   <label
                     htmlFor="isRecurring"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"

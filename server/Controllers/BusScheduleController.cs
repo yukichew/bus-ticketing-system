@@ -908,12 +908,15 @@ RideNGo";
                 .Include(bs => bs.BusInfo)
                 .Include(bs => bs.Routes)
                 .Include(bs => bs.PostedBy)
+                .OrderBy(bs => bs.TravelDate)
+                .ThenBy(bs => bs.ETD)
                 .Select(bs => new
                 {
                     bs.BusScheduleID,
                     bs.TravelDate,
                     bs.ETD,
                     bs.ETA,
+                    bs.ScheduleStatus,
                     bs.Status,
                     bs.IsRecurring,
                     BusInfo = new
