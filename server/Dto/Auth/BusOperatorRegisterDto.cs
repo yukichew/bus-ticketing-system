@@ -8,6 +8,5 @@ namespace server.Dto.Auth
         public string Address { get; set; }
         [Required(ErrorMessage = "Bus images are required")]
         public List<string> BusImages { get; set; }
-        public bool IsRefundable { get; set; }
     }
 }

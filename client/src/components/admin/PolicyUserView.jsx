@@ -65,13 +65,10 @@ const PolicyUserView = () => {
           )}
           <Card>
             {policyData.map((policy, index) => (
-              <div
-                key={policy.id}
-                className='mb-6'
-              >
+              <div key={policy.id}>
                 <div className='flex justify-between'>
                   <h3
-                    className='text-xl font-bold mb-10 cursor-pointer font-poppins hover:text-primary'
+                    className='text-xl font-bold cursor-pointer font-poppins hover:text-primary'
                     onClick={() => handlePolicyClick(policy.policyTitle)}
                   >
                     {index + 1}. {policy.policyTitle}
@@ -95,11 +92,11 @@ const PolicyUserView = () => {
                 </div>
 
                 {expandedPolicy === policy.policyTitle && (
-                  <ul className='list-none pl-0'>
+                  <ul className='list-none pl-0 border-t pt-2 mt-2'>
                     {policy.terms.map((term, index) => (
                       <li
                         key={index}
-                        className='flex flex-col mb-6'
+                        className='flex flex-col'
                       >
                         <div className='flex items-center mb-1 font-poppins text-gray-500'>
                           <FaRegHandPointRight className='mr-2' />

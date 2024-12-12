@@ -96,7 +96,6 @@ namespace server.Controllers
                 PhoneNumber = registerDto.PhoneNumber,
                 Address = registerDto.Address,
                 BusImages = registerDto.BusImages,
-                IsRefundable = registerDto.IsRefundable,
                 Status = "Pending",
             };
 
@@ -417,7 +416,6 @@ namespace server.Controllers
                                           user.PhoneNumber,
                                           ((BusOperator)user).Address,
                                           ((BusOperator)user).BusImages,
-                                          ((BusOperator)user).IsRefundable,
                                           ((BusOperator)user).Status
                                       }).ToListAsync();
 

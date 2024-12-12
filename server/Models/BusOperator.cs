@@ -11,6 +11,5 @@ namespace server.Models
         [Required]
         public List<string> BusImages { get; set; } = new List<string>();
         public string? Bio { get; set; }
-        public bool? IsRefundable { get; set; }
     }
 }

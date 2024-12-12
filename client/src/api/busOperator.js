@@ -16,6 +16,19 @@ export const approveBo = async (id) => {
   }
 };
 
+export const editBOProfile = async (id, busOperatorDetails) => {
+  try {
+    const { data } = await api.put(`/BusOperator/update-bus-operator/${id}`, busOperatorDetails, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return data;
+  } catch (err) {
+    return catchError(err);
+  }
+};
+
 export const deactivateBo = async (id) => {
   try {
     const status = "Inactive";
