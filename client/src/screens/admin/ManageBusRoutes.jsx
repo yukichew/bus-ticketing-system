@@ -5,8 +5,6 @@ import Table from "../../components/common/Table";
 import { IoFilter } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
 import Modal from "../../components/common/Modal";
-import ViewBusRoutes from "../../components/admin/modal/ViewBusRoutes";
-import Status from "../../components/admin/Status";
 import Card from "../../components/common/Card";
 import CustomInput from "../../components/common/CustomInput";
 import CustomButton from "../../components/common/CustomButton";
@@ -21,16 +19,19 @@ const mapBusScheduleData = (response) => {
     etd: item.etd,
     eta: item.eta,
     isRecurring: item.isRecurring ? "Yes" : "No",
-    status: item.status,
+    status: item.scheduleStatus,
     busPlate: item.busInfo.busPlate,
     busType: item.busInfo.busType.types,
     busNoOfSeats: item.busInfo.busType.noOfSeats,
     boardingLocation: item.routes.boardingLocation.name,
+    origin: item.routes.boardingLocation.state,
     boardingAddress: item.routes.boardingLocation.address,
     arrivalLocation: item.routes.arrivalLocation.name,
+    destination: item.routes.arrivalLocation.state,
     arrivalAddress: item.routes.arrivalLocation.address,
     departureTime: item.routes.departureTime,
     arrivalTime: item.routes.arrivalTime,
+    price: item.routes.price,
     postedByUser: item.postedBy.userName,
     busImages: item.postedBy.busImages,
   }));
@@ -38,7 +39,6 @@ const mapBusScheduleData = (response) => {
 
 const ManageBusRoutes = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedOperator, setSelectedOperator] = useState(null);
   const [showFilters, setShowFilters] = useState(true);
@@ -69,7 +69,6 @@ const ManageBusRoutes = () => {
         console.error("Error fetching bus schedules:", error);
       }
     };
-
     fetchBusSchedules();
   }, []);
 
@@ -104,13 +103,25 @@ const ManageBusRoutes = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const columns = ["Travel Date", "ETD", "ETA", "Recurring"];
+  const columns = ["Origin", "Destination", "Travel Date", "ETD", "ETA", "Price", "Recurring Option"];
+
   const columnKeys = [
+    "origin",
+    "destination",
     "travelDate",
     "etd",
     "eta",
+    "price",
     "isRecurring",
   ];
+
+  const statusStyles = {
+      'Scheduled': 'text-blue-600 bg-blue-100',
+      'On Time': 'text-orange-600 bg-orange-100',
+      'En Route': 'text-yellow-600 bg-yellow-100',
+      'Delayed': 'text-red-600 bg-red-100',
+      'Completed': 'text-lime-700 bg-lime-100',
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -124,11 +135,10 @@ const ManageBusRoutes = () => {
     ...item,
     busScheduleID: shortenBusScheduleID(item.busScheduleID),
     status: (
-      <div className="flex justify-center">
-        <Status status={item.status} />
+      <div className={`flex items-center justify-center relative w-40 h-8 ${statusStyles[item.status] || 'text-gray-600 bg-gray-100'} rounded-lg border-1 border-gray-50 shadow-md p-1 font-poppins font-medium text-sm`}>
+          {item.status}
       </div>
     ),
-    originalStatus: item.status,
   }));
 
   const actionIcons = (row) => (
@@ -249,7 +259,7 @@ const ManageBusRoutes = () => {
                     htmlFor="status"
                     className="block text-md font-poppins font-medium text-gray-700 mb-2"
                   >
-                    Status
+                    Schedule Status
                   </label>
                   <select
                     id="status"
@@ -259,8 +269,11 @@ const ManageBusRoutes = () => {
                     className="w-full h-12 px-4 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm"
                   >
                     <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="ontime">On Time</option>
+                    <option value="enroute">En Route</option>
+                    <option value="delayed">Delayed</option>
+                    <option value="completed">Completed</option>
                   </select>
                 </div>
               </div>
@@ -302,13 +315,6 @@ const ManageBusRoutes = () => {
               actions={actionIcons}
             />
           </div>
-
-          <Modal isVisible={showModal} onClose={() => setShowModal(false)}>
-            <ViewBusRoutes
-              operator={selectedOperator}
-              onClose={() => setShowModal(false)}
-            />
-          </Modal>
 
           <Modal
             isVisible={showDetailsModal}

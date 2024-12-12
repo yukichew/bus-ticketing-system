@@ -42,28 +42,6 @@ namespace server.Controllers
         }
         #endregion
 
-        #region GetBusSchedulesForToday
-        // GET: api/BusSchedule/Today
-        [HttpGet("Today")]
-        public async Task<ActionResult> GetBusSchedulesForToday()
-        {
-            var today = DateTime.Today;
-
-            var busSchedulesForToday = await _context.Set<BusSchedule>()
-                .Include(b => b.BusInfo)
-                .Include(b => b.RecurringOptions)
-                .Include(b => b.Routes)
-                    .ThenInclude(r => r.BoardingLocation)
-                .Include(b => b.Routes)
-                    .ThenInclude(r => r.ArrivalLocation)
-                .Where(bs => bs.TravelDate == today)
-                .OrderBy(bs => bs.ETD)
-                .ToListAsync();
-
-            return Ok(busSchedulesForToday);
-        }
-        #endregion
-
         #region GetBusSchedule
         // GET: api/BusSchedule/{id}
         [HttpGet("{id}")]
@@ -933,15 +911,18 @@ RideNGo";
                         BoardingLocation = new
                         {
                             bs.Routes.BoardingLocation.Name,
+                            bs.Routes.BoardingLocation.State,
                             bs.Routes.BoardingLocation.Address,
                         },
                         DepartureTime = bs.Routes.DepartureTime,
                         ArrivalLocation = new
                         {
                             bs.Routes.ArrivalLocation.Name,
+                            bs.Routes.ArrivalLocation.State,
                             bs.Routes.ArrivalLocation.Address,
                         },
                         ArrivalTime = bs.Routes.ArrivalTime,
+                        Price = bs.Routes.Price,
                     },
                     PostedBy = new
                     {

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BsTelephone } from 'react-icons/bs';
 import { IoPersonOutline } from 'react-icons/io5';
 import { MdOutlineEmail } from 'react-icons/md';
-import { PiLineVerticalBold } from 'react-icons/pi';
 import CustomInput from '../../../components/common/CustomInput';
 import * as yup from 'yup';
 import { validateField } from '../../../utils/validate';
