@@ -7,7 +7,7 @@ import CustomInput from '../../../components/common/CustomInput';
 import FilesUploadButton from '../../../components/common/FilesUploadButton';
 import { useAuth } from '../../../utils/AuthContext';
 import { getUserProfile } from '../../../api/auth';
-import { uploadToS3, deleteImageFromS3 } from '../../../utils/s3Context';
+import { uploadToS3, deleteImageFromS3, getImageFromS3 } from '../../../utils/s3Context';
 import { editBOProfile } from '../../../api/busOperator';
 import { toast } from 'react-toastify';
 
@@ -18,6 +18,8 @@ const UserProfile = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [busImages, setBusImages] = useState([]);
   const [logo, setLogo] = useState("");
+  const [previousLogo, setPreviousLogo] = useState("");
+  const [newLogo, setNewLogo] = useState("");
   const [formData, setFormData] = useState({
     fullname: '',
     companyEmail: '',
@@ -39,7 +41,8 @@ const UserProfile = () => {
       });
 
       setBusOperatorID(profile.id);
-      setLogo(profile.companyLogo || '');
+      setLogo(profile.companyLogo);
+      setPreviousLogo(profile.companyLogo);
       setBusImages(profile.busImages || []);
     }
   };
@@ -63,37 +66,51 @@ const UserProfile = () => {
     e.preventDefault();
 
     const uploadedImages = [];
+    let previousLogoKey = ""; 
 
     try {
-        for (const image of logo) {
-            if (image instanceof File) {
-                const uploadResult = await uploadToS3(image);
+        if (previousLogo) {
+            const keyFromUrl = previousLogo.split('/').pop();
+            previousLogoKey = keyFromUrl;
+        }
 
-                if (uploadResult) {
-                    uploadedImages.push(uploadResult);
-                } else {
-                    throw new Error(`Failed to upload image: ${image.name}`);
+        if (newLogo.length > 0) {
+            for (const image of newLogo) {
+                if (image instanceof File) {
+                    const uploadResult = await uploadToS3(image);
+                    if (uploadResult) {
+                        uploadedImages.push(uploadResult);
+                    } else {
+                        throw new Error(`Failed to upload image: ${image.name}`);
+                    }
                 }
             }
         }
 
-        if (uploadedImages.length === 0) {
+        if (uploadedImages.length === 0 && !logo) {
             throw new Error("No images uploaded.");
         }
 
         const busOperatorDetails = {
             ...formData,
             busImages: busImages,
-            companyLogo: uploadedImages.length > 0 ? uploadedImages[0].url : "",
+            companyLogo: uploadedImages.length > 0 ? uploadedImages[0].url : logo,
         };
 
         const response = await editBOProfile(busOperatorID, busOperatorDetails);
 
         if (response?.error) {
-          throw new Error(response.message);
+            throw new Error(response.message);
         }
 
-        toast.success('Profile updated successfully.');
+        if (uploadedImages.length > 0 && previousLogoKey) {
+            const isDeleted = await deleteImageFromS3(previousLogoKey);
+            if (!isDeleted) {
+                console.error(`Failed to delete previous logo with key: ${previousLogoKey}`);
+            }
+        }
+
+        toast.success("Profile updated successfully.");
         fetchProfile();
         setIsEditable(false);
     } catch (error) {
@@ -231,8 +248,8 @@ const UserProfile = () => {
 
               {isEditable && !logo && (
                 <FilesUploadButton
-                  setImages={setLogo}
-                  initialFiles={logo}
+                  setImages={setNewLogo}
+                  initialFiles={newLogo}
                   maxFiles={1}
                   maxFileSize={1 * 1024 * 1024}
                   aspectRatio="square"
