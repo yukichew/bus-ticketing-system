@@ -23,6 +23,50 @@ namespace server.Controllers
             _emailService = emailService;
         }
 
+        #region Update BusOperator API
+        [HttpPut("update-bus-operator/{id}")]
+        public async Task<IActionResult> UpdateBusOperator(string id, [FromBody] BusOperator busOperator)
+        {
+            var busOperatorRoleId = await _context.Roles
+                .Where(r => r.Name == "BusOperator")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (busOperatorRoleId == null)
+            {
+                return BadRequest(new { message = "BusOperator role not found." });
+            }
+
+            var existBusOperator = await (from user in _context.Users
+                                     join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                                     where userRole.RoleId == busOperatorRoleId && user.Id == id
+                                     select user).OfType<BusOperator>()
+                                      .FirstOrDefaultAsync();
+
+            if (existBusOperator == null)
+            {
+                return NotFound(new { message = $"Bus operator with ID {id} not found." });
+            }
+
+            // Update the BusOperator properties
+            existBusOperator.Fullname = busOperator.Fullname;
+            existBusOperator.PhoneNumber = busOperator.PhoneNumber;
+            existBusOperator.Address = busOperator.Address;
+            existBusOperator.CompanyLogo = busOperator.CompanyLogo;
+            existBusOperator.BusImages = busOperator.BusImages;
+            existBusOperator.Bio = busOperator.Bio;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { message = $"Bus operator with ID {id} has been successfully updated." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the bus operator.", details = ex.Message });
+            }
+        }
+        #endregion
 
         #region Update BusOperator Status API
         [HttpPut("update-status/{id}")]

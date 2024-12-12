@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CiEdit } from 'react-icons/ci';
-import { IoMdAddCircleOutline } from 'react-icons/io';
-import { MdOutlineSubtitles, MdOutlineTitle } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { MdOutlineSubtitles } from 'react-icons/md';
 import Container from '../../../components/Container';
 import Card from '../../../components/common/Card';
 import CustomButton from '../../../components/common/CustomButton';
@@ -10,41 +7,46 @@ import CustomInput from '../../../components/common/CustomInput';
 import FilesUploadButton from '../../../components/common/FilesUploadButton';
 import { useAuth } from '../../../utils/AuthContext';
 import { getUserProfile } from '../../../api/auth';
+import { uploadToS3, deleteImageFromS3 } from '../../../utils/s3Context';
+import { editBOProfile } from '../../../api/busOperator';
+import { toast } from 'react-toastify';
 
 const UserProfile = () => {
   const token = sessionStorage.getItem('token');
   const { auth } = useAuth();
+  const [busOperatorID, setBusOperatorID] = useState("");
   const [isEditable, setIsEditable] = useState(false);
-  const [images, setImages] = useState([]);
+  const [busImages, setBusImages] = useState([]);
+  const [logo, setLogo] = useState("");
   const [formData, setFormData] = useState({
-    companyName: '',
+    fullname: '',
     companyEmail: '',
-    contactNo: '',
+    phoneNumber: '',
     address: '',
-    companyLogo: '',
     bio: '',
-    isRefundable: '',
   });
 
   const fetchProfile = async () => {
     if (auth) {
       const profile = await getUserProfile(token);
-
+      
       setFormData({
-        companyName: profile.userName ?? '-',
+        fullname: profile.fullname ?? '-',
         companyEmail: profile.email ?? '-',
-        contactNo: profile.phoneNumber ?? '-',
+        phoneNumber: profile.phoneNumber ?? '-',
         address: profile.address ?? '-',
-        companyLogo: profile.companyLogo ?? '',
         bio: profile.bio ?? '-',
-        isRefundable: profile.isRefundable ?? '-',
       });
+
+      setBusOperatorID(profile.id);
+      setLogo(profile.companyLogo || '');
+      setBusImages(profile.busImages || []);
     }
   };
 
   useEffect(() => {
     fetchProfile();
-  }, [auth]);
+  }, [auth, busOperatorID]);
 
   const handleInputChange = (field, value) => {
     setFormData((prevData) => ({
@@ -57,8 +59,53 @@ const UserProfile = () => {
     setIsEditable(true);
   };
 
-  const handleSubmit = (form) => {
-    alert(`${form} information saved!`);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const uploadedImages = [];
+
+    try {
+        for (const image of logo) {
+            if (image instanceof File) {
+                const uploadResult = await uploadToS3(image);
+
+                if (uploadResult) {
+                    uploadedImages.push(uploadResult);
+                } else {
+                    throw new Error(`Failed to upload image: ${image.name}`);
+                }
+            }
+        }
+
+        if (uploadedImages.length === 0) {
+            throw new Error("No images uploaded.");
+        }
+
+        const busOperatorDetails = {
+            ...formData,
+            busImages: busImages,
+            companyLogo: uploadedImages.length > 0 ? uploadedImages[0].url : "",
+        };
+
+        const response = await editBOProfile(busOperatorID, busOperatorDetails);
+
+        if (response?.error) {
+          throw new Error(response.message);
+        }
+
+        toast.success('Profile updated successfully.');
+        fetchProfile();
+        setIsEditable(false);
+    } catch (error) {
+        for (const img of uploadedImages) {
+            const isDeleted = await deleteImageFromS3(img.key);
+            if (!isDeleted) {
+                console.error(`Failed to delete image with key: ${img.key}`);
+            }
+        }
+
+        toast.error(error.message);
+    }
   };
 
   const handleCancel = () => {
@@ -83,18 +130,20 @@ const UserProfile = () => {
               <div className='flex flex-col space-y-4'>
                 <div>
                   <label
-                    htmlFor='companyname'
+                    htmlFor='fullname'
                     className='block text-sm font-poppins font-medium text-gray-700'
                   >
                     Company Name
                   </label>
                   <input
                     type='text'
-                    id='companyname'
-                    className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
+                    id='fullname'
+                    className={`w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm mt-1 ${
+                      isEditable ? 'text-black' : 'text-gray-500'
+                    }`}
                     placeholder='Enter company name'
-                    value={formData.companyName}
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
+                    value={formData.fullname}
+                    onChange={(e) => handleInputChange('fullname', e.target.value)}
                     disabled={!isEditable}
                   />
                 </div>
@@ -108,11 +157,12 @@ const UserProfile = () => {
                   <input
                     type='text'
                     id='companyemail'
-                    className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
+                    className={`w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm mt-1 ${
+                      isEditable ? 'text-black' : 'text-gray-500'
+                    }`}
                     placeholder='Enter company email'
                     value={formData.companyEmail}
-                    onChange={(e) => handleInputChange('companyEmail', e.target.value)}
-                    disabled={!isEditable}
+                    disabled
                   />
                 </div>
                 <div>
@@ -125,10 +175,12 @@ const UserProfile = () => {
                   <input
                     type='text'
                     id='companycontact'
-                    className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
+                    className={`w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm mt-1 ${
+                      isEditable ? 'text-black' : 'text-gray-500'
+                    }`}
                     placeholder='Enter company contact number'
-                    value={formData.contactNo}
-                    onChange={(e) => handleInputChange('contactNo', e.target.value)}
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
                     disabled={!isEditable}
                   />
                 </div>
@@ -142,7 +194,9 @@ const UserProfile = () => {
                   <input
                     type='text'
                     id='address'
-                    className='w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm text-gray-500 mt-1'
+                    className={`w-full h-12 p-2 rounded ring-1 ring-gray-300 focus:ring-primary focus:outline-none font-poppins text-sm mt-1 ${
+                      isEditable ? 'text-black' : 'text-gray-500'
+                    }`}
                     placeholder='Enter address'
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
@@ -153,22 +207,32 @@ const UserProfile = () => {
             </Card>
           </div>
 
-          <div> 
+          <div>
             <Card header="Company Logo" className="flex-grow">
-              {formData.companyLogo === '' ? (
+              {!logo ? (
                 <p className='text-gray-500 font-small font-poppins'>No company logo uploaded.</p>
               ) : (
-                <img
-                  src={formData.companyLogo}
-                  alt="Company Logo"
-                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                />
+                <div className="flex flex-col items-start">
+                  <img
+                    src={logo}
+                    alt="Company Logo"
+                    style={{ width: '200px', height: '200px', objectFit: 'cover' }}
+                  />
+                  {isEditable && (
+                    <button
+                      className="w-[200px] max-w-[200px] mt-2 border border-red-500 rounded-lg text-red-700 py-2 hover:bg-red-500 hover:text-white hover:font-medium"
+                      onClick={() => setLogo('')}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               )}
 
-              {isEditable && (
+              {isEditable && !logo && (
                 <FilesUploadButton
-                  setImages={setImages}
-                  initialFiles={images.map((name) => new File([], name))}
+                  setImages={setLogo}
+                  initialFiles={logo}
                   maxFiles={1}
                   maxFileSize={1 * 1024 * 1024}
                   aspectRatio="square"
@@ -178,23 +242,20 @@ const UserProfile = () => {
           </div>
 
           <div>
-            <Card header='Bus Photos' className='flex-grow'>
+            <Card header='Bus Images' className='flex-grow'>
               <div className='flex justify-between space-x-4 h-full'>
-                <div className='w-1/2 h-full bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden'>
-                  <img
-                    className='object-cover h-full w-full'
-                    src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                    alt='Bus Image 1'
-                  />
-                </div>
-
-                <div className='w-1/2 h-full bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden'>
-                  <img
-                    className='object-cover h-full w-full'
-                    src='https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-                    alt='Bus Image 2'
-                  />
-                </div>
+                {busImages.map((image, index) => (
+                  <div key={index} className='w-1/2 h-full'>
+                    <div className='border border-gray-300 rounded-lg flex flex-col items-center justify-center overflow-hidden'>
+                      <img
+                        className='object-cover'
+                        src={image}
+                        alt={`Bus Image ${index + 1}`}
+                        style={{ width: '100%', height: '300px' }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </Card>
           </div>
