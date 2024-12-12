@@ -3,7 +3,7 @@ import { catchError } from "../utils/error";
 
 export const getAllBusTypesByBusOperatorID = async (token) => {
   try {
-    const { data } = await api.get(`/BusType`, {
+    const { data } = await api.get(`/BusType/BusOperator`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
