@@ -82,23 +82,6 @@ const ManageReviews = () => {
     fetchRatesAndReviews();
   }, []);
 
-  useEffect(() => {
-    const fetchSpecificDetails = async () => {
-      try {
-        const response = await getSpecificRatingDetails();
-        if (response?.error) {
-          console.error("API error: ", response.message);
-        } else {
-          setReviews(response);
-        }
-      } catch (error) {
-        console.error("Unexpected error occurred: ", error);
-      }
-    };
-
-    fetchSpecificDetails();
-  }, []);
-
   const applyFilters = () => {
     return ratesAndReviews.filter((item) =>
       Object.keys(filters).every((key) => {
