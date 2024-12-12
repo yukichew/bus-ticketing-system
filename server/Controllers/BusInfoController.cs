@@ -225,7 +225,7 @@ namespace server.Controllers
             var busPlateExists = await _context.Set<BusInfo>().AnyAsync(b => b.BusPlate == busInfo.BusPlate);
             if (busPlateExists)
             {
-                return BadRequest(new { message = $"A bus with the plate '{busInfo.BusPlate}' already exists." });
+                return BadRequest(new { message = $"A bus with the plate '{busInfo.BusPlate}' has already been registered." });
             }
 
             var busTypeExists = await _context.Set<BusType>().AnyAsync(bt => bt.BusTypeID == busInfo.BusTypeID);
@@ -261,10 +261,19 @@ namespace server.Controllers
                 return Unauthorized(new { message = "Only active BusOperators can create buses." });
             }
 
-            var busPlateExists = await _context.Set<BusInfo>().AnyAsync(b => b.BusPlate == busInfo.BusPlate);
-            if (busPlateExists)
+            var existingBusInfo = await _context.Set<BusInfo>().FirstOrDefaultAsync(b => b.BusID == id);
+            if (existingBusInfo == null)
             {
-                return BadRequest(new { message = $"A bus with the plate '{busInfo.BusPlate}' already exists." });
+                return BadRequest(new { message = "Bus not found." });
+            }
+
+            if (existingBusInfo.BusPlate != busInfo.BusPlate)
+            {
+                var busPlateExists = await _context.Set<BusInfo>().AnyAsync(b => b.BusPlate == busInfo.BusPlate);
+                if (busPlateExists)
+                {
+                    return BadRequest(new { message = $"A bus with the plate '{busInfo.BusPlate}' has already been registered." });
+                }
             }
 
             var busTypeExists = await _context.Set<BusType>().AnyAsync(bt => bt.BusTypeID == busInfo.BusTypeID);
@@ -278,6 +287,7 @@ namespace server.Controllers
                 return BadRequest(new { message = "Bus ID mismatch." });
             }
 
+            _context.Entry(existingBusInfo).State = EntityState.Detached;
             _context.Entry(busInfo).State = EntityState.Modified;
 
             try
