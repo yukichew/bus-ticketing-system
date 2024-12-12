@@ -24,7 +24,7 @@ const Profile = () => {
       .string()
       .required('Phone number is required')
       .matches(
-        /^\+60\d{10,11}$/,
+        /^\+60\d{9,10}$/,
         'Phone number must be in the format +60123456789'
       ),
   });

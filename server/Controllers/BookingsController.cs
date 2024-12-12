@@ -55,7 +55,7 @@ namespace server.Controllers
             var onwardSeats = bookingDto.OnwardTrip.Seats.Select(seat => seat.SeatNumber).ToList();
             var returnSeats = bookingDto.ReturnTrip?.Seats.Select(seat => seat.SeatNumber).ToList();
 
-            // Check seat availability for onward trip
+            // check seat availability for onward trip
             var onwardAlreadyBooked = await _context.Seats
                 .Where(s => onwardSeats.Contains(s.SeatNumber) && s.Booking.BusScheduleID == bookingDto.OnwardTrip.BusScheduleID)
                 .Select(s => s.SeatNumber)
@@ -66,7 +66,7 @@ namespace server.Controllers
                 throw new Exception($"The following seats for the onward trip are already occupied: {string.Join(", ", onwardAlreadyBooked)}");
             }
 
-            // Check seat availability for return trip
+            // check seat availability for return trip (if applicable)
             if (returnSeats != null)
             {
                 var returnAlreadyBooked = await _context.Seats
@@ -80,9 +80,7 @@ namespace server.Controllers
                 }
             }
 
-            var onwardBooking = await CreateBooking(bookingDto.OnwardTrip.BusScheduleID, bookingDto.OnwardTrip.AmountPaid, bookingDto.OnwardTrip.Seats);
-
-            // Create booking
+            // create booking
             var booking = new Booking
             {
                 BusScheduleID = bookingDto.OnwardTrip.BusScheduleID,
@@ -98,13 +96,13 @@ namespace server.Controllers
             _context.Booking.Add(booking);
             await _context.SaveChangesAsync();
 
-            // Add passengers and seats for onward trip
+            // add passengers and seats for onward trip
             foreach (var seatDto in bookingDto.OnwardTrip.Seats)
             {
                 await AddSeatAndPassenger(seatDto, booking.BookingID);
             }
 
-            // Add passengers and seats for return trip, if applicable
+            // ad passengers and seats for return trip (if applicable)
             if (bookingDto.ReturnTrip != null)
             {
                 foreach (var seatDto in bookingDto.ReturnTrip.Seats)
