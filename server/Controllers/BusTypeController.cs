@@ -201,7 +201,7 @@ namespace server.Controllers
             }
 
             var busTypeExists = await _context.Set<BusType>()
-                .AnyAsync(b => b.Types == busType.Types && b.NoOfSeats == busType.NoOfSeats);
+                .AnyAsync(b => b.PostedBy.Id == busOperator.Id && b.Types == busType.Types && b.NoOfSeats == busType.NoOfSeats);
             if (busTypeExists)
             {
                 return BadRequest(new { message = $"A bus with the type '{busType.Types}' and number of seats '{busType.NoOfSeats}' already exists." });
