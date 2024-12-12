@@ -44,8 +44,9 @@ const NewBusForm = () => {
 
     const fetchBusTypeData = async () => {
         const results = await getAllBusTypesByBusOperatorID(token);
+        const busTypesArr = results?.busTypes || [];
 
-        const formattedData = results.map((item) => ({
+        const formattedData = busTypesArr.map((item) => ({
             busTypeID: item.busTypeID,
             typeWithSeats: `${item.types}, ${item.noOfSeats} seats`,
             status: item.status,

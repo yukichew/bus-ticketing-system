@@ -10,12 +10,14 @@ import Card from '../common/Card';
 import DatePickerField from '../common/DatePickerField';
 import { getAllBusSchedulesByBusOperatorID, searchScheduleByBusOperatorID } from '../../api/schedule';
 import { getAllLocations } from '../../api/location';
+import { getOccupiedSeats } from '../../api/booking';
 import moment from 'moment';
 
 const BusScheduling = () => {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const [busScheduleData, setBusScheduleData] = useState([]);
+    const [occupiedSeats, setOccupiedSeats] = useState([]);
     const [isOriginOpen, setIsOriginOpen] = useState(false);
     const [selectedOriginOption, setSelectedOriginOption] = useState('Select an origin');
     const [isDestinationOpen, setIsDestinationOpen] = useState(false);
@@ -52,22 +54,28 @@ const BusScheduling = () => {
             const results = await getAllBusSchedulesByBusOperatorID(token);
     
             if (Array.isArray(results) && results.length > 0) {
-                const formattedData = results.map((item) => ({
-                    busScheduleID: item.busScheduleID,
-                    busPlate: item.busInfo.busPlate,
-                    route: {
-                        origin: item.routes.boardingLocation.state,
-                        destination: item.routes.arrivalLocation.state,
-                        originStation: item.routes.boardingLocation.name,
-                        destinationStation: item.routes.arrivalLocation.name,
-                        etd: item.etd,
-                        eta: item.eta,
-                    },
-                    date: moment(item.travelDate).format('YYYY-MM-DD'),
-                    totalSeats: item.busInfo.busType.noOfSeats,
-                    seatsSold: 10,
-                    seatsLeft: 10,
-                    status: item.scheduleStatus,
+                const formattedData = await Promise.all(results.map(async (item) => {
+                    const data = await getOccupiedSeats(item.busScheduleID);
+                    const seatsSold = (Array.isArray(data) && !data.error) ? data.length : 0;
+                    const seatsLeft = item.busInfo.busType.noOfSeats - seatsSold;
+
+                    return {
+                        busScheduleID: item.busScheduleID,
+                        busPlate: item.busInfo.busPlate,
+                        route: {
+                            origin: item.routes.boardingLocation.state,
+                            destination: item.routes.arrivalLocation.state,
+                            originStation: item.routes.boardingLocation.name,
+                            destinationStation: item.routes.arrivalLocation.name,
+                            etd: item.etd,
+                            eta: item.eta,
+                        },
+                        date: moment(item.travelDate).format('YYYY-MM-DD'),
+                        totalSeats: item.busInfo.busType.noOfSeats,
+                        seatsSold: seatsSold,
+                        seatsLeft: seatsLeft >= 0 ? seatsLeft : 0,
+                        status: item.scheduleStatus,
+                    };
                 }));
     
                 setBusScheduleData(formattedData);
@@ -75,6 +83,7 @@ const BusScheduling = () => {
                 setBusScheduleData([]);
             }
         } catch (error) {
+            console.error("Error fetching bus schedule data:", error);
             setBusScheduleData([]);
         }
     };
@@ -157,22 +166,28 @@ const BusScheduling = () => {
             const results = await searchScheduleByBusOperatorID(activeFilters, token);
     
             if (Array.isArray(results) && results.length > 0) {
-                const formattedData = results.map((item) => ({
-                    busScheduleID: item.busScheduleID,
-                    busPlate: item.busInfo.busPlate,
-                    route: {
-                        origin: item.routes.boardingLocation.state,
-                        destination: item.routes.arrivalLocation.state,
-                        originStation: item.routes.boardingLocation.name,
-                        destinationStation: item.routes.arrivalLocation.name,
-                        etd: item.etd,
-                        eta: item.eta,
-                    },
-                    date: moment(item.travelDate).format('YYYY-MM-DD'),
-                    totalSeats: item.busInfo.busType.noOfSeats,
-                    seatsSold: 10,
-                    seatsLeft: 10,
-                    status: item.scheduleStatus,
+                const formattedData = await Promise.all(results.map(async (item) => {
+                    const data = await getOccupiedSeats(item.busScheduleID);
+                    const seatsSold = (Array.isArray(data) && !data.error) ? data.length : 0;
+                    const seatsLeft = item.busInfo.busType.noOfSeats - seatsSold;
+
+                    return {
+                        busScheduleID: item.busScheduleID,
+                        busPlate: item.busInfo.busPlate,
+                        route: {
+                            origin: item.routes.boardingLocation.state,
+                            destination: item.routes.arrivalLocation.state,
+                            originStation: item.routes.boardingLocation.name,
+                            destinationStation: item.routes.arrivalLocation.name,
+                            etd: item.etd,
+                            eta: item.eta,
+                        },
+                        date: moment(item.travelDate).format('YYYY-MM-DD'),
+                        totalSeats: item.busInfo.busType.noOfSeats,
+                        seatsSold: seatsSold,
+                        seatsLeft: seatsLeft >= 0 ? seatsLeft : 0,
+                        status: item.scheduleStatus,
+                    };
                 }));
     
                 setBusScheduleData(formattedData);
@@ -201,6 +216,9 @@ const BusScheduling = () => {
     }
 
     const formatSeats = (seatsSold, seatsLeft) => {
+        if (seatsSold === 0) {
+            return <span className='font-poppins text-lime-600'> {seatsLeft} left</span>;
+        }
         if (seatsLeft === 0) {
             return <span className='font-poppins text-gray-400 font-medium italic'>Sold Out</span>;
         }
