@@ -236,5 +236,44 @@ namespace server.Controllers
             return Ok(new { message = "The selected rate and review is successfully deleted." });
         }
         #endregion
+
+        #region ApproveAndRejectRatesAndReviews
+        [HttpPut("update-rate-review-status/{id}")]
+        public async Task<IActionResult> UpdateRateReviewStatus(Guid id, [FromBody] string status)
+        {
+            if (string.IsNullOrEmpty(status))
+            {
+                return BadRequest(new { message = "Status cannot be empty." });
+            }
+
+            var rateReview = await _context.RatesAndReviews
+                .FirstOrDefaultAsync(rr => rr.ID == id);
+
+            if (rateReview == null)
+            {
+                return NotFound(new { message = $"Rates and Review with ID {id} not found." });
+            }
+
+            rateReview.Status = status;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Status of Rates and Review with ID {id} has been updated to {status}." });
+        }
+        #endregion
+
+        #region GET total reported reviews
+        // GET: api/RatesAndReviews/count/pending
+        [HttpGet("count/pending")]
+        public async Task<ActionResult<int>> GetPendingForReviewCount()
+        {
+            
+            var count = await _context.Set<RatesAndReviews>()
+                                       .Where(r => r.Status == "Pending for Review")
+                                       .CountAsync();
+
+            return Ok(count);
+        }
+        #endregion
     }
 }
