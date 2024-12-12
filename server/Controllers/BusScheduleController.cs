@@ -450,6 +450,21 @@ namespace server.Controllers
                 return BadRequest(new { message = "Routes information is required." });
             }
 
+            // Fetch the Boarding and Arrival locations to compare states
+            var boardingLocation = await _context.Set<Locations>().FirstOrDefaultAsync(l => l.LocationID == busScheduleDTO.Routes.BoardingLocationID);
+            var arrivalLocation = await _context.Set<Locations>().FirstOrDefaultAsync(l => l.LocationID == busScheduleDTO.Routes.ArrivalLocationID);
+
+            if (boardingLocation == null || arrivalLocation == null)
+            {
+                return BadRequest(new { message = "Invalid Boarding or Arrival location." });
+            }
+
+            // Validate that the boarding location and arrival location are not in the same state
+            if (boardingLocation.State == arrivalLocation.State)
+            {
+                return BadRequest(new { message = "Boarding and Arrival locations cannot be in the same state." });
+            }
+
             TimeSpan etd = ParseTimeSpan(busScheduleDTO.ETD);
             TimeSpan eta = ParseTimeSpan(busScheduleDTO.ETA);
 
@@ -515,7 +530,6 @@ namespace server.Controllers
                     }
                 }
             }
-
 
             var route = new Routes
             {

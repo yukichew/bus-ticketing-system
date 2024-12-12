@@ -72,9 +72,10 @@ const BusInfo = () => {
     const fetchBusTypeData = async () => {
         try {
             const results = await getAllBusTypesByBusOperatorID(token);
+            const busTypesArr = results?.busTypes || [];
 
-            if (Array.isArray(results) && results.length > 0) {
-                const formattedData = results.map((item) => ({
+            if (Array.isArray(busTypesArr) && busTypesArr.length > 0) {
+                const formattedData = busTypesArr.map((item) => ({
                     busTypeID: item.busTypeID,
                     types: item.types,
                     noOfSeats: `${item.noOfSeats} seats`,

@@ -46,6 +46,7 @@ namespace server.Controllers
 
             var passengers = await _context.Seats
                 .Where(s => s.Booking.BusScheduleID == busScheduleGuid && (s.Booking.BookingStatus == "Confirmed"))
+                .OrderBy(s => s.SeatNumber)
                 .ToListAsync();
 
             return Ok(passengers);
