@@ -9,6 +9,7 @@ import {
 } from '../../constants/NavbarItems';
 import { getUserProfile, logout } from '../../api/auth';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../utils/AuthContext';
 
 const NavbarLinks = ({ role }) => {
   const links =
@@ -33,7 +34,8 @@ const NavbarLinks = ({ role }) => {
   );
 };
 
-const Navbar = ({ auth }) => {
+const Navbar = () => {
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
   const [toggleMenu, setToggleMenu] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -56,6 +58,7 @@ const Navbar = ({ auth }) => {
       return toast.error(result.message);
     }
 
+    setAuth(null);
     navigate('/');
   };
 
