@@ -954,12 +954,14 @@ RideNGo";
         }
         #endregion
 
-
+        #region check if bus schedule exists method
         private bool BusScheduleExists(Guid id)
         {
             return _context.BusSchedules.Any(e => e.BusScheduleID == id);
         }
+        #endregion
 
+        #region parse time span method
         private TimeSpan ParseTimeSpan(string timeString)
         {
             if (TimeSpan.TryParse(timeString, out var parsedTime))
@@ -969,5 +971,6 @@ RideNGo";
 
             throw new ArgumentException("Invalid time format.");
         }
+        #endregion
     }
 }
