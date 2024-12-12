@@ -796,6 +796,61 @@ RideNGo";
         }
         #endregion
 
+        #region Get Bus Schedules Details - ADMIN
+        [HttpGet("get-bus-schedules-details")]
+        public async Task<IActionResult> GetBusSchedulesDetails()
+        {
+            var busSchedules = await _context.BusSchedules
+                .Include(bs => bs.BusInfo)
+                .Include(bs => bs.Routes)
+                .Include(bs => bs.PostedBy)
+                .Select(bs => new
+                {
+                    bs.BusScheduleID,
+                    bs.TravelDate,
+                    bs.ETD,
+                    bs.ETA,
+                    bs.Status,
+                    bs.IsRecurring,
+                    BusInfo = new
+                    {
+                        bs.BusInfo.BusPlate,
+                        BusType = new
+                        {
+                            bs.BusInfo.BusType.NoOfSeats,
+                            bs.BusInfo.BusType.Types,
+                        },
+                    },
+                    Routes = new
+                    {
+                        BoardingLocation = new
+                        {
+                            bs.Routes.BoardingLocation.Name,
+                            bs.Routes.BoardingLocation.Address,
+                        },
+                        DepartureTime = bs.Routes.DepartureTime,
+                        ArrivalLocation = new
+                        {
+                            bs.Routes.ArrivalLocation.Name,
+                            bs.Routes.ArrivalLocation.Address,
+                        },
+                        ArrivalTime = bs.Routes.ArrivalTime,
+                    },
+                    PostedBy = new
+                    {
+                        bs.PostedBy.UserName,
+                        bs.PostedBy.BusImages
+                    }
+                })
+                .ToListAsync();
+
+            var totalBusSchedules = busSchedules.Count;
+
+            return Ok(new { busSchedules, totalBusSchedules });
+        }
+        #endregion
+
+
         private bool BusScheduleExists(Guid id)
         {
             return _context.BusSchedules.Any(e => e.BusScheduleID == id);
