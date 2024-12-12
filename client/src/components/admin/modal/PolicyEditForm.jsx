@@ -21,7 +21,6 @@ const PolicyEditForm = ({ operator, onClose }) => {
 
   useEffect(() => {
     if (operator) {
-      console.log("Operator object:", operator);
       setPolicyInfo({
         policyTitle: operator.policyTitle || "",
         terms: operator.terms || "",

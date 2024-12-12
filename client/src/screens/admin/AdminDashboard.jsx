@@ -21,14 +21,11 @@ const AdminDashboard = () => {
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
-    console.log("Sidebar Open:", !isSidebarOpen);
   };
 
   useEffect(() => {
-    console.log("Sidebar state changed:", isSidebarOpen);
   }, [isSidebarOpen]);
 
-  // Get total application and bus operator
   useEffect(() => {
     const fetchCounts = async () => {
       try {
