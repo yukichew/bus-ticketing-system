@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition("auth", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Please enter into field the word 'Bearer' following by space and JWT",
+        Description = "Please enter the word 'Bearer' following by space and JWT Token in the field.",
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
@@ -108,15 +108,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    await DataSeed.SeedRolesAsync(roleManager);
-
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-    await DataSeed.SeedAdminDataSync(userManager);
 }
 
 Stripe.StripeConfiguration.ApiKey = app.Configuration.GetSection("Stripe")["SecretKey"];
