@@ -158,9 +158,12 @@ export const updateBusSchedule = async (
 export const getAllBusSchedules = async () => {
   try {
     const { data } = await api.get("/BusSchedule/get-bus-schedules-details");
+
     const { busSchedules, totalBusSchedules } = data;
+
     return { busSchedules, totalBusSchedules };
   } catch (error) {
     console.error("Error fetching bus schedules:", error);
+    return { busSchedules: [], totalBusSchedules: 0 };
   }
 };
