@@ -145,9 +145,13 @@ const Payment = () => {
               disabled={loading || !stripe}
             />
           </form>
-          <div className='mt-5 text-center text-lg font-semibold'>
-            <p>
+          <div className='mt-5 text-center'>
+            <p className='text-lg font-semibold'>
               Time left: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            </p>
+            <p className='text-sm text-gray-500 mt-2'>
+              Please do not close this page and complete your payment within the
+              time limit.
             </p>
           </div>
         </div>

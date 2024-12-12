@@ -4,10 +4,8 @@ import Rating from '../../screens/user/modal/Rating';
 import Modal from '../common/Modal';
 import Ticket from './Ticket';
 import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
 
 const BookingCard = ({ booking, seatNumber, user }) => {
-  const navigate = useNavigate();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [viewPdf, setViewPdf] = useState(false);
   const [ratingView, setRatingView] = useState(false);
@@ -20,17 +18,6 @@ const BookingCard = ({ booking, seatNumber, user }) => {
   const handleRateReview = () => {
     setRatingView(true);
     setDropdownVisible(false);
-  };
-
-  const handleContinuePayment = () => {
-    navigate('/payment', {
-      state: {
-        bookingID: booking.bookingID,
-        email: user.email,
-        fullname: user.fullname,
-        amountPaid: booking.amountPaid,
-      },
-    });
   };
 
   return (
@@ -99,14 +86,6 @@ const BookingCard = ({ booking, seatNumber, user }) => {
               >
                 Rate and Review
               </button>
-              {booking.bookingStatus === 'Pending' && (
-                <button
-                  onClick={handleContinuePayment}
-                  className='block w-full py-3 hover:bg-gray-100 text-red-500'
-                >
-                  Continue Payment
-                </button>
-              )}
             </div>
           )}
         </div>

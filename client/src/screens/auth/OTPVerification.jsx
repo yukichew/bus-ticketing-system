@@ -13,6 +13,7 @@ const OTPVerification = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { source, type, email } = location.state || {};
+  console.log(location.state);
   const [otp, setOTP] = useState('');
   const [errors, setErrors] = useState({});
 
@@ -62,12 +63,12 @@ const OTPVerification = () => {
     <>
       <div className='flex h-screen'>
         {/* Left Side */}
-        <div className="flex-1 bg-slate-50 flex items-center justify-center relative">
+        <div className='flex-1 bg-slate-50 flex items-center justify-center relative'>
           <LoginHero />
         </div>
 
         {/* Right Side */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className='flex-1 flex items-center justify-center'>
           <div className='w-full max-w-md p-8'>
             <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
               {source === 'register'
