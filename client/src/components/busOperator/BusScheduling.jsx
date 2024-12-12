@@ -54,7 +54,7 @@ const BusScheduling = () => {
     const fetchBusScheduleData = async () => {
         try {
             const results = await getAllBusSchedulesByBusOperatorID(token);
-    
+
             if (Array.isArray(results) && results.length > 0) {
                 const formattedData = await Promise.all(results.map(async (item) => {
                     const data = await getOccupiedSeats(item.busScheduleID);
@@ -71,6 +71,7 @@ const BusScheduling = () => {
                             destinationStation: item.routes.arrivalLocation.name,
                             etd: item.etd,
                             eta: item.eta,
+                            price: item.routes.price,
                         },
                         date: moment(item.travelDate).format('YYYY-MM-DD'),
                         totalSeats: item.busInfo.busType.noOfSeats,
@@ -80,12 +81,12 @@ const BusScheduling = () => {
                     };
                 }));
     
+                
                 setBusScheduleData(formattedData);
             } else {
                 setBusScheduleData([]);
             }
         } catch (error) {
-            console.error("Error fetching bus schedule data:", error);
             setBusScheduleData([]);
         }
     };
@@ -110,9 +111,9 @@ const BusScheduling = () => {
         fetchLocationData();
     }, []);
 
-    const columns = ['Bus Plate', 'Route', 'Date', 'Seats Availability'];
+    const columns = ['Bus Plate', 'Route', 'Date', 'Price', 'Seats Availability'];
 
-    const columnKeys = ['busPlate', 'route', 'date', 'seats'];
+    const columnKeys = ['busPlate', 'route', 'date', 'price', 'seats'];
 
     const statusOptions = ['Scheduled', 'On Time', 'En Route', 'Delayed', 'Completed'];
 
@@ -183,6 +184,7 @@ const BusScheduling = () => {
                             destinationStation: item.routes.arrivalLocation.name,
                             etd: item.etd,
                             eta: item.eta,
+                            price: item.routes.price,
                         },
                         date: moment(item.travelDate).format('YYYY-MM-DD'),
                         totalSeats: item.busInfo.busType.noOfSeats,
@@ -266,6 +268,11 @@ const BusScheduling = () => {
         date: (
             <div className='w-24'>
                 <span>{item.date}</span>
+            </div>
+        ),
+        price:(
+            <div className='w-20'>
+                RM {item.route.price}
             </div>
         ),
         status: (

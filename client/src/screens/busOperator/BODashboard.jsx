@@ -104,6 +104,7 @@ const BODashboard = () => {
                             destinationStation: item.routes.arrivalLocation.name,
                             etd: item.etd,
                             eta: item.eta,
+                            price: item.routes.price,
                         },
                         date: moment(item.travelDate).format('YYYY-MM-DD'),
                         totalSeats: item.busInfo.busType.noOfSeats,
@@ -145,9 +146,9 @@ const BODashboard = () => {
         fetchLocationData();
     }, []);
 
-    const columns = ['Bus Plate', 'Route', 'Date', 'Seats Availability'];
+    const columns = ['Bus Plate', 'Route', 'Date', 'Price', 'Seats Availability'];
 
-    const columnKeys = ['busPlate', 'route', 'date', 'seats'];
+    const columnKeys = ['busPlate', 'route', 'date', 'price', 'seats'];
 
     const statusOptions = ['Scheduled', 'On Time', 'En Route', 'Delayed', 'Completed'];
     
@@ -218,6 +219,7 @@ const BODashboard = () => {
                             destinationStation: item.routes.arrivalLocation.name,
                             etd: item.etd,
                             eta: item.eta,
+                            price: item.routes.price,
                         },
                         date: moment(item.travelDate).format('YYYY-MM-DD'),
                         totalSeats: item.busInfo.busType.noOfSeats,
@@ -301,6 +303,11 @@ const BODashboard = () => {
         date: (
             <div className='w-24'>
                 <span>{item.date}</span>
+            </div>
+        ),
+        price:(
+            <div className='w-20'>
+                RM {item.route.price}
             </div>
         ),
         status: (
