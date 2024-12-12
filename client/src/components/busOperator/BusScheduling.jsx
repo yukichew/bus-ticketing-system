@@ -17,6 +17,7 @@ const BusScheduling = () => {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
     const [busScheduleData, setBusScheduleData] = useState([]);
+    const [occupiedSeats, setOccupiedSeats] = useState([]);
     const [isOriginOpen, setIsOriginOpen] = useState(false);
     const [selectedOriginOption, setSelectedOriginOption] = useState('Select an origin');
     const [isDestinationOpen, setIsDestinationOpen] = useState(false);
@@ -82,6 +83,7 @@ const BusScheduling = () => {
                 setBusScheduleData([]);
             }
         } catch (error) {
+            console.error("Error fetching bus schedule data:", error);
             setBusScheduleData([]);
         }
     };
