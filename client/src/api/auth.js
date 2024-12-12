@@ -42,16 +42,6 @@ export const getUserProfile = async () => {
   }
 };
 
-export const refreshTokenApi = async (refreshToken) => {
-  try {
-    const { data } = await api.post('/Auth/refresh-token', { refreshToken });
-    sessionStorage.setItem('token', data.token);
-    return data;
-  } catch (err) {
-    return catchError(err);
-  }
-};
-
 export const logout = async () => {
   try {
     const { data } = await api.post('/Auth/logout');
