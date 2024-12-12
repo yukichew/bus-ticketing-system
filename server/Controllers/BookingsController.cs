@@ -216,7 +216,7 @@ namespace server.Controllers
             }
 
             var query = _context.Seats
-                .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == user.Email.ToLower())
+                .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == user.Email.ToLower() && s.Booking.BookingStatus != "Pending")
                 .Include(s => s.Booking)
                 .ThenInclude(b => b.BusSchedule.Routes)
                 .AsQueryable();

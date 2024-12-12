@@ -150,10 +150,10 @@ const Navbar = () => {
               </button>
             )}
             {auth && (
-              <div>
+              <div className='flex flex-col items-center'>
                 <button
                   onClick={() => setDropdownVisible(!dropdownVisible)}
-                  className='text-slate-600 hover:text-primary'
+                  className='text-slate-600 font-semibold hover:text-primary hover:underline transition duration-200'
                 >
                   {profile?.fullname}
                 </button>
@@ -161,10 +161,18 @@ const Navbar = () => {
                 {dropdownVisible && (
                   <div className='flex flex-col items-center mt-4'>
                     <Link
-                      to='/edit-profile'
+                      to={
+                        auth.role === 'Member' ? '/profile' : '/bo/user-profile'
+                      }
                       className='text-slate-600 hover:text-primary'
                     >
                       Edit Profile
+                    </Link>
+                    <Link
+                      to='/change-password'
+                      className='py-2 first-line:text-slate-600 hover:text-primary'
+                    >
+                      Change Password
                     </Link>
                     <button
                       onClick={handleLogout}
