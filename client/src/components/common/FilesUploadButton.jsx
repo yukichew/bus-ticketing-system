@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PiUploadSimple } from "react-icons/pi";
 import { AiOutlineDelete } from "react-icons/ai";
+import { toast } from 'react-toastify';
 
 const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFileSize = 2 * 1024 * 1024, aspectRatio = "square" }) => {
     const [files, setFiles] = useState(initialFiles);
@@ -27,11 +28,11 @@ const FilesUploadButton = ({ setImages, initialFiles = [], maxFiles = 2, maxFile
     const validateFile = (file) => {
         const validFormats = ['image/svg+xml', 'image/jpeg', 'image/png'];
         if (!validFormats.includes(file.type)) {
-            alert('Only SVG, JPG, and PNG files are supported.');
+            toast.error('Only SVG, JPG, and PNG files are supported.');
             return false;
         }
         if (file.size > maxFileSize) {
-            alert(`File size should not exceed ${maxFileSize / (1024 * 1024)} MB.`);
+            toast.error(`File size should not exceed ${maxFileSize / (1024 * 1024)} MB.`);
             return false;
         }
         return true;
