@@ -51,7 +51,7 @@ const UserRegistration = () => {
       .string()
       .required('Phone number is required')
       .matches(
-        /^\+60\d{10,11}$/,
+        /^\+60\d{9,10}$/,
         'Phone number must be in the format +60123456789'
       ),
   });
@@ -97,12 +97,12 @@ const UserRegistration = () => {
     <>
       <div className='flex h-screen'>
         {/* Left Side */}
-        <div className="flex-1 bg-slate-50 flex items-center justify-center relative">
+        <div className='flex-1 bg-slate-50 flex items-center justify-center relative'>
           <LoginHero />
         </div>
 
         {/* Right Side */}
-        <div className="relative flex-1 flex items-center justify-center">
+        <div className='relative flex-1 flex items-center justify-center'>
           <div className='w-full max-w-md p-8'>
             <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
               Create An Account
