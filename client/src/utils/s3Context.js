@@ -56,17 +56,3 @@ export const deleteImageFromS3 = async (key) => {
         return false;
     }
 };
-
-export const getImageFromS3 = async (url) => {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Failed to fetch the image');
-        }
-        const blob = await response.blob();
-        return blob;
-    } catch (error) {
-        console.error('Error fetching image from S3:', error);
-        return null;
-    }
-};

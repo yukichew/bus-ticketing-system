@@ -79,7 +79,6 @@ const ManageFaq = () => {
       Object.keys(filters).every((key) => {
         if (!filters[key]) return true;
         if (key === "status") {
-          console.log(`Checking status: ${item.status} === ${filters[key]}`);
           return item.status?.toLowerCase() === filters[key]?.toLowerCase();
         }
         return item[key]?.toLowerCase().includes(filters[key].toLowerCase());
@@ -89,7 +88,6 @@ const ManageFaq = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      console.log("Deleting FAQ ID:", selectedOperator?.faqId);
       await deleteFaq(selectedOperator?.faqId);
 
       const remainingData = faqData.filter(
@@ -118,7 +116,6 @@ const ManageFaq = () => {
       <div className="relative group">
         <button
           onClick={() => {
-            console.log("FAQ ID:", row.faqId);
             setSelectedOperator({
               ...row,
               faqId: row.faqId,
@@ -140,7 +137,6 @@ const ManageFaq = () => {
       <div className="relative group">
         <button
           onClick={() => {
-            console.log("FAQ ID:", row.faqId);
             setSelectedOperator({
               ...row,
               faqId: row.faqId,

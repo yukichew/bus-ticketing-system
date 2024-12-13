@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
-using server.Dto;
+using server.Dto.Bookings;
 using server.Helper;
 using server.Models;
 using Stripe;
@@ -25,7 +25,6 @@ namespace server.Controllers
             _config = config;
             _emailService = emailService;
         }
-
 
         // GET: api/Transactions
         [HttpGet]
@@ -66,7 +65,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Check out using Stripe
+        #region Check out using Stripe api
         // POST: api/Transactions
         [HttpPost]
         public async Task<ActionResult<Transaction>> CheckOut(TransactionDto transactionDto)
@@ -121,7 +120,7 @@ namespace server.Controllers
         }
         #endregion
 
-        #region Confirm transaction
+        #region Confirm transaction api
         [HttpPost("ConfirmTransaction")]
         public async Task<IActionResult> ConfirmTransaction([FromBody] TransactionStatusDto statusDto)
         {
@@ -155,12 +154,27 @@ namespace server.Controllers
                 // send payment receipt email
                 var passenger = seats.FirstOrDefault().Passenger;
                 var receiptMessage = $"Dear {passenger.Fullname},\n\n" +
-                                     $"Thank you for choosing RideNGo. Here are your receipt details:\n\n" +
-                                     $"Your booking has been confirmed.\n" +
-                                     $"Amount: RM {transaction.Amount}\n" +
-                                     $"Transaction ID: {transaction.PaymentIntentID}\n\n" +
-                                     $"We appreciate your booking with RideNGo. Have a great trip!\n\n" +
-                                     $"Regards,\nRideNGo Team";
+                     $"Thank you for choosing RideNGo. Here are your receipt details:\n\n" +
+                     $"Your booking has been confirmed.\n" +
+                     $"Bus Operator: {booking.BusSchedule.PostedBy.Fullname}\n" +
+                     $"Bus Type: {booking.BusSchedule.BusInfo.BusType.Types}\n" +
+                     $"Departure Time: {booking.BusSchedule.ETD}\n" +
+                     $"Travel Date: {booking.BusSchedule.TravelDate}\n\n";
+
+                if (booking.ReturnBusSchedule != null)
+                {
+                    receiptMessage += $"Return Trip Details:\n" +
+                                      $"Bus Operator (Return): {booking.ReturnBusSchedule.PostedBy.Fullname}\n" +
+                                      $"Bus Type (Return): {booking.ReturnBusSchedule.BusInfo.BusType.Types}\n" +
+                                      $"Departure Time (Return): {booking.ReturnBusSchedule.ETD}\n" +
+                                      $"Travel Date (Return): {booking.ReturnBusSchedule.TravelDate}\n\n";
+                }
+
+                receiptMessage += $"Amount: RM {transaction.Amount}\n" +
+                  $"Payment made at: {transaction.CreatedAt}\n\n" +
+                  $"Transaction ID: {transaction.PaymentIntentID}\n\n" +
+                  $"We appreciate your booking with RideNGo. Have a great trip!\n\n" +
+                  $"Regards,\nRideNGo Team";
 
                 await _emailService.SendEmailAsync(passenger.Fullname, passenger.Email, "RideNGo Payment Receipt", receiptMessage);
             }

@@ -28,7 +28,7 @@ const PaymentSuccess = () => {
 
         <CustomButton
           title='Back to Home'
-          className='mt-8 w-2/12'
+          className='mt-8 w-[180px]'
           onClick={() => navigate('/')}
         />
       </div>

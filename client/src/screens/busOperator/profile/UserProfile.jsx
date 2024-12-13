@@ -7,7 +7,7 @@ import CustomInput from '../../../components/common/CustomInput';
 import FilesUploadButton from '../../../components/common/FilesUploadButton';
 import { useAuth } from '../../../utils/AuthContext';
 import { getUserProfile } from '../../../api/auth';
-import { uploadToS3, deleteImageFromS3, getImageFromS3 } from '../../../utils/s3Context';
+import { uploadToS3, deleteImageFromS3 } from '../../../utils/s3Context';
 import { editBOProfile } from '../../../api/busOperator';
 import { toast } from 'react-toastify';
 

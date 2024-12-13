@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import CustomButton from "../../../components/common/CustomButton";
 import CustomInput from "../../../components/common/CustomInput";
-import Stars from "../../../components/common/Stars";
+import { approveAndRejectReviews } from "../../../api/rating";
+import { toast } from "react-toastify";
 
 const ReviewForm = ({ operator, onClose }) => {
-  const [rating, setRating] = useState(0);
-
   const [reviewInfo, setReviewInfo] = useState({
     busOperatorID: "",
     passengerID: "",
@@ -18,14 +17,13 @@ const ReviewForm = ({ operator, onClose }) => {
   useEffect(() => {
     if (operator) {
       setReviewInfo({
-        busOperatorID: operator.busOperatorID,
-        passengerID: operator.passengerID,
+        reviewID: operator.reviewID,
+        busType: operator.busType,
+        busPlate: operator.busPlate,
+        busOperator: operator.busOperator,
         comment: operator.comment,
-        rates: Number(operator.numericRates) || 0,
-        date: operator.originalDate,
-        status: operator.originalStatus || "",
+        status: operator.originalStatus,
       });
-      setRating(Number(operator.numericRates) || 0);
     }
   }, [operator]);
 
@@ -37,21 +35,65 @@ const ReviewForm = ({ operator, onClose }) => {
     }));
   };
 
+  const handleApproveAndReject = async (status) => {
+    if (!operator || !operator.reviewID) {
+      console.error("No operator selected or missing ID.");
+      return;
+    }
+
+    if (!status) {
+      console.error("Status is required.");
+      return;
+    }
+
+    try {
+      const response = await approveAndRejectReviews(operator.reviewID, status);
+
+      if (response?.error) {
+        toast.error("API error: ", response.message);
+      } else {
+        toast.success("Ratings have been reviewed.");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Unexpected error occurred: ", error);
+    }
+  };
+
   return (
-    <div className="flex flex-col space-y-4 w-[600px]">
+    <div className="flex flex-col space-y-4 w-[400px]">
       <div className="pointer-events-none">
         <label
-          htmlFor="busOperatorID"
+          htmlFor="busOperator"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Bus Operator ID
+          Bus Operator
+        </label>
+        <CustomInput
+          placeholder="Enter Bus Operator"
+          id="busOperator"
+          name="busOperator"
+          type="text"
+          value={reviewInfo.busOperator}
+          onChange={handleReviewChange}
+          required
+        />
+      </div>
+      <div className="pointer-events-none">
+        <label
+          htmlFor="busType"
+          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
+        >
+          Bus Type
         </label>
         <CustomInput
           placeholder="Bus Operator ID"
-          id="busOperatorID"
-          name="busOperatorID"
+          id="busType"
+          name="busType"
           type="text"
-          value={reviewInfo.busOperatorID}
+          value={reviewInfo.busType}
           onChange={handleReviewChange}
           required
         />
@@ -59,91 +101,35 @@ const ReviewForm = ({ operator, onClose }) => {
 
       <div className="pointer-events-none">
         <label
-          htmlFor="passengerID"
+          htmlFor="busPlate"
           className="block text-sm font-poppins font-medium text-gray-700 pb-2"
         >
-          Passenger ID
+          Bus Plate
         </label>
         <CustomInput
-          placeholder="Passenger ID"
-          id="passengerID"
-          name="passengerID"
+          placeholder="Bus Plate"
+          id="busPlate"
+          name="busPlate"
           type="text"
-          value={reviewInfo.passengerID}
+          value={reviewInfo.busPlate}
           onChange={handleReviewChange}
           required
         />
       </div>
 
-      <div className="pointer-events-none">
-        <label
-          htmlFor="status"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Status
-        </label>
-        <CustomInput
-          placeholder="Enter Status"
-          id="status"
-          name="status"
-          type="text"
-          value={reviewInfo.status}
-          onChange={handleReviewChange}
-          required
-        />
-      </div>
-
-      <div className="pointer-events-none">
-        <label
-          htmlFor="date"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Date
-        </label>
-        <CustomInput
-          placeholder="Enter Date"
-          id="date"
-          name="date"
-          type="date"
-          value={reviewInfo.date}
-          onChange={handleReviewChange}
-          required
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="rates"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Rates
-        </label>
-        <div className="flex items-center">
-          <Stars rating={operator.numericRates} />
-          <span className="ml-2 text-gray-600">{operator.numericRates}/5</span>
+      {operator?.originalStatus === "Pending for Review" && (
+        <div className="flex justify-between">
+          <CustomButton
+            title={"Approve"}
+            onClick={() => handleApproveAndReject("Inactive")}
+            className="pr-6"
+          />
+          <CustomButton
+            title={"Reject"}
+            onClick={() => handleApproveAndReject("Active")}
+          />
         </div>
-      </div>
-
-      <div className="pointer-events-none">
-        <label
-          htmlFor="comment"
-          className="block text-sm font-poppins font-medium text-gray-700 pb-2"
-        >
-          Comment
-        </label>
-        <CustomInput
-          placeholder="Enter Comment"
-          id="comment"
-          name="comment"
-          type="text"
-          value={reviewInfo.comment}
-          onChange={handleReviewChange}
-          multiline
-          required
-        />
-      </div>
-
-      <CustomButton title={"Delete"} onClick={onClose} />
+      )}
     </div>
   );
 };

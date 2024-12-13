@@ -42,28 +42,6 @@ namespace server.Controllers
         }
         #endregion
 
-        #region GetBusSchedulesForToday
-        // GET: api/BusSchedule/Today
-        [HttpGet("Today")]
-        public async Task<ActionResult> GetBusSchedulesForToday()
-        {
-            var today = DateTime.Today;
-
-            var busSchedulesForToday = await _context.Set<BusSchedule>()
-                .Include(b => b.BusInfo)
-                .Include(b => b.RecurringOptions)
-                .Include(b => b.Routes)
-                    .ThenInclude(r => r.BoardingLocation)
-                .Include(b => b.Routes)
-                    .ThenInclude(r => r.ArrivalLocation)
-                .Where(bs => bs.TravelDate == today)
-                .OrderBy(bs => bs.ETD)
-                .ToListAsync();
-
-            return Ok(busSchedulesForToday);
-        }
-        #endregion
-
         #region GetBusSchedule
         // GET: api/BusSchedule/{id}
         [HttpGet("{id}")]
@@ -900,11 +878,74 @@ RideNGo";
         }
         #endregion
 
+        #region Get Bus Schedules Details - ADMIN
+        [HttpGet("get-bus-schedules-details")]
+        public async Task<IActionResult> GetBusSchedulesDetails()
+        {
+            var busSchedules = await _context.BusSchedules
+                .Include(bs => bs.BusInfo)
+                .Include(bs => bs.Routes)
+                .Include(bs => bs.PostedBy)
+                .OrderBy(bs => bs.TravelDate)
+                .ThenBy(bs => bs.ETD)
+                .Select(bs => new
+                {
+                    bs.BusScheduleID,
+                    bs.TravelDate,
+                    bs.ETD,
+                    bs.ETA,
+                    bs.ScheduleStatus,
+                    bs.Status,
+                    bs.IsRecurring,
+                    BusInfo = new
+                    {
+                        bs.BusInfo.BusPlate,
+                        BusType = new
+                        {
+                            bs.BusInfo.BusType.NoOfSeats,
+                            bs.BusInfo.BusType.Types,
+                        },
+                    },
+                    Routes = new
+                    {
+                        BoardingLocation = new
+                        {
+                            bs.Routes.BoardingLocation.Name,
+                            bs.Routes.BoardingLocation.State,
+                            bs.Routes.BoardingLocation.Address,
+                        },
+                        DepartureTime = bs.Routes.DepartureTime,
+                        ArrivalLocation = new
+                        {
+                            bs.Routes.ArrivalLocation.Name,
+                            bs.Routes.ArrivalLocation.State,
+                            bs.Routes.ArrivalLocation.Address,
+                        },
+                        ArrivalTime = bs.Routes.ArrivalTime,
+                        Price = bs.Routes.Price,
+                    },
+                    PostedBy = new
+                    {
+                        bs.PostedBy.UserName,
+                        bs.PostedBy.BusImages
+                    }
+                })
+                .ToListAsync();
+
+            var totalBusSchedules = busSchedules.Count;
+
+            return Ok(new { busSchedules, totalBusSchedules });
+        }
+        #endregion
+
+        #region check if bus schedule exists method
         private bool BusScheduleExists(Guid id)
         {
             return _context.BusSchedules.Any(e => e.BusScheduleID == id);
         }
+        #endregion
 
+        #region parse time span method
         private TimeSpan ParseTimeSpan(string timeString)
         {
             if (TimeSpan.TryParse(timeString, out var parsedTime))
@@ -914,5 +955,6 @@ RideNGo";
 
             throw new ArgumentException("Invalid time format.");
         }
+        #endregion
     }
 }

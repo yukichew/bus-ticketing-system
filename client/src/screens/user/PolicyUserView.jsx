@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import AdminHeader from '../../components/admin/AdminHeader';
-import Sidebar from '../../components/admin/Sidebar';
 import Card from '../../components/common/Card';
 import Container from '../../components/Container';
 import { FaRegHandPointRight } from 'react-icons/fa';
@@ -10,15 +8,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { getActiveTerms } from '../../api/tac';
 
 const PolicyUserView = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [expandedPolicy, setExpandedPolicy] = useState(null); // Tracks which policy is expanded
   const [policyData, setPolicyData] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
 
   const handlePolicyClick = (policyTitle) => {
     setExpandedPolicy((prev) => (prev === policyTitle ? null : policyTitle));

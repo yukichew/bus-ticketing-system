@@ -36,7 +36,7 @@ const EmailVerification = () => {
         }
         toast.success(response.message);
         navigate('/otp-verification', {
-          state: { source: 'forgot-password' },
+          state: { source: 'forgot-password', type, email },
         });
       }
     } catch (err) {
@@ -64,12 +64,12 @@ const EmailVerification = () => {
     <>
       <div className='flex h-screen'>
         {/* Left Side */}
-        <div className="flex-1 bg-slate-50 flex items-center justify-center relative">
+        <div className='flex-1 bg-slate-50 flex items-center justify-center relative'>
           <LoginHero />
         </div>
 
         {/* Right Side */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className='flex-1 flex items-center justify-center'>
           <div className='w-full max-w-md p-8'>
             <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
               {source === 'register'

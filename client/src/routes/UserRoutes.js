@@ -6,9 +6,9 @@ import Home from '../screens/user/Home';
 import ContactUs from '../screens/user/ContactUs';
 import Payment from '../screens/user/Payment';
 import BusTickets from '../screens/user/BusTickets';
-import FaqUserView from '../components/admin/FaqUserView';
-import PolicyUserView from '../components/admin/PolicyUserView';
 import PaymentSuccess from '../screens/user/PaymentSuccess';
+import FaqUserView from '../screens/user/FaqUserView';
+import PolicyUserView from '../screens/user/PolicyUserView';
 
 const UserRoutes = [
   <Route

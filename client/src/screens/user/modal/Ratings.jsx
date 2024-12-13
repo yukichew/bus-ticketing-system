@@ -9,25 +9,27 @@ const Ratings = ({ id }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       const results = await getActiveRatings(id);
-      setReviews(results);
+      setReviews(Array.isArray(results) ? results : []);
     };
 
     fetchReviews();
-  }, []);
+  }, [id]);
 
   return (
     <>
-      <RatingSummary reviews={reviews} />
-      <h2 className='text-lg font-semibold mt-5'>Reviews</h2>
       {reviews && reviews.length > 0 ? (
-        reviews.map((review) => (
-          <Review
-            key={review.id}
-            review={review}
-          />
-        ))
+        <>
+          <RatingSummary reviews={reviews} />
+          <h2 className='text-lg font-semibold mt-5'>Reviews</h2>
+          {reviews.map((review) => (
+            <Review
+              key={review.id}
+              review={review}
+            />
+          ))}
+        </>
       ) : (
-        <p className=''>No reviews available</p>
+        <p>No reviews available</p>
       )}
     </>
   );

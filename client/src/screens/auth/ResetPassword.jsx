@@ -63,12 +63,12 @@ const ResetPassword = () => {
     <>
       <div className='flex h-screen'>
         {/* Left Side */}
-        <div className="flex-1 bg-slate-50 flex items-center justify-center relative">
+        <div className='flex-1 bg-slate-50 flex items-center justify-center relative'>
           <LoginHero />
         </div>
 
         {/* Right Side */}
-        <div className="relative flex-1 flex items-center justify-center">
+        <div className='relative flex-1 flex items-center justify-center'>
           <div className='w-full max-w-md p-8'>
             <h3 className='font-poppins mb-4 text-xl font-semibold sm:text-center sm:mb-2 sm:text-2xl'>
               Reset Your Password
@@ -79,7 +79,7 @@ const ResetPassword = () => {
                   id={'newpassword'}
                   name={'newpassword'}
                   placeholder={'New Password'}
-                  type={isPasswordVisible ? 'text' : 'newpassword'}
+                  type={isPasswordVisible ? 'text' : 'password'}
                   required
                   icon={IoKeyOutline}
                   onChange={(e) => handleChange('newPassword', e.target.value)}
@@ -102,7 +102,7 @@ const ResetPassword = () => {
                   )}
                 </div>
               </div>
-              <div className='mt-28'>
+              <div className='mt-6'>
                 <CustomButton
                   title={'Confirm'}
                   onClick={handleSubmit}

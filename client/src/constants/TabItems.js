@@ -8,7 +8,6 @@ import ManageBusOperator from "../components/admin/ManageBusOperators";
 import ManageUser from "../components/admin/ManageUser";
 import ManagePolicy from "../components/admin/ManagePolicy";
 import ManageFaq from "../components/admin/ManageFaq";
-import ViewBusRoutes from "../components/admin/modal/ViewBusRoutes";
 import BusScheduleInfo from "../screens/admin/modal/BusScheduleInfo";
 
 export const busInfoTabs = [

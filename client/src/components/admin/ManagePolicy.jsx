@@ -65,7 +65,6 @@ const ManagePolicy = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      console.log("Deleting TAC ID:", selectedPolicy?.tacId);
       await deleteTerm(selectedPolicy?.tacId);
 
       const remainingData = policies.filter(
@@ -128,7 +127,6 @@ const ManagePolicy = () => {
       <div className="relative group">
         <button
           onClick={() => {
-            console.log("TAC ID:", row.tacId);
             setSelectedPolicy({
               ...row,
               tacId: row.tacId,

@@ -4,4 +4,4 @@ export const policies = [
   'No refund for no-show or late arrival',
 ];
 
-export const filterStatusOptions = ['Confirmed', 'Pending', 'Cancelled'];
+export const filterStatusOptions = ['Confirmed', 'Cancelled'];

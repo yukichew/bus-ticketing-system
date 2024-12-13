@@ -116,9 +116,11 @@ namespace server.Controllers
         }
         #endregion
 
+        #region check if location exists method
         private bool LocationExists(Guid id)
         {
             return _context.Set<Locations>().Any(e => e.LocationID == id);
         }
+        #endregion
     }
 }

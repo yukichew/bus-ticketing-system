@@ -31,16 +31,8 @@ export const createTerm = async (term) => {
   }
 };
 
-// Update a term by ID
 export const updateTerm = async (tacId, updatedPolicy) => {
   try {
-    console.log("Sending to server:", {
-      tacId,
-      policyTitle: updatedPolicy.policyTitle,
-      terms: updatedPolicy.terms,
-      status: updatedPolicy.status,
-    });
-
     const response = await axios.put(
       `https://localhost:7137/api/TermsAndConditions/${tacId}`,
       {
@@ -56,14 +48,12 @@ export const updateTerm = async (tacId, updatedPolicy) => {
       }
     );
 
-    console.log("Response from server:", response.data);
     return response.data;
   } catch (err) {
-    console.error("Full server error response:", err);
+    return catchError(err);
   }
 };
 
-// Delete a term by ID
 export const deleteTerm = async (id) => {
   try {
     const { data } = await api.delete(`/TermsAndConditions/${id}`);

@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dto;
+using server.Dto.Bookings;
 using server.Models;
-using System.Collections.Generic;
 
 namespace server.Controllers
 {
@@ -216,7 +216,7 @@ namespace server.Controllers
             }
 
             var query = _context.Seats
-                .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == user.Email.ToLower())
+                .Where(s => s.Passenger != null && s.Passenger.Email.ToLower() == user.Email.ToLower() && s.Booking.BookingStatus != "Pending")
                 .Include(s => s.Booking)
                 .ThenInclude(b => b.BusSchedule.Routes)
                 .AsQueryable();
