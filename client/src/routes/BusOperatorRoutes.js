@@ -23,14 +23,8 @@ const routesConfig = [
   { path: '/bo/bus/new-bus-type', component: NewBusTypeForm },
   { path: '/bo/bus/edit-bus-type/:busTypeID', component: EditBusTypeForm },
   { path: '/bo/bus/new-bus-schedule', component: NewBusScheduleForm },
-  {
-    path: '/bo/bus/edit-bus-schedule/:busScheduleID',
-    component: EditBusScheduleForm,
-  },
-  {
-    path: '/bo/bus/bus-schedule/passenger-lists/:busScheduleID',
-    component: PassengerList,
-  },
+  { path: '/bo/bus/edit-bus-schedule/:busScheduleID', component: EditBusScheduleForm },
+  { path: '/bo/bus/bus-schedule/passenger-lists/:busScheduleID', component: PassengerList },
   { path: '/bo/bus/bus-schedule-history', component: BusScheduleHistory },
   { path: '/bo/rates-and-reviews', component: BORatesAndReviews },
 ];
