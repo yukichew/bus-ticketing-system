@@ -127,6 +127,7 @@ const UserProfile = () => {
 
   const handleCancel = () => {
     setIsEditable(false);
+    fetchProfile();
   };
 
   return (
